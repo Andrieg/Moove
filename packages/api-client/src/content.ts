@@ -28,3 +28,4 @@ export function getChallenges() {
 export function getChallengeById(id: string) {
   return apiFetch<Challenge>(`/challenges/${id}`);
 }
+
