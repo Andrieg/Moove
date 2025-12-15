@@ -6,8 +6,12 @@ import { getCurrentUserProfile, clearToken } from "@moove/api-client";
 export default function MePage() {
   const [data, setData] = useState<unknown>(null);
   const [error, setError] = useState<string | null>(null);
+  const [tokenPreview, setTokenPreview] = useState<string>("(checking…)");
 
   useEffect(() => {
+    const t = localStorage.getItem("token");
+    setTokenPreview(t ? `${t.slice(0, 20)}…` : "null");
+
     getCurrentUserProfile()
       .then(setData)
       .catch((e) => setError((e as Error).message));
@@ -16,6 +20,9 @@ export default function MePage() {
   return (
     <main style={{ padding: 24, fontFamily: "sans-serif" }}>
       <h1>/users/me</h1>
+      <p>
+        localStorage token: <code>{tokenPreview}</code>
+      </p>
 
       <button
         onClick={() => {
