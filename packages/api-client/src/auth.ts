@@ -1,33 +1,24 @@
-import type { AuthUser } from "@moove/types";
 import { apiFetch } from "./http";
 
-/**
- * Get the currently authenticated user.
- * You already used this in apps/client to prove wiring.
- */
-export function getCurrentUser() {
-  return apiFetch<AuthUser>("/auth/me");
-}
+export type LoginRequest = {
+  email: string;
+  client?: boolean;
+  target?: string;
+  brand?: string;
+};
+
+export type LoginResponse =
+  | { status: "SUCCESS"; user: string }
+  | { status: "FAIL"; error: string; code?: number };
 
 /**
- * Request a magic link for passwordless login.
- * NOTE: endpoint path/body might differ in legacy API.
- * We'll align once we confirm actual routes.
+ * Legacy API: POST /users/login
+ * - Sends an email containing `${APP_URL}/auth?token=<JWT>`
+ * - Returns { status: "SUCCESS", user: "<userId>" } (NOT the JWT)
  */
-export function requestMagicLink(email: string) {
-  return apiFetch<{ ok: boolean }>(`/auth/magic-link`, {
+export function requestLoginLink(payload: LoginRequest) {
+  return apiFetch<LoginResponse>("/users/login", {
     method: "POST",
-    body: JSON.stringify({ email })
-  });
-}
-
-/**
- * Verify the magic link token and receive a JWT (or session).
- * NOTE: response shape may differ; adjust to match legacy.
- */
-export function verifyMagicLink(token: string) {
-  return apiFetch<{ jwt: string }>(`/auth/verify`, {
-    method: "POST",
-    body: JSON.stringify({ token })
+    body: JSON.stringify(payload),
   });
 }
