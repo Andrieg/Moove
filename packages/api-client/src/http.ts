@@ -1,22 +1,27 @@
-type ApiError = {
-  status: number;
-  message: string;
-  body?: unknown;
-};
-
 function getBaseUrl() {
-  // Client-side: Next exposes NEXT_PUBLIC_* vars
   if (typeof window !== "undefined") {
     return process.env.NEXT_PUBLIC_API_URL || "https://api.moove.fit";
   }
-  // Server-side fallback:
-  return process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "https://api.moove.fit";
+  return (
+    process.env.API_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://api.moove.fit"
+  );
 }
 
-function getToken() {
-  // Simple starter strategy: token in localStorage
+export function setToken(token: string) {
+  if (typeof window === "undefined") return;
+  localStorage.setItem("token", token);
+}
+
+export function getToken() {
   if (typeof window === "undefined") return null;
   return localStorage.getItem("token");
+}
+
+export function clearToken() {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem("token");
 }
 
 export async function apiFetch<T>(
@@ -31,8 +36,8 @@ export async function apiFetch<T>(
     headers: {
       "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers || {})
-    }
+      ...(options.headers || {}),
+    },
   });
 
   const contentType = res.headers.get("content-type") || "";
@@ -41,12 +46,12 @@ export async function apiFetch<T>(
     : await res.text().catch(() => null);
 
   if (!res.ok) {
-    const err: ApiError = {
-      status: res.status,
-      message: typeof body === "string" ? body : "API request failed",
-      body
-    };
-    throw new Error(JSON.stringify(err));
+    // Preserve details for debugging
+    throw new Error(
+      typeof body === "string"
+        ? body
+        : JSON.stringify({ status: res.status, body })
+    );
   }
 
   return body as T;
