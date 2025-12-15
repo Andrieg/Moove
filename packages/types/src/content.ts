@@ -1,15 +1,17 @@
 export interface Video {
   id: string;
-  coachId: string;
-  title: string;
-  durationSeconds: number;
-  published: boolean;
+  title?: string;
+  coachId?: string;
+  published?: boolean;
+  durationSeconds?: number;
+  [key: string]: unknown;
 }
 
 export interface Challenge {
   id: string;
-  coachId: string;
-  title: string;
-  startDate: string;
-  endDate: string;
+  title?: string;
+  coachId?: string;
+  startDate?: string;
+  endDate?: string;
+  [key: string]: unknown;
 }
