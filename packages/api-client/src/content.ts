@@ -1,17 +1,30 @@
-import type { Video } from "@moove/types";
+import type { Video, Challenge } from "@moove/types";
 import { apiFetch } from "./http";
 
 /**
- * Fetch list of videos accessible to current user (member/coach).
+ * Legacy API: GET /videos
  */
 export function getVideos() {
-  return apiFetch<Video[]>(`/videos`);
+  return apiFetch<Video[]>("/videos");
 }
 
 /**
- * Fetch a single video by id.
+ * Legacy API: GET /videos/:id
  */
-export function getVideoById(videoId: string) {
-  return apiFetch<Video>(`/videos/${videoId}`);
+export function getVideoById(id: string) {
+  return apiFetch<Video>(`/videos/${id}`);
 }
 
+/**
+ * Legacy API: GET /challenges
+ */
+export function getChallenges() {
+  return apiFetch<Challenge[]>("/challenges");
+}
+
+/**
+ * Legacy API: GET /challenges/:id
+ */
+export function getChallengeById(id: string) {
+  return apiFetch<Challenge>(`/challenges/${id}`);
+}
