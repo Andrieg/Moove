@@ -2,6 +2,13 @@ import type { User } from "@moove/types";
 import { apiFetch } from "./http";
 
 /**
+ * Get the current user's profile.
+ */
+export function getCurrentUserProfile() {
+  return apiFetch<User>(`/users/me`);
+}
+
+/**
  * Legacy API: GET /users/me (protected)
  */
 export function getCurrentUserProfile() {
