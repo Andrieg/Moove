@@ -7,7 +7,6 @@ import { setToken } from "@moove/api-client";
 function readTokenFromHash(): string | null {
   if (typeof window === "undefined") return null;
   const hash = window.location.hash || "";
-  // supports: #token=XYZ or #/auth?token=XYZ
   const m = hash.match(/token=([^&]+)/);
   return m ? decodeURIComponent(m[1]) : null;
 }
@@ -55,8 +54,8 @@ export default function AuthPage() {
 
       <h2>Manual token paste (fallback)</h2>
       <p>
-        If your email link isn’t including <code>?token=</code>, copy the token
-        (JWT) and paste it here.
+        Copy the JWT token (it usually looks like <code>xxx.yyy.zzz</code>) and
+        paste it below.
       </p>
 
       <textarea
@@ -66,10 +65,6 @@ export default function AuthPage() {
         style={{ width: "100%", padding: 12, fontFamily: "monospace" }}
         placeholder="Paste JWT token here…"
       />
-
-      <p style={{ marginTop: 12 }}>
-        Tip: a JWT usually looks like <code>xxxxx.yyyyy.zzzzz</code>.
-      </p>
     </main>
   );
 }
