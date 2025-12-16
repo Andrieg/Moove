@@ -8,6 +8,7 @@ import type { Video } from "@moove/types";
 import Button from "../../_components/atoms/Button";
 import Title from "../../_components/atoms/Title";
 import Text from "../../_components/atoms/Text";
+import VideoPlayer from "../../_components/blocks/VideoPlayer";
 
 export default function VideoDetailPage() {
   const params = useParams();
@@ -17,6 +18,8 @@ export default function VideoDetailPage() {
   const [video, setVideo] = useState<Video | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [liked, setLiked] = useState(false);
+  const [favorited, setFavorited] = useState(false);
+  const [showPlayer, setShowPlayer] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -61,9 +64,17 @@ export default function VideoDetailPage() {
     : 0;
   const cover = video.cover as { url?: string } | undefined;
   const thumbnail = cover?.url || "/backgrounds/default-workout.jpg";
+  const videoUrl = (video as any).video?.url || undefined;
+
+  // Mock data for demonstration
+  const category = "Full Body";
+  const intensity = "Strength";
+  const style = "HIIT";
+  const views = Math.floor(Math.random() * 1000) + 100;
+  const rating = (Math.random() * 1 + 4).toFixed(1);
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-gray-50 min-h-screen">
       {/* Hero Section */}
       <div className="bg-gray-50">
         <div className="container mx-auto">
@@ -86,12 +97,12 @@ export default function VideoDetailPage() {
                 {/* Features List */}
                 <ul className="flex flex-wrap gap-2 mb-6 text-gray-600">
                   <li className="after:content-['|'] after:ml-2 after:text-gray-300">
-                    Full Body
+                    {category}
                   </li>
                   <li className="after:content-['|'] after:ml-2 after:text-gray-300">
-                    Strength
+                    {intensity}
                   </li>
-                  <li>HIIT</li>
+                  <li>{style}</li>
                 </ul>
 
                 {/* Icons Row */}
@@ -105,7 +116,7 @@ export default function VideoDetailPage() {
                       height={18}
                     />
                     <Text size="sm" weight="600">
-                      0
+                      {views}
                     </Text>
                   </div>
 
@@ -131,55 +142,115 @@ export default function VideoDetailPage() {
                       height={18}
                     />
                     <Text size="sm" weight="600">
-                      4.9
+                      {rating}
                     </Text>
                   </div>
                 </div>
 
-                {/* CTA Button */}
-                <Button
-                  variant="primary"
-                  size="default"
-                  fullWidth
-                  onClick={() => router.push(`/player/${video.id}`)}
-                >
-                  WATCH NOW
-                </Button>
+                {/* Action Buttons */}
+                <div className="space-y-3">
+                  <Button
+                    variant="primary"
+                    size="default"
+                    fullWidth
+                    onClick={() => setShowPlayer(true)}
+                  >
+                    START WORKOUT
+                  </Button>
+                  
+                  <div className="flex gap-3">
+                    <Button
+                      variant={favorited ? "primary" : "transparent"}
+                      size="default"
+                      className="flex-1 flex items-center justify-center gap-2"
+                      onClick={() => setFavorited(!favorited)}
+                    >
+                      <Image
+                        src={favorited ? "/icons/star.svg" : "/icons/star.svg"}
+                        alt="Favorite"
+                        width={18}
+                        height={18}
+                      />
+                      {favorited ? "SAVED" : "SAVE"}
+                    </Button>
+                    <Button
+                      variant={liked ? "primary" : "transparent"}
+                      size="default"
+                      className="flex-1 flex items-center justify-center gap-2"
+                      onClick={() => setLiked(!liked)}
+                    >
+                      <Image
+                        src={liked ? "/icons/likeFilled.svg" : "/icons/like.svg"}
+                        alt="Like"
+                        width={18}
+                        height={18}
+                      />
+                      {liked ? "LIKED" : "LIKE"}
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Image - Right Side */}
+            {/* Image/Video - Right Side */}
             <div className="lg:col-span-8 order-1 lg:order-2 relative min-h-[20rem] lg:min-h-[30rem]">
-              <div
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: `url(${thumbnail})` }}
-              >
-                {/* Navigation Icons */}
-                <div className="flex justify-between p-4">
-                  <button
-                    onClick={() => router.push("/")}
-                    className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition"
-                  >
-                    <Image
-                      src="/icons/back.svg"
-                      alt="Back"
-                      width={20}
-                      height={20}
-                    />
-                  </button>
-                  <button
-                    onClick={() => setLiked(!liked)}
-                    className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition"
-                  >
-                    <Image
-                      src={liked ? "/icons/likeFilled.svg" : "/icons/like.svg"}
-                      alt="Like"
-                      width={20}
-                      height={20}
-                    />
-                  </button>
+              {showPlayer ? (
+                <div className="absolute inset-0 bg-black">
+                  <VideoPlayer
+                    videoUrl={videoUrl}
+                    thumbnailUrl={thumbnail}
+                    title={video.title}
+                    onClose={() => setShowPlayer(false)}
+                  />
                 </div>
-              </div>
+              ) : (
+                <div
+                  className="absolute inset-0 bg-cover bg-center"
+                  style={{ backgroundImage: `url(${thumbnail})` }}
+                >
+                  {/* Navigation Icons */}
+                  <div className="flex justify-between p-4">
+                    <button
+                      onClick={() => router.back()}
+                      className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition"
+                    >
+                      <Image
+                        src="/icons/back.svg"
+                        alt="Back"
+                        width={20}
+                        height={20}
+                      />
+                    </button>
+                    <button
+                      onClick={() => setLiked(!liked)}
+                      className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition"
+                    >
+                      <Image
+                        src={liked ? "/icons/likeFilled.svg" : "/icons/like.svg"}
+                        alt="Like"
+                        width={20}
+                        height={20}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Play Button Overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <button
+                      onClick={() => setShowPlayer(true)}
+                      className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition hover:scale-110"
+                    >
+                      <Image
+                        src="/icons/play.svg"
+                        alt="Play"
+                        width={32}
+                        height={32}
+                        className="ml-1"
+                      />
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -196,6 +267,23 @@ export default function VideoDetailPage() {
             {(video.description as string) ||
               `This ${duration}-minute workout is designed to push your limits and help you achieve your fitness goals. Perfect for all fitness levels, this class combines strength training with cardio intervals for maximum results.`}
           </Text>
+        </section>
+
+        {/* Equipment Needed */}
+        <section className="py-6 border-b border-gray-200">
+          <Title size="base" weight="600" className="mb-3">
+            Equipment Needed
+          </Title>
+          <div className="flex flex-wrap gap-2">
+            {["Dumbbells", "Mat", "Water Bottle"].map((item) => (
+              <span
+                key={item}
+                className="px-4 py-2 bg-gray-100 rounded-full text-sm text-gray-700"
+              >
+                {item}
+              </span>
+            ))}
+          </div>
         </section>
 
         {/* Disclaimer */}
@@ -224,7 +312,7 @@ export default function VideoDetailPage() {
           </div>
         </section>
 
-        {/* Notes (if available) */}
+        {/* Notes */}
         <section className="py-6">
           <Title size="base" weight="600" className="mb-3">
             Notes
