@@ -55,7 +55,7 @@ export default function ChallengesPage() {
                 type="challenge"
                 classroom={{
                   id: challenge.id,
-                  title: challenge.title,
+                  title: challenge.title || "Untitled Challenge",
                   cover: { url: "" },
                 }}
               />
