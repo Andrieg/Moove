@@ -132,6 +132,7 @@ export default function Home() {
 
       <h2 style={{ marginTop: 20 }}>/users/me response</h2>
       <pre style={{ whiteSpace: "pre-wrap" }}>{JSON.stringify(meResponse, null, 2)}</pre>
-    </main>
+      </main>
+    </>
   );
 }
