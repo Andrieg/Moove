@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   description: "Access your workouts, challenges, and fitness journey",
 };
 
+import MainLayout from "./_components/layout/MainLayout";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,7 +29,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <MainLayout>{children}</MainLayout>
       </body>
     </html>
   );
