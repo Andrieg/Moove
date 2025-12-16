@@ -109,6 +109,44 @@ const getAllChallanges = async (request: any, reply: any) => {
   });
 };
 
+const getChallangeById = async (request: any, reply: any) => {
+  const { id } = request.params;
+  const email = request?.user?.email;
+
+  // DEV BYPASS: Return mock challenge by ID in development
+  if (process.env.NODE_ENV !== "production") {
+    const mockChallenge = {
+      id: id,
+      title: "30 Day Strength Challenge",
+      startDate: "2024-12-01T00:00:00Z",
+      endDate: "2024-12-31T23:59:59Z",
+      coachId: email || "dev@moove.test",
+      description: "Build strength over 30 days with progressive workouts. Each day includes targeted exercises designed to build functional strength.",
+    };
+
+    return reply.send({
+      status: 'SUCCESS',
+      challenge: mockChallenge
+    });
+  }
+
+  // Production path
+  const challange = await DB.CHALLANGES.getById?.(email, id);
+
+  if (challange) {
+    return reply.send({
+      status: 'SUCCESS',
+      challenge: challange
+    });
+  }
+
+  return reply.send({
+    status: 'FAIL',
+    error: 'not found',
+    code: 1002
+  });
+};
+
 const deleteChallange = async (request: any, reply: any) => {
   const { email } = request?.user;
   const { id } = request.params;
@@ -137,5 +175,6 @@ export {
   createChallange,
   updateChallange,
   getAllChallanges,
+  getChallangeById,
   deleteChallange,
 }
