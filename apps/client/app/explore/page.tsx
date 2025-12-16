@@ -145,7 +145,7 @@ export default function ExplorePage() {
               type="withBottom"
               classroom={{
                 id: video.id,
-                title: video.title,
+                title: video.title || "HIIT Workout",
                 cover: video.cover,
                 duration: Math.floor((video.durationSeconds || 0) / 60),
                 target: "Full Body",
