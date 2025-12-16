@@ -12,7 +12,7 @@ import { createVideo, deleteVideo, getVideos, getVideoById, updateVideo } from '
 import { createLiveClass, deleteLiveClass, getLiveClass, updateLiveClass } from '../modules/lives';
 import { createCategory, getCategories } from '../modules/categories';
 import { createLocation, getLocations } from '../modules/locations';
-import { createChallange, deleteChallange, getAllChallanges, updateChallange } from '../modules/challanges';
+import { createChallange, deleteChallange, getAllChallanges, getChallangeById, updateChallange } from '../modules/challanges';
 import { createLink, deleteLink, getLinks, updateLink } from '../modules/links';
 import { createLandingpage, getLandingpage, getLandingpageByBrand, updateLandingpage } from '../modules/landingpages';
 import { generateSessionCheckout } from '../modules/billing/checkout';
