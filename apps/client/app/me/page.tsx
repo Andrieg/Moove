@@ -19,8 +19,10 @@ export default function MePage() {
   }, []);
 
   return (
-    <main style={{ padding: 24, fontFamily: "sans-serif" }}>
-      <h1>/users/me</h1>
+    <>
+      <Nav />
+      <main style={{ padding: 24, fontFamily: "sans-serif" }}>
+        <h1>/users/me</h1>
       <p>
         localStorage token: <code>{tokenPreview}</code>
       </p>
