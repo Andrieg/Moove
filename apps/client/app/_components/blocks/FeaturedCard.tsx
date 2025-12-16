@@ -8,7 +8,7 @@ interface FeaturedCardProps {
   classroom: {
     id: string;
     title: string;
-    cover?: { url: string };
+    cover?: { url?: string } | any;
     description?: string;
   };
   tag?: string;
