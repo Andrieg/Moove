@@ -90,7 +90,7 @@ export default function ExplorePage() {
               type="only_title"
               classroom={{
                 id: video.id,
-                title: video.title,
+                title: video.title || "Untitled Workout",
                 cover: video.cover,
               }}
             />
