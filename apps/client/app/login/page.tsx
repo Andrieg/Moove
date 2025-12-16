@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { requestLoginLink } from "@moove/api-client";
 import type { LoginResponse } from "@moove/api-client";
+import Nav from "../_components/Nav";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
