@@ -56,9 +56,9 @@ export default function ExplorePage() {
         });
 
   // Group videos by type
-  const hiitVideos = videos.filter((v) => v.title.toLowerCase().includes("hiit"));
-  const yogaVideos = videos.filter((v) => v.title.toLowerCase().includes("yoga"));
-  const strengthVideos = videos.filter((v) => v.title.toLowerCase().includes("strength"));
+  const hiitVideos = videos.filter((v) => v.title?.toLowerCase().includes("hiit"));
+  const yogaVideos = videos.filter((v) => v.title?.toLowerCase().includes("yoga"));
+  const strengthVideos = videos.filter((v) => v.title?.toLowerCase().includes("strength"));
 
   const durationOptions = [
     { id: "all", label: "All" },
