@@ -389,6 +389,14 @@ const routes = fp(async (server, opts, next) => {
   server.route({
     url: '/challenges/:id',
     logLevel: 'warn',
+    method: ['GET'],
+    preValidation: [server.authenticate],
+    handler: (request, reply) => getChallangeById(request, reply)
+  });
+
+  server.route({
+    url: '/challenges/:id',
+    logLevel: 'warn',
     method: ['DELETE'],
     preValidation: [server.authenticate],
     handler: (request, reply) => deleteChallange(request, reply)
