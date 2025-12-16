@@ -41,8 +41,7 @@ export default function VideoDetailPage() {
             </p>
             <h1>{video.title}</h1>
             <p style={{ color: "#666" }}>
-              Duration: {Math.floor(video.durationSeconds / 60)} min{" "}
-              {video.durationSeconds % 60} sec
+              Duration: {video.durationSeconds ? `${Math.floor(video.durationSeconds / 60)} min ${video.durationSeconds % 60} sec` : "Unknown"}
             </p>
             {video.published ? (
               <span style={{ color: "green", fontSize: 14 }}>Published</span>
