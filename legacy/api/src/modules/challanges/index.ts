@@ -65,6 +65,34 @@ const getAllChallanges = async (request: any, reply: any) => {
     });
   }
 
+  // ✅ DEV BYPASS: Return mock challenges without AWS/DynamoDB
+  if (process.env.NODE_ENV !== "production") {
+    const mockChallenges = [
+      {
+        id: uuidv4(),
+        title: "30 Day Strength Challenge",
+        startDate: "2024-12-01T00:00:00Z",
+        endDate: "2024-12-31T23:59:59Z",
+        coachId: email,
+        description: "Build strength over 30 days with progressive workouts",
+      },
+      {
+        id: uuidv4(),
+        title: "New Year Fitness Challenge",
+        startDate: "2025-01-01T00:00:00Z",
+        endDate: "2025-01-31T23:59:59Z",
+        coachId: email,
+        description: "Start the new year right with daily workouts",
+      },
+    ];
+
+    return reply.send({
+      status: 'SUCCESS',
+      challenges: mockChallenges
+    });
+  }
+
+  // ✅ PRODUCTION PATH (unchanged behaviour)
   const challanges = await DB.CHALLANGES.getAll(email);
 
   if (!!challanges?.Items) {
