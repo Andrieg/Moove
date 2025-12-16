@@ -153,9 +153,53 @@ const deleteVideo = async (request: any, reply: any) => {
   });
 };
 
+const getVideoById = async (request: any, reply: any) => {
+  const { id } = request.params;
+  const email = request?.user?.email;
+
+  // DEV BYPASS: Return mock video by ID in development
+  if (process.env.NODE_ENV !== "production") {
+    const mockVideo = {
+      id: id,
+      title: "Full Body HIIT Workout",
+      durationSeconds: 1800,
+      published: true,
+      coachId: email || "dev@moove.test",
+      cover: { url: "" },
+      description: "High-intensity interval training for full body conditioning. This workout includes warm-up, main circuit, and cool-down phases.",
+      target: "Full Body",
+      goal: "Fat Loss",
+      type: "HIIT",
+      video: { url: "" },
+    };
+
+    return reply.send({
+      status: 'SUCCESS',
+      video: mockVideo
+    });
+  }
+
+  // Production path (query DynamoDB)
+  const video = await DB.VIDEOS.getById?.(email, id);
+
+  if (video) {
+    return reply.send({
+      status: 'SUCCESS',
+      video
+    });
+  }
+
+  return reply.send({
+    status: 'FAIL',
+    error: 'not found',
+    code: 1002
+  });
+};
+
 export {
   createVideo,
   updateVideo,
   getVideos,
+  getVideoById,
   deleteVideo,
 }
