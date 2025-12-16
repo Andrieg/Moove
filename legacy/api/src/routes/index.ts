@@ -8,7 +8,7 @@ import { onBoarding, onBoardingRefresh } from '../modules/billing/onboarding';
 import { webhook } from '../modules/billing/webhook';
 import { createMembership, updateMembership, getBilling, getMembershipPlan, cancelMembership } from '../modules/billing';
 import { createClassroom, deleteClassroom, getClassrooms, updateClassroom } from '../modules/classrooms';
-import { createVideo, deleteVideo, getVideos, updateVideo } from '../modules/videos';
+import { createVideo, deleteVideo, getVideos, getVideoById, updateVideo } from '../modules/videos';
 import { createLiveClass, deleteLiveClass, getLiveClass, updateLiveClass } from '../modules/lives';
 import { createCategory, getCategories } from '../modules/categories';
 import { createLocation, getLocations } from '../modules/locations';
