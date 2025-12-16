@@ -10,7 +10,7 @@ interface ClassCardProps {
   classroom: {
     id: string;
     title: string;
-    cover?: { url: string };
+    cover?: { url?: string } | any;
     duration?: number;
     durationSeconds?: number;
     target?: string;
