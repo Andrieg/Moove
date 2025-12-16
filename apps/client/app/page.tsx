@@ -53,10 +53,10 @@ export default function HomePage() {
 
   // Categorize videos by category (mock categories for now)
   const categories = [
-    { name: "HIIT", videos: videos.filter((v) => v.title.toLowerCase().includes("hiit")) },
-    { name: "Strength", videos: videos.filter((v) => v.title.toLowerCase().includes("strength")) },
-    { name: "Yoga", videos: videos.filter((v) => v.title.toLowerCase().includes("yoga")) },
-    { name: "Cardio", videos: videos.filter((v) => v.title.toLowerCase().includes("cardio")) },
+    { name: "HIIT", videos: videos.filter((v) => v.title?.toLowerCase().includes("hiit")) },
+    { name: "Strength", videos: videos.filter((v) => v.title?.toLowerCase().includes("strength")) },
+    { name: "Yoga", videos: videos.filter((v) => v.title?.toLowerCase().includes("yoga")) },
+    { name: "Cardio", videos: videos.filter((v) => v.title?.toLowerCase().includes("cardio")) },
   ].filter((cat) => cat.videos.length > 0);
 
   // If no specific categories, show all videos as "Workouts"
