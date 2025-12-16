@@ -281,6 +281,14 @@ const routes = fp(async (server, opts, next) => {
   server.route({
     url: '/videos/:id',
     logLevel: 'warn',
+    method: ['GET'],
+    preValidation: [server.authenticate],
+    handler: (request, reply) => getVideoById(request, reply)
+  });
+
+  server.route({
+    url: '/videos/:id',
+    logLevel: 'warn',
     method: ['DELETE'],
     preValidation: [server.authenticate],
     handler: (request, reply) => deleteVideo(request, reply)
