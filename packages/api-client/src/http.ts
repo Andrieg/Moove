@@ -1,12 +1,22 @@
+function normalizeBaseUrl(raw: string) {
+  // Ensure no trailing slash
+  return raw.replace(/\/+$/, "");
+}
+
+function normalizePath(path: string) {
+  // Ensure leading slash
+  return path.startsWith("/") ? path : `/${path}`;
+}
+
 function getBaseUrl() {
+  // Browser: always same-origin.
+  // IMPORTANT: In Emergent preview we want to hit the Next.js proxy route at /legacy
   if (typeof window !== "undefined") {
-    return process.env.NEXT_PUBLIC_API_URL || "https://api.moove.fit";
+    return normalizeBaseUrl(process.env.NEXT_PUBLIC_API_URL || "/legacy");
   }
-  return (
-    process.env.API_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    "https://api.moove.fit"
-  );
+
+  // Server: also use same-origin proxy by default (safe)
+  return normalizeBaseUrl(process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:3000/legacy");
 }
 
 export function setToken(token: string) {
@@ -24,19 +34,18 @@ export function clearToken() {
   localStorage.removeItem("token");
 }
 
-export async function apiFetch<T>(
-  path: string,
-  options: RequestInit = {}
-): Promise<T> {
+export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const baseUrl = getBaseUrl();
   const token = getToken();
 
-  const res = await fetch(`${baseUrl}${path}`, {
+  const url = `${baseUrl}${normalizePath(path)}`;
+
+  const res = await fetch(url, {
     ...options,
     headers: {
+      ...(options.headers || {}),
       "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers || {}),
     },
   });
 
@@ -46,11 +55,12 @@ export async function apiFetch<T>(
     : await res.text().catch(() => null);
 
   if (!res.ok) {
-    // Preserve details for debugging
     throw new Error(
-      typeof body === "string"
-        ? body
-        : JSON.stringify({ status: res.status, body })
+      JSON.stringify({
+        status: res.status,
+        url,
+        body,
+      })
     );
   }
 
