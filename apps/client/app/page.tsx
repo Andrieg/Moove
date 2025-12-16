@@ -49,7 +49,7 @@ export default function HomePage() {
   }
 
   // Get featured content (first video if available)
-  const featured = videos.length > 0 ? videos[0] : null;
+  const featured = videos.length > 0 && videos[0].title ? videos[0] : null;
 
   // Categorize videos by category (mock categories for now)
   const categories = [
