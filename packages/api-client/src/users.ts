@@ -1,17 +1,20 @@
+// /app/packages/api-client/src/users.ts
+
 import type { User } from "@moove/types";
 import { apiFetch } from "./http";
 
-/**
- * Legacy API: GET /users/me (protected)
- */
-export function getCurrentUserProfile() {
-  return apiFetch<User>("/users/me");
+type WhoAmIResponse =
+  | { status: "SUCCESS"; user: User }
+  | { status: "FAIL"; error: string; code?: number };
+
+export async function getCurrentUserProfile(): Promise<User> {
+  const res = await apiFetch<WhoAmIResponse>("/users/me");
+
+  if (res.status === "SUCCESS") return res.user;
+
+  throw new Error(res.error || "Unknown /users/me failure");
 }
 
-/**
- * Legacy API: GET /users/:userID
- * Keep for later; adjust if backend differs.
- */
 export function getUserById(userId: string) {
   return apiFetch<User>(`/users/${userId}`);
 }

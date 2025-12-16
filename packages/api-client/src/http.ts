@@ -1,30 +1,27 @@
-function normalizeBaseUrl(raw: string) {
-  // Ensure no trailing slash
-  return raw.replace(/\/+$/, "");
+// /app/packages/api-client/src/http.ts
+
+function normalizeBase(base: string) {
+  // Ensure leading slash for relative base paths like "/legacy"
+  // Remove trailing slash to avoid double slashes when joining
+  if (!base) return "";
+  const withLeading = base.startsWith("http") || base.startsWith("/") ? base : `/${base}`;
+  return withLeading.endsWith("/") ? withLeading.slice(0, -1) : withLeading;
 }
 
 function normalizePath(path: string) {
-  // Ensure leading slash
-  let normalized = path.startsWith("/") ? path : `/${path}`;
-  
-  // GUARD: Prevent double-prefixing bugs
-  // Remove any accidental /api/legacy or /legacy prefix from the path
-  // since the baseUrl already includes /legacy
-  normalized = normalized.replace(/^\/api\/legacy/, "");
-  normalized = normalized.replace(/^\/legacy\/legacy/, "/legacy");
-  
-  return normalized;
+  if (!path) return "";
+  return path.startsWith("/") ? path : `/${path}`;
 }
 
 function getBaseUrl() {
-  // Browser: always same-origin.
-  // IMPORTANT: In Emergent preview we want to hit the Next.js proxy route at /legacy
+  // In Emergent preview the working proxy is /legacy (NOT /api/legacy)
+  // So default to "/legacy" in the browser.
   if (typeof window !== "undefined") {
-    return normalizeBaseUrl(process.env.NEXT_PUBLIC_API_URL || "/legacy");
+    return normalizeBase(process.env.NEXT_PUBLIC_API_URL || "/legacy");
   }
 
-  // Server: also use same-origin proxy by default (safe)
-  return normalizeBaseUrl(process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:3000/legacy");
+  // Server-side (safe default): use same-origin too
+  return normalizeBase(process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:3000/legacy");
 }
 
 export function setToken(token: string) {
@@ -45,16 +42,15 @@ export function clearToken() {
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const baseUrl = getBaseUrl();
   const token = getToken();
-
   const url = `${baseUrl}${normalizePath(path)}`;
+
+  const headers = new Headers(options.headers || {});
+  if (!headers.has("Content-Type")) headers.set("Content-Type", "application/json");
+  if (token) headers.set("Authorization", `Bearer ${token}`);
 
   const res = await fetch(url, {
     ...options,
-    headers: {
-      ...(options.headers || {}),
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
+    headers,
   });
 
   const contentType = res.headers.get("content-type") || "";
@@ -63,13 +59,12 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
     : await res.text().catch(() => null);
 
   if (!res.ok) {
-    throw new Error(
-      JSON.stringify({
-        status: res.status,
-        url,
-        body,
-      })
-    );
+    const err = {
+      status: res.status,
+      url,
+      body,
+    };
+    throw new Error(JSON.stringify(err));
   }
 
   return body as T;
