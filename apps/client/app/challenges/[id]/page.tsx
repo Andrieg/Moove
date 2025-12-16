@@ -41,8 +41,8 @@ export default function ChallengeDetailPage() {
             </p>
             <h1>{challenge.title}</h1>
             <p style={{ color: "#666" }}>
-              {new Date(challenge.startDate).toLocaleDateString()} –{" "}
-              {new Date(challenge.endDate).toLocaleDateString()}
+              {challenge.startDate ? new Date(challenge.startDate).toLocaleDateString() : "TBD"} –{" "}
+              {challenge.endDate ? new Date(challenge.endDate).toLocaleDateString() : "TBD"}
             </p>
 
             <div
