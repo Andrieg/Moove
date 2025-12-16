@@ -59,7 +59,8 @@ export default function VideoDetailPage() {
   const duration = video.durationSeconds
     ? Math.floor(video.durationSeconds / 60)
     : 0;
-  const thumbnail = video.cover?.url || "/backgrounds/default-workout.jpg";
+  const cover = video.cover as { url?: string } | undefined;
+  const thumbnail = cover?.url || "/backgrounds/default-workout.jpg";
 
   return (
     <div className="bg-gray-50">
