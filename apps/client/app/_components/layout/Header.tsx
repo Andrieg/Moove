@@ -88,13 +88,18 @@ export default function Header() {
 
           {/* Search Icon */}
           <div className="ml-auto">
-            <Image
-              src="/icons/search.svg"
-              alt="Search"
-              width={24}
-              height={24}
-              className="cursor-pointer"
-            />
+            <button
+              onClick={() => router.push("/search")}
+              className="p-2 hover:bg-gray-100 rounded-full"
+            >
+              <Image
+                src="/icons/search.svg"
+                alt="Search"
+                width={24}
+                height={24}
+                className="cursor-pointer"
+              />
+            </button>
           </div>
         </div>
       </header>
