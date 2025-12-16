@@ -193,7 +193,7 @@ export default function VideoDetailPage() {
             Class Details
           </Title>
           <Text size="sm" className="text-gray-700 leading-relaxed">
-            {video.description ||
+            {(video.description as string) ||
               `This ${duration}-minute workout is designed to push your limits and help you achieve your fitness goals. Perfect for all fitness levels, this class combines strength training with cardio intervals for maximum results.`}
           </Text>
         </section>
