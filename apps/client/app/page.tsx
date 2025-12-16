@@ -93,8 +93,10 @@ export default function Home() {
   }
 
   return (
-    <main style={{ padding: 24, fontFamily: "sans-serif", maxWidth: 820 }}>
-      <h1>Moove: apps/client</h1>
+    <>
+      <Nav />
+      <main style={{ padding: 24, fontFamily: "sans-serif", maxWidth: 820 }}>
+        <h1>Moove: apps/client</h1>
       <p>If this page builds, workspace imports are correct.</p>
 
       <h2>Auth status</h2>
