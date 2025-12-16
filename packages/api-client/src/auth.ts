@@ -43,7 +43,7 @@ export type LoginResponse =
  * Dev behavior (optional patch): returns { token, link } to allow local login without email
  */
 export function requestLoginLink(payload: LoginRequest) {
-  return apiFetch<LoginResponse>("/api/legacy/users/login", {
+  return apiFetch<LoginResponse>("/users/login", {
     method: "POST",
     body: JSON.stringify(payload),
   });
