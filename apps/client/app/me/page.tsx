@@ -44,6 +44,7 @@ export default function MePage() {
           {JSON.stringify(data, null, 2)}
         </pre>
       )}
-    </main>
+      </main>
+    </>
   );
 }
