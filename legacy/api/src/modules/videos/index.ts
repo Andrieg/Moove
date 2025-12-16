@@ -65,6 +65,54 @@ const getVideos = async (request: any, reply: any) => {
     });
   }
 
+  // ✅ DEV BYPASS: Return mock videos without AWS/DynamoDB
+  if (process.env.NODE_ENV !== "production") {
+    const mockVideos = [
+      {
+        id: uuidv4(),
+        title: "Full Body HIIT Workout",
+        durationSeconds: 1800,
+        published: true,
+        coachId: email,
+        cover: { url: "" },
+        description: "High-intensity interval training for full body conditioning",
+        target: "Full Body",
+        goal: "Fat Loss",
+        type: "HIIT",
+      },
+      {
+        id: uuidv4(),
+        title: "Yoga Flow",
+        durationSeconds: 2400,
+        published: true,
+        coachId: email,
+        cover: { url: "" },
+        description: "Relaxing yoga flow to improve flexibility and mindfulness",
+        target: "Full Body",
+        goal: "Flexibility",
+        type: "Yoga",
+      },
+      {
+        id: uuidv4(),
+        title: "Strength Training",
+        durationSeconds: 2700,
+        published: true,
+        coachId: email,
+        cover: { url: "" },
+        description: "Build muscle with compound movements",
+        target: "Upper Body",
+        goal: "Muscle Gain",
+        type: "Strength",
+      },
+    ];
+
+    return reply.send({
+      status: 'SUCCESS',
+      videos: mockVideos
+    });
+  }
+
+  // ✅ PRODUCTION PATH (unchanged behaviour)
   const videos = await DB.VIDEOS.get(email);
 
   if (!!videos?.Items) {
