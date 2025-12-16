@@ -42,8 +42,8 @@ export default function ChallengesPage() {
                   <a href={`/challenges/${challenge.id}`}>{challenge.title}</a>
                 </h2>
                 <p style={{ margin: 0, color: "#666", fontSize: 14 }}>
-                  {new Date(challenge.startDate).toLocaleDateString()} –{" "}
-                  {new Date(challenge.endDate).toLocaleDateString()}
+                  {challenge.startDate ? new Date(challenge.startDate).toLocaleDateString() : "TBD"} –{" "}
+                  {challenge.endDate ? new Date(challenge.endDate).toLocaleDateString() : "TBD"}
                 </p>
               </div>
             ))}
