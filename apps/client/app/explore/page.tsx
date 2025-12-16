@@ -105,7 +105,11 @@ export default function ExplorePage() {
             <button
               key={option.id}
               onClick={() => setSelectedDuration(option.id)}
-              className={`min-w-[8rem] h-32 rounded-lg shadow-md transition-all hover:scale-105 flex items-center justify-center text-lg font-bold ${\n                selectedDuration === option.id\n                  ? \"bg-gradient-to-br from-[#429FBA] to-[#217E9A] text-white\"\n                  : \"bg-white border-2 border-[#217E9A] text-[#217E9A]\"\n              }`}
+              className={`min-w-[8rem] h-32 rounded-lg shadow-md transition-all hover:scale-105 flex items-center justify-center text-lg font-bold ${
+                selectedDuration === option.id
+                  ? "bg-gradient-to-br from-[#429FBA] to-[#217E9A] text-white"
+                  : "bg-white border-2 border-[#217E9A] text-[#217E9A]"
+              }`}
             >
               {option.label}
             </button>
