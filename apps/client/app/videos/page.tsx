@@ -42,8 +42,7 @@ export default function VideosPage() {
                   <a href={`/videos/${video.id}`}>{video.title}</a>
                 </h2>
                 <p style={{ margin: 0, color: "#666" }}>
-                  Duration: {Math.floor(video.durationSeconds / 60)} min{" "}
-                  {video.durationSeconds % 60} sec
+                  Duration: {video.durationSeconds ? `${Math.floor(video.durationSeconds / 60)} min ${video.durationSeconds % 60} sec` : "Unknown"}
                 </p>
                 {video.published ? (
                   <span style={{ color: "green", fontSize: 12 }}>Published</span>
