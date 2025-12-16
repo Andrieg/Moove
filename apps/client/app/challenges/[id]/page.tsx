@@ -8,6 +8,22 @@ import type { Challenge } from "@moove/types";
 import Button from "../../_components/atoms/Button";
 import Title from "../../_components/atoms/Title";
 import Text from "../../_components/atoms/Text";
+import ProgressIndicator from "../../_components/blocks/ProgressIndicator";
+import WorkoutListItem from "../../_components/blocks/WorkoutListItem";
+
+// Mock workout data for the challenge
+const mockWorkouts = [
+  { day: 1, title: "Foundation Basics", duration: 20, isCompleted: true },
+  { day: 2, title: "Core Strength", duration: 25, isCompleted: true },
+  { day: 3, title: "Lower Body Power", duration: 30, isCompleted: true },
+  { day: 4, title: "Upper Body Focus", duration: 25, isCompleted: false, isCurrent: true },
+  { day: 5, title: "Full Body HIIT", duration: 35, isCompleted: false },
+  { day: 6, title: "Active Recovery", duration: 20, isCompleted: false },
+  { day: 7, title: "Cardio Blast", duration: 30, isCompleted: false },
+  { day: 8, title: "Strength Circuits", duration: 35, isCompleted: false, isLocked: true },
+  { day: 9, title: "Flexibility Flow", duration: 25, isCompleted: false, isLocked: true },
+  { day: 10, title: "Peak Performance", duration: 40, isCompleted: false, isLocked: true },
+];
 
 export default function ChallengeDetailPage() {
   const params = useParams();
@@ -18,6 +34,7 @@ export default function ChallengeDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [liked, setLiked] = useState(false);
   const [joined, setJoined] = useState(false);
+  const [activeTab, setActiveTab] = useState<"overview" | "workouts">("overview");
 
   useEffect(() => {
     if (!id) return;
@@ -73,9 +90,12 @@ export default function ChallengeDetailPage() {
     : "TBD";
 
   const thumbnail = "/backgrounds/default-challenge.jpg";
+  const completedWorkouts = mockWorkouts.filter((w) => w.isCompleted).length;
+  const totalWorkouts = mockWorkouts.length;
+  const participantCount = Math.floor(Math.random() * 500) + 100;
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-gray-50 min-h-screen">
       {/* Hero Section */}
       <div className="bg-gray-50">
         <div className="container mx-auto">
@@ -103,7 +123,7 @@ export default function ChallengeDetailPage() {
                 {/* Features */}
                 <ul className="flex flex-wrap gap-2 mb-6 text-gray-600">
                   <li className="after:content-['|'] after:ml-2 after:text-gray-300">
-                    30 Days
+                    {totalWorkouts} Days
                   </li>
                   <li className="after:content-['|'] after:ml-2 after:text-gray-300">
                     All Levels
@@ -112,7 +132,7 @@ export default function ChallengeDetailPage() {
                 </ul>
 
                 {/* Stats */}
-                <div className="flex gap-6 mb-8">
+                <div className="flex gap-6 mb-6">
                   {/* Participants */}
                   <div className="flex items-center gap-2">
                     <Image
@@ -122,7 +142,7 @@ export default function ChallengeDetailPage() {
                       height={18}
                     />
                     <Text size="sm" weight="600">
-                      248 joined
+                      {participantCount} joined
                     </Text>
                   </div>
 
@@ -135,21 +155,43 @@ export default function ChallengeDetailPage() {
                       height={18}
                     />
                     <Text size="sm" weight="600">
-                      30 days
+                      {totalWorkouts} days
                     </Text>
                   </div>
                 </div>
 
+                {/* Progress (only show if joined) */}
+                {joined && (
+                  <div className="mb-6 p-4 bg-white rounded-lg shadow-sm">
+                    <ProgressIndicator
+                      current={completedWorkouts}
+                      total={totalWorkouts}
+                      label="Your Progress"
+                      size="md"
+                    />
+                  </div>
+                )}
+
                 {/* CTA Button */}
                 {joined ? (
-                  <Button
-                    variant="secondary"
-                    size="default"
-                    fullWidth
-                    onClick={() => router.push(`/challenges/${challenge.id}/progress`)}
-                  >
-                    VIEW PROGRESS
-                  </Button>
+                  <div className="space-y-3">
+                    <Button
+                      variant="primary"
+                      size="default"
+                      fullWidth
+                      onClick={() => setActiveTab("workouts")}
+                    >
+                      CONTINUE CHALLENGE
+                    </Button>
+                    <Button
+                      variant="transparent"
+                      size="default"
+                      fullWidth
+                      onClick={() => router.push(`/challenges/${challenge.id}/leaderboard`)}
+                    >
+                      VIEW LEADERBOARD
+                    </Button>
+                  </div>
                 ) : (
                   <Button
                     variant="primary"
@@ -172,7 +214,7 @@ export default function ChallengeDetailPage() {
                 {/* Navigation Icons */}
                 <div className="flex justify-between p-4">
                   <button
-                    onClick={() => router.push("/challenges")}
+                    onClick={() => router.back()}
                     className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition"
                   >
                     <Image
@@ -194,95 +236,165 @@ export default function ChallengeDetailPage() {
                     />
                   </button>
                 </div>
+
+                {/* Badge Overlay */}
+                {joined && (
+                  <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg px-4 py-3 shadow-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-gradient-to-br from-[#429FBA] to-[#217E9A] rounded-full flex items-center justify-center">
+                        <Image
+                          src="/icons/fire-1.png"
+                          alt="Streak"
+                          width={24}
+                          height={24}
+                        />
+                      </div>
+                      <div>
+                        <Text size="xs" className="text-gray-500">Current Streak</Text>
+                        <Text size="lg" weight="700" className="text-gray-800">
+                          {completedWorkouts} Days 🔥
+                        </Text>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Details Sections */}
+      {/* Tabs Navigation (only show if joined) */}
+      {joined && (
+        <div className="container mx-auto px-4 sm:px-8 lg:px-32 xl:px-48">
+          <div className="flex border-b border-gray-200">
+            <button
+              onClick={() => setActiveTab("overview")}
+              className={`px-6 py-4 font-semibold text-sm transition-colors ${
+                activeTab === "overview"
+                  ? "text-[#308FAB] border-b-2 border-[#308FAB]"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Overview
+            </button>
+            <button
+              onClick={() => setActiveTab("workouts")}
+              className={`px-6 py-4 font-semibold text-sm transition-colors ${
+                activeTab === "workouts"
+                  ? "text-[#308FAB] border-b-2 border-[#308FAB]"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Workouts ({completedWorkouts}/{totalWorkouts})
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Content Sections */}
       <div className="container mx-auto px-4 sm:px-8 lg:px-32 xl:px-48 py-8">
-        {/* Challenge Details */}
-        <section className="py-6 border-b border-gray-200">
-          <Title size="base" weight="600" className="mb-3">
-            About This Challenge
-          </Title>
-          <Text size="sm" className="text-gray-700 leading-relaxed">
-            Join thousands of members in this transformative 30-day fitness
-            challenge. Each day includes a curated workout designed to build
-            strength, endurance, and confidence. Perfect for all fitness levels
-            with modifications available for every exercise.
-          </Text>
-        </section>
+        {activeTab === "overview" ? (
+          <>
+            {/* Challenge Details */}
+            <section className="py-6 border-b border-gray-200">
+              <Title size="base" weight="600" className="mb-3">
+                About This Challenge
+              </Title>
+              <Text size="sm" className="text-gray-700 leading-relaxed">
+                Join thousands of members in this transformative {totalWorkouts}-day fitness
+                challenge. Each day includes a curated workout designed to build
+                strength, endurance, and confidence. Perfect for all fitness levels
+                with modifications available for every exercise.
+              </Text>
+            </section>
 
-        {/* What's Included */}
-        <section className="py-6 border-b border-gray-200">
-          <Title size="base" weight="600" className="mb-3">
-            What's Included
-          </Title>
-          <ul className="space-y-2 ml-4">
-            <li className="flex items-start gap-2">
-              <span className="text-[#308FAB] mt-1">✓</span>
-              <Text size="sm" className="text-gray-700">
-                30 days of guided workouts
-              </Text>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-[#308FAB] mt-1">✓</span>
-              <Text size="sm" className="text-gray-700">
-                Progress tracking and milestones
-              </Text>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-[#308FAB] mt-1">✓</span>
-              <Text size="sm" className="text-gray-700">
-                Community support and encouragement
-              </Text>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-[#308FAB] mt-1">✓</span>
-              <Text size="sm" className="text-gray-700">
-                Nutrition tips and guidelines
-              </Text>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-[#308FAB] mt-1">✓</span>
-              <Text size="sm" className="text-gray-700">
-                Certificate of completion
-              </Text>
-            </li>
-          </ul>
-        </section>
+            {/* What's Included */}
+            <section className="py-6 border-b border-gray-200">
+              <Title size="base" weight="600" className="mb-3">
+                What's Included
+              </Title>
+              <ul className="space-y-2 ml-4">
+                {[
+                  `${totalWorkouts} days of guided workouts`,
+                  "Progress tracking and milestones",
+                  "Community support and encouragement",
+                  "Nutrition tips and guidelines",
+                  "Certificate of completion",
+                ].map((item, index) => (
+                  <li key={index} className="flex items-start gap-2">
+                    <span className="text-[#308FAB] mt-1">✓</span>
+                    <Text size="sm" className="text-gray-700">
+                      {item}
+                    </Text>
+                  </li>
+                ))}
+              </ul>
+            </section>
 
-        {/* Requirements */}
-        <section className="py-6">
-          <Title size="base" weight="600" className="mb-3">
-            Requirements
-          </Title>
-          <Text size="sm" className="text-gray-700 leading-relaxed mb-4">
-            This challenge is designed for all fitness levels. You'll need:
-          </Text>
-          <ul className="space-y-2 ml-4">
-            <li className="flex items-start gap-2">
-              <span className="text-gray-400 mt-1">•</span>
-              <Text size="sm" className="text-gray-700">
-                Basic equipment (dumbbells, mat)
+            {/* Requirements */}
+            <section className="py-6">
+              <Title size="base" weight="600" className="mb-3">
+                Requirements
+              </Title>
+              <Text size="sm" className="text-gray-700 leading-relaxed mb-4">
+                This challenge is designed for all fitness levels. You'll need:
               </Text>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-gray-400 mt-1">•</span>
-              <Text size="sm" className="text-gray-700">
-                20-30 minutes per day
+              <ul className="space-y-2 ml-4">
+                {[
+                  "Basic equipment (dumbbells, mat)",
+                  "20-30 minutes per day",
+                  "Commitment and motivation",
+                ].map((item, index) => (
+                  <li key={index} className="flex items-start gap-2">
+                    <span className="text-gray-400 mt-1">•</span>
+                    <Text size="sm" className="text-gray-700">
+                      {item}
+                    </Text>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </>
+        ) : (
+          /* Workouts List */
+          <section className="py-6">
+            <div className="flex items-center justify-between mb-6">
+              <Title size="lg" weight="600">
+                Challenge Workouts
+              </Title>
+              <Text size="sm" className="text-gray-500">
+                {completedWorkouts} of {totalWorkouts} completed
               </Text>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-gray-400 mt-1">•</span>
-              <Text size="sm" className="text-gray-700">
-                Commitment and motivation
+            </div>
+
+            <div className="space-y-3">
+              {mockWorkouts.map((workout) => (
+                <WorkoutListItem
+                  key={workout.day}
+                  day={workout.day}
+                  title={workout.title}
+                  duration={workout.duration}
+                  isCompleted={workout.isCompleted}
+                  isLocked={workout.isLocked}
+                  isCurrent={workout.isCurrent}
+                  onClick={() => router.push(`/player/challenge-${id}-day-${workout.day}`)}
+                />
+              ))}
+            </div>
+
+            {/* Bottom Motivation */}
+            <div className="mt-8 p-6 bg-gradient-to-br from-[#429FBA]/10 to-[#217E9A]/10 rounded-xl text-center">
+              <Text size="lg" weight="600" className="mb-2">
+                Keep Going! 💪
               </Text>
-            </li>
-          </ul>
-        </section>
+              <Text size="sm" className="text-gray-600">
+                You're {Math.round((completedWorkouts / totalWorkouts) * 100)}% through this challenge.
+                {completedWorkouts < totalWorkouts && " Complete today's workout to maintain your streak!"}
+              </Text>
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );
