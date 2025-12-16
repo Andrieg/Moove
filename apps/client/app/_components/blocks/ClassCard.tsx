@@ -85,6 +85,7 @@ export default function ClassCard({
     <div
       className={`${sizeClasses[type]} rounded-lg m-4 shadow-md cursor-pointer relative overflow-hidden bg-cover bg-center transition-all hover:scale-105`}
       style={{ backgroundImage: `url(${thumbnail})` }}
+      onClick={handleClick}
     >
       <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-black/75 p-4 flex flex-col">
         {/* Like Button */}
