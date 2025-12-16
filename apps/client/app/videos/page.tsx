@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { getVideos } from "@moove/api-client";
 import type { Video } from "@moove/types";
-import Nav from "../_components/Nav";
+import ClassCard from "../_components/blocks/ClassCard";
+import Title from "../_components/atoms/Title";
 
 export default function VideosPage() {
   const [videos, setVideos] = useState<Video[] | null>(null);
@@ -15,45 +16,54 @@ export default function VideosPage() {
       .catch((e) => setError((e as Error).message));
   }, []);
 
-  return (
-    <>
-      <Nav />
-      <main style={{ padding: 24, fontFamily: "sans-serif" }}>
-        <h1>Videos</h1>
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+          <Title color="black" size="xl">Error</Title>
+          <pre className="mt-2 text-red-600 whitespace-pre-wrap">{error}</pre>
+        </div>
+      </div>
+    );
+  }
 
-        {error ? (
-          <pre style={{ whiteSpace: "pre-wrap", color: "red" }}>{error}</pre>
-        ) : videos === null ? (
-          <p>Loading…</p>
-        ) : videos.length === 0 ? (
-          <p>No videos available yet.</p>
-        ) : (
-          <div style={{ display: "grid", gap: 16, marginTop: 16 }}>
-            {videos.map((video) => (
-              <div
-                key={video.id}
-                style={{
-                  border: "1px solid #e5e5e5",
-                  borderRadius: 8,
-                  padding: 16,
+  if (videos === null) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <div className="inline-block w-12 h-12 border-4 border-[#308FAB] border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-gray-600">Loading videos...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-6">
+      <Title color="black" size="2xl" className="mb-6">All Videos</Title>
+
+      {videos.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500 text-lg">No videos available yet.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {videos.map((video) => (
+            <div key={video.id} className="flex justify-center">
+              <ClassCard
+                type="withBottom"
+                classroom={{
+                  id: video.id,
+                  title: video.title,
+                  cover: video.cover,
+                  duration: Math.floor((video.durationSeconds || 0) / 60),
+                  target: "Full Body",
                 }}
-              >
-                <h2 style={{ margin: 0, marginBottom: 8 }}>
-                  <a href={`/videos/${video.id}`}>{video.title}</a>
-                </h2>
-                <p style={{ margin: 0, color: "#666" }}>
-                  Duration: {video.durationSeconds ? `${Math.floor(video.durationSeconds / 60)} min ${video.durationSeconds % 60} sec` : "Unknown"}
-                </p>
-                {video.published ? (
-                  <span style={{ color: "green", fontSize: 12 }}>Published</span>
-                ) : (
-                  <span style={{ color: "gray", fontSize: 12 }}>Draft</span>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </main>
-    </>
+              />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
