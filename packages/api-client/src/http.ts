@@ -5,7 +5,15 @@ function normalizeBaseUrl(raw: string) {
 
 function normalizePath(path: string) {
   // Ensure leading slash
-  return path.startsWith("/") ? path : `/${path}`;
+  let normalized = path.startsWith("/") ? path : `/${path}`;
+  
+  // GUARD: Prevent double-prefixing bugs
+  // Remove any accidental /api/legacy or /legacy prefix from the path
+  // since the baseUrl already includes /legacy
+  normalized = normalized.replace(/^\/api\/legacy/, "");
+  normalized = normalized.replace(/^\/legacy\/legacy/, "/legacy");
+  
+  return normalized;
 }
 
 function getBaseUrl() {
