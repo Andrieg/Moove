@@ -7,6 +7,7 @@ import {
   requestLoginLink,
   setToken,
 } from "@moove/api-client";
+import Nav from "./_components/Nav";
 
 type DevLoginResponse = {
   status: "SUCCESS" | "FAIL";
