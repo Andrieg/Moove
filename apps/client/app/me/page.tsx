@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getCurrentUserProfile, clearToken } from "@moove/api-client";
+import Nav from "../_components/Nav";
 
 export default function MePage() {
   const [data, setData] = useState<unknown>(null);
