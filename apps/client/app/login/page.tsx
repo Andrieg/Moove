@@ -46,8 +46,10 @@ export default function LoginPage() {
   }
 
   return (
-    <main style={{ padding: 24, fontFamily: "sans-serif", maxWidth: 720 }}>
-      <h1>Login</h1>
+    <>
+      <Nav />
+      <main style={{ padding: 24, fontFamily: "sans-serif", maxWidth: 720 }}>
+        <h1>Login</h1>
 
       <form onSubmit={onSubmit} style={{ display: "grid", gap: 12, maxWidth: 420 }}>
         <label>
