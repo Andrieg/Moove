@@ -95,6 +95,7 @@ export default function LoginPage() {
       <p style={{ marginTop: 16 }}>
         After clicking the link you’ll land on <code>/auth?token=...</code>.
       </p>
-    </main>
+      </main>
+    </>
   );
 }
