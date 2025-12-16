@@ -71,7 +71,7 @@ export default function HomePage() {
           <FeaturedCard
             classroom={{
               id: featured.id,
-              title: featured.title,
+              title: featured.title || "Featured Workout",
               cover: { url: featured.cover?.url || "" },
               description: `${Math.floor((featured.durationSeconds || 0) / 60)} minutes of intense workout`,
             }}
