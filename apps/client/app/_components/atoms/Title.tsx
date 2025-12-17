@@ -2,8 +2,8 @@ import React from 'react';
 
 interface TitleProps {
   children: React.ReactNode;
-  size?: 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl';
-  weight?: '400' | '500' | '600' | '700';
+  size?: 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl' | string;
+  weight?: '400' | '500' | '600' | '700' | string;
   color?: string;
   center?: boolean;
   noWrap?: boolean;
@@ -21,7 +21,7 @@ export default function Title({
   className = '',
   onClick,
 }: TitleProps) {
-  const sizeClasses = {
+  const sizeClasses: Record<string, string> = {
     sm: 'text-[1rem]',
     base: 'text-[1.1rem]',
     lg: 'text-[1.3rem]',
@@ -30,15 +30,31 @@ export default function Title({
     '3xl': 'text-[2rem]',
   };
 
+  const weightClasses: Record<string, string> = {
+    '400': 'font-normal',
+    '500': 'font-medium',
+    '600': 'font-semibold',
+    '700': 'font-bold',
+  };
+
   const centerClass = center ? 'text-center' : '';
   const nowrapClass = noWrap ? 'whitespace-nowrap' : '';
   const clickClass = onClick ? 'cursor-pointer' : '';
+  
+  // Handle custom size (like "1.3rem") vs predefined size
+  const isCustomSize = size.includes('rem') || size.includes('px');
+  const sizeClass = isCustomSize ? '' : (sizeClasses[size] || sizeClasses.xl);
+  const customSizeStyle = isCustomSize ? { fontSize: size } : {};
+  
+  // Handle weight
+  const weightClass = weightClasses[weight] || 'font-bold';
+  
   const colorStyle = color ? { color } : {};
 
   return (
     <span
-      className={`font-sans ${sizeClasses[size]} font-[${weight}] ${centerClass} ${nowrapClass} ${clickClass} ${className}`}
-      style={colorStyle}
+      className={`font-sans ${sizeClass} ${weightClass} ${centerClass} ${nowrapClass} ${clickClass} ${className}`}
+      style={{ ...colorStyle, ...customSizeStyle }}
       onClick={onClick}
     >
       {children}
