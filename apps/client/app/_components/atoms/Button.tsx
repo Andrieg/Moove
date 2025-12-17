@@ -8,6 +8,7 @@ interface ButtonProps {
   fullWidth?: boolean;
   className?: string;
   type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
 }
 
 export default function Button({
