@@ -35,10 +35,17 @@ const tabs: NavTab[] = [
     links: ["/book"],
   },
   {
+    id: "chat",
+    title: "Chat",
+    icon: "/icons/chat.svg",
+    iconActive: "/icons/chatFilled.svg",
+    links: ["/chat"],
+  },
+  {
     id: "profile",
     title: "Profile",
-    icon: "/icons/profile.svg",
-    iconActive: "/icons/profile.svg",
+    icon: "/images/example-avatar-4.png",
+    iconActive: "/images/example-avatar-4.png",
     links: ["/profile", "/me"],
   },
 ];
@@ -49,8 +56,9 @@ export default function BottomNav() {
   const [activeTab, setActiveTab] = useState("forYou");
 
   useEffect(() => {
-    const tab = tabs.find((t) => t.links.some((l) => pathname === l || pathname.startsWith(l)));
+    const tab = tabs.find((t) => t.links.some((l) => pathname === l || pathname.startsWith(l + "/")));
     if (tab) setActiveTab(tab.id);
+    else if (pathname === "/") setActiveTab("forYou");
   }, [pathname]);
 
   const handleTabClick = (tab: NavTab) => {
@@ -58,30 +66,54 @@ export default function BottomNav() {
     router.push(tab.links[0]);
   };
 
-  const hideNav = pathname === "/login" || pathname === "/auth";
+  // Hide on certain pages
+  const hideNav = pathname === "/login" || pathname === "/auth" || pathname.startsWith("/player");
 
   if (hideNav) return null;
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white shadow-[0px_-4px_20px_rgba(0,0,0,0.05)] rounded-t-[3rem] px-4 py-3">
+    <nav 
+      className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white rounded-[5rem] mx-0 mb-0 px-4 py-4"
+      style={{ 
+        boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
+        width: "calc(100vw - 2rem)",
+        marginLeft: "1rem",
+        marginBottom: "0"
+      }}
+    >
       <div className="flex justify-around items-center">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
+          const isProfile = tab.id === "profile";
+          
           return (
             <button
               key={tab.id}
               onClick={() => handleTabClick(tab)}
-              className="flex flex-col items-center gap-1 min-w-[60px]"
+              className="flex flex-col items-center gap-1 min-w-[50px] transition-all"
             >
-              <Image
-                src={isActive ? tab.iconActive : tab.icon}
-                alt={tab.title}
-                width={24}
-                height={24}
-                className="h-6 w-6"
-              />
+              {isProfile ? (
+                <Image
+                  src={tab.icon}
+                  alt={tab.title}
+                  width={24}
+                  height={24}
+                  className="h-6 w-6 rounded-full object-cover"
+                  style={{ borderRadius: "1rem" }}
+                />
+              ) : (
+                <Image
+                  src={isActive ? tab.iconActive : tab.icon}
+                  alt={tab.title}
+                  width={24}
+                  height={24}
+                  className="h-6 w-6"
+                />
+              )}
               {isActive && (
-                <span className="text-xs font-normal text-gray-700">{tab.title}</span>
+                <span className="text-[0.8rem] font-normal text-black">
+                  {tab.title}
+                </span>
               )}
             </button>
           );
