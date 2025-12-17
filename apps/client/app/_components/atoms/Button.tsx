@@ -19,8 +19,9 @@ export default function Button({
   fullWidth = false,
   className = '',
   type = 'button',
+  disabled = false,
 }: ButtonProps) {
-  const baseClasses = 'font-semibold uppercase transition-all duration-200 outline-none cursor-pointer font-sans';
+  const baseClasses = 'font-semibold uppercase transition-all duration-200 outline-none font-sans';
   
   const variantClasses = {
     primary: 'bg-gradient-to-br from-[#429FBA] to-[#217E9A] text-white border-0 shadow-[0px_4px_20px_rgba(59,152,179,0.3)]',
@@ -35,12 +36,14 @@ export default function Button({
   };
 
   const widthClass = fullWidth ? 'w-full' : '';
+  const disabledClass = disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
 
   return (
     <button
       type={type}
-      onClick={onClick}
-      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${widthClass} ${className}`}
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
+      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${widthClass} ${disabledClass} ${className}`}
     >
       {children}
     </button>
