@@ -44,7 +44,8 @@ export default function ProfilePage() {
       getVideos().catch(() => []),
     ])
       .then(([userData, videosData]) => {
-        setUser(userData.user || userData);
+        const userObj = userData as any;
+        setUser(userObj?.user || userObj);
         // Mock: first 2 videos as favorites
         setFavorites(videosData.slice(0, 2));
       })
