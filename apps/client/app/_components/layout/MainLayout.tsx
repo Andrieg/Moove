@@ -16,10 +16,16 @@ export default function MainLayout({ children }: MainLayoutProps) {
     return <>{children}</>;
   }
 
+  // Check if page has bottom tabs (Explore section)
+  const hasBottomTabs = pathname === "/explore" || 
+    pathname === "/community" || 
+    pathname === "/challenges" || 
+    pathname === "/videos";
+
   return (
     <>
       <Header />
-      <main className="pt-[5.5rem] pb-[6rem] md:pb-0">
+      <main className={`pb-[6rem] md:pb-0 ${hasBottomTabs ? "pt-[9rem]" : "pt-[5.5rem]"}`}>
         {children}
       </main>
       <BottomNav />
