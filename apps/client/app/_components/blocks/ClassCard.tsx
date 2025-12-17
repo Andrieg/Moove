@@ -185,10 +185,7 @@ export default function ClassCard({
             variant="primary"
             size="small"
             className="text-[0.7rem] px-4 py-1"
-            onClick={(e: React.MouseEvent) => {
-              e.stopPropagation();
-              handleClick();
-            }}
+            onClick={() => handleClick()}
           >
             {buttonText || "START"}
           </Button>
