@@ -60,43 +60,71 @@ export default function Header() {
     router.push(tab.link);
   };
 
+  // Get right icon based on current page
+  const getRightIcon = () => {
+    if (pathname === "/" || pathname === "/explore" || pathname.startsWith("/community") || pathname.startsWith("/challenges") || pathname.startsWith("/videos")) {
+      return { icon: "/icons/search.svg", link: "/search", alt: "Search" };
+    }
+    if (pathname === "/book") {
+      return { icon: "/icons/calendar-add.svg", link: "/book/appointment", alt: "Add Booking" };
+    }
+    if (pathname === "/profile" || pathname.startsWith("/profile")) {
+      return { icon: "/icons/header-settings-icon.svg", link: "/profile/settings", alt: "Settings" };
+    }
+    return { icon: "/icons/search.svg", link: "/search", alt: "Search" };
+  };
+
+  const rightIcon = getRightIcon();
+
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-30 bg-white border-b border-gray-200 h-20">
-        <div className="flex items-center h-full px-4 md:px-8">
+      {/* Main Header - 5rem height to match legacy */}
+      <header className="fixed top-0 left-0 right-0 z-30 bg-white border-b border-[#E6E5E5] h-[5rem]">
+        <div className="flex items-center h-full">
           {/* Logo */}
-          <div className="flex-shrink-0">
-            <span className="text-2xl font-bold text-[#308FAB]">Moove</span>
+          <div className="flex-1 flex items-center pl-8 h-full">
+            <Image
+              src="/images/logo-black.png"
+              alt="Moove"
+              width={100}
+              height={32}
+              className="cursor-pointer"
+              onClick={() => router.push("/")}
+              style={{ objectFit: "contain" }}
+            />
           </div>
 
-          {/* Main Tabs - Hidden on mobile */}
-          <nav className="hidden md:flex flex-1 justify-center gap-8">
+          {/* Main Tabs - Hidden on mobile, flex-5 equivalent */}
+          <nav className="hidden md:flex flex-[5] justify-center items-center h-full">
             {mainTabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => handleTabClick(tab)}
-                className={`font-medium text-base transition-colors ${
+                className={`h-full px-8 font-semibold text-[1rem] transition-colors relative ${
                   activeTab === tab.id
-                    ? "text-[#308FAB] border-b-2 border-[#308FAB]"
-                    : "text-gray-600 hover:text-[#308FAB]"
-                } pb-1`}
+                    ? "text-[#308FAB]"
+                    : "text-black hover:text-[#308FAB]"
+                }`}
               >
                 {tab.title}
+                {activeTab === tab.id && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#308FAB] rounded-full" />
+                )}
               </button>
             ))}
           </nav>
 
-          {/* Search Icon */}
-          <div className="ml-auto">
+          {/* Right Icon */}
+          <div className="flex-1 flex justify-end items-center pr-8">
             <button
-              onClick={() => router.push("/search")}
-              className="p-2 hover:bg-gray-100 rounded-full"
+              onClick={() => router.push(rightIcon.link)}
+              className="p-2 hover:bg-gray-50 rounded-full transition"
             >
               <Image
-                src="/icons/search.svg"
-                alt="Search"
-                width={24}
-                height={24}
+                src={rightIcon.icon}
+                alt={rightIcon.alt}
+                width={28}
+                height={28}
                 className="cursor-pointer"
               />
             </button>
@@ -104,23 +132,26 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Bottom Tabs */}
+      {/* Bottom Tabs - 3.5rem height to match legacy */}
       {bottomTabs.length > 0 && (
-        <div className="fixed top-20 left-0 right-0 z-20 bg-white h-14 border-b border-gray-100 hidden md:flex items-center justify-center">
-          <nav className="flex gap-4">
-            {bottomTabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => handleBottomTabClick(tab)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  activeBottomTab === tab.id || pathname === tab.link
-                    ? "bg-[#308FAB] text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
-              >
-                {tab.title}
-              </button>
-            ))}
+        <div className="fixed top-[calc(5rem+1px)] left-0 right-0 z-20 bg-white h-[3.5rem] hidden md:flex items-center justify-center">
+          <nav className="flex gap-2 overflow-x-auto hide-scrollbar px-4">
+            {bottomTabs.map((tab) => {
+              const isActive = activeBottomTab === tab.id || pathname === tab.link;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => handleBottomTabClick(tab)}
+                  className={`px-6 py-2 rounded-full text-[1rem] font-semibold whitespace-nowrap transition-colors ${
+                    isActive
+                      ? "bg-[rgba(48,143,171,0.2)] text-[#308FAB]"
+                      : "bg-[#F8F8F8] text-black hover:bg-gray-200"
+                  }`}
+                >
+                  {tab.title}
+                </button>
+              );
+            })}
           </nav>
         </div>
       )}
