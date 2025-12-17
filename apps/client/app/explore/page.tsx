@@ -91,7 +91,7 @@ export default function ExplorePage() {
               classroom={{
                 id: video.id,
                 title: video.title || "Untitled Workout",
-                cover: video.cover,
+                cover: video.cover as { url?: string } | undefined,
               }}
             />
           ))}
@@ -127,7 +127,7 @@ export default function ExplorePage() {
               classroom={{
                 id: video.id,
                 title: video.title || "Untitled Workout",
-                cover: video.cover,
+                cover: video.cover as { url?: string } | undefined,
                 duration: Math.floor((video.durationSeconds || 0) / 60),
                 target: "Full Body",
               }}
@@ -146,7 +146,7 @@ export default function ExplorePage() {
               classroom={{
                 id: video.id,
                 title: video.title || "HIIT Workout",
-                cover: video.cover,
+                cover: video.cover as { url?: string } | undefined,
                 duration: Math.floor((video.durationSeconds || 0) / 60),
                 target: "Full Body",
               }}
@@ -165,7 +165,7 @@ export default function ExplorePage() {
               classroom={{
                 id: video.id,
                 title: video.title || "Yoga Workout",
-                cover: video.cover,
+                cover: video.cover as { url?: string } | undefined,
                 duration: Math.floor((video.durationSeconds || 0) / 60),
                 target: "Full Body",
               }}
@@ -184,7 +184,7 @@ export default function ExplorePage() {
               classroom={{
                 id: video.id,
                 title: video.title || "Strength Workout",
-                cover: video.cover,
+                cover: video.cover as { url?: string } | undefined,
                 duration: Math.floor((video.durationSeconds || 0) / 60),
                 target: "Full Body",
               }}

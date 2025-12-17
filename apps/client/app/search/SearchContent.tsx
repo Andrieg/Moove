@@ -391,7 +391,7 @@ export default function SearchContent() {
                             classroom={{
                               id: video.id,
                               title: video.title || "Untitled",
-                              cover: video.cover,
+                              cover: video.cover as { url?: string } | undefined,
                               duration: Math.floor((video.durationSeconds || 0) / 60),
                               target: "Full Body",
                             }}

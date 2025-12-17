@@ -55,7 +55,7 @@ export default function VideosPage() {
                 classroom={{
                   id: video.id,
                   title: video.title || "Untitled Video",
-                  cover: video.cover,
+                  cover: video.cover as { url?: string } | undefined,
                   duration: Math.floor((video.durationSeconds || 0) / 60),
                   target: "Full Body",
                 }}
