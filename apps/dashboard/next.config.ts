@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/legacy/:path*",
-        destination: `${process.env.LEGACY_API_URL || "http://127.0.0.1:3005"}/:path*",
+        destination: `${process.env.LEGACY_API_URL || "http://127.0.0.1:3005"}/:path*`,
       },
     ];
   },
