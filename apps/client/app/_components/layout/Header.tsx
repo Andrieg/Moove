@@ -33,8 +33,6 @@ export default function Header() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("for_you");
   const [activeBottomTab, setActiveBottomTab] = useState("");
-  const [dashboardUrl, setDashboardUrl] = useState("/dashboard");
-
   const currentTab = mainTabs.find(
     (t) => t.id === activeTab || t.bottomTabs?.some((bt) => bt.link === pathname)
   );
@@ -50,11 +48,6 @@ export default function Header() {
       if (bottomTab) setActiveBottomTab(bottomTab.id);
     }
   }, [pathname]);
-
-  // Set dashboard URL after mount to avoid hydration mismatch
-  useEffect(() => {
-    setDashboardUrl(`${window.location.protocol}//${window.location.hostname}:3001`);
-  }, []);
 
   const handleTabClick = (tab: Tab) => {
     setActiveTab(tab.id);
