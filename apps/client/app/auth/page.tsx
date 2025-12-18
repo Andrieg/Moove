@@ -1,17 +1,21 @@
+"use client";
+
 import { Suspense } from "react";
-import AuthClient from "./AuthClient";
+import AuthCallback from "./AuthCallback";
 
 export default function AuthPage() {
   return (
     <Suspense
       fallback={
-        <main style={{ padding: 24, fontFamily: "sans-serif", maxWidth: 720 }}>
-          <h1>Auth</h1>
-          <p>Loading…</p>
-        </main>
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="text-center">
+            <div className="inline-block w-12 h-12 border-4 border-[#308FAB] border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        </div>
       }
     >
-      <AuthClient />
+      <AuthCallback />
     </Suspense>
   );
 }

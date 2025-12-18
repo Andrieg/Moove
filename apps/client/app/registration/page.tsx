@@ -1,29 +1,20 @@
 "use client";
 
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { requestLoginLink } from "@moove/api-client";
 import Title from "../_components/atoms/Title";
 import Text from "../_components/atoms/Text";
 import Button from "../_components/atoms/Button";
 
-export default function LoginPage() {
+export default function RegistrationPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
-  // Check for token in URL (magic link callback)
-  useEffect(() => {
-    const token = searchParams?.get("token");
-    if (token) {
-      localStorage.setItem("moovefit-token", token);
-      router.push("/auth");
-    }
-  }, [searchParams, router]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -31,6 +22,11 @@ export default function LoginPage() {
 
     if (!email) {
       setError("Please enter your email address");
+      return;
+    }
+
+    if (!termsAccepted) {
+      setError("Please accept the Terms & Conditions");
       return;
     }
 
@@ -44,7 +40,6 @@ export default function LoginPage() {
       });
 
       if (result.status === "SUCCESS") {
-        // Store user ID for verification
         localStorage.setItem("moovefit-member", result.user);
 
         // DEV: If token is returned directly, auto-login
@@ -54,10 +49,9 @@ export default function LoginPage() {
           return;
         }
 
-        // Production: Redirect to success page
         router.push("/success");
       } else {
-        setError("Invalid email address or user not found");
+        setError("Could not create account. Please try again.");
       }
     } catch (err) {
       setError("Something went wrong. Please try again.");
@@ -100,7 +94,7 @@ export default function LoginPage() {
         {/* Form */}
         <form onSubmit={handleSubmit} className="w-full">
           <Title color="white" size="1.8rem" weight="700" center className="mb-6">
-            Log In
+            Create Account
           </Title>
 
           <div className="mb-4">
@@ -110,33 +104,53 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email address"
               className={`w-full px-4 py-4 rounded-lg bg-white/10 border ${
-                error ? "border-red-400" : "border-white/20"
+                error && !email ? "border-red-400" : "border-white/20"
               } text-white placeholder-white/50 focus:outline-none focus:border-white/50 transition`}
             />
-            {error && (
-              <Text color="#ff6b6b" size="0.8rem" className="mt-2">
-                {error}
-              </Text>
-            )}
           </div>
+
+          {/* Terms Checkbox */}
+          <label className="flex items-start gap-3 mb-6 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
+              className="mt-1 w-5 h-5 rounded border-white/20 bg-white/10 text-[#308FAB] focus:ring-[#308FAB]"
+            />
+            <Text color="white" size="0.85rem" className="leading-relaxed">
+              I confirm that I have read and agree to the{" "}
+              <a href="#" className="underline hover:text-white/80">
+                Terms & Conditions
+              </a>{" "}
+              and{" "}
+              <a href="#" className="underline hover:text-white/80">
+                Privacy Policy
+              </a>
+            </Text>
+          </label>
+
+          {error && (
+            <Text color="#ff6b6b" size="0.8rem" className="mb-4 text-center">
+              {error}
+            </Text>
+          )}
 
           <Button
             variant="primary"
             fullWidth
             type="submit"
             disabled={isLoading}
-            className="mt-4 mb-6"
           >
-            {isLoading ? "SENDING..." : "SEND ME A LOGIN LINK"}
+            {isLoading ? "CREATING..." : "SEND ME A LOGIN LINK"}
           </Button>
         </form>
 
         {/* Footer */}
         <footer className="mt-12 text-center">
           <Text color="white/60" size="0.8rem">
-            Don't have an account?{" "}
-            <Link href="/registration" className="text-white underline">
-              Create one
+            Already have an account?{" "}
+            <Link href="/login" className="text-white underline">
+              Log in
             </Link>
           </Text>
         </footer>
