@@ -14,15 +14,18 @@
 6. Book page - week/month calendar, class booking
 7. Community page - social feed, polls, completed cards, comments
 8. Navigation - header and bottom nav work correctly
+9. Authentication flow - onboarding, login, registration, logout
 
 ## Test Environment
 - Frontend: http://localhost:3000
 - Legacy API: http://localhost:3005
 - Dev mode auth bypass enabled
+- Login returns token directly in dev mode
 
 ## Incorporate User Feedback
 - None at this time
 
 ## Last Test Run
 - All pages verified via screenshots
+- Authentication flow working (login redirects to home, logout redirects to onboarding)
 - Build passes successfully
