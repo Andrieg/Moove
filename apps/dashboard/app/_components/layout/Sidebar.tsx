@@ -114,7 +114,7 @@ export default function Sidebar() {
         
         {/* Link to Client App */}
         <a
-          href={typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:3000` : 'http://localhost:3000'}
+          href={clientAppUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all mt-1"
