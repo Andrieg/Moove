@@ -5,7 +5,7 @@
   "workspaces": [
     "apps/*",
     "packages/*",
-    "legacy/*"
+    "legacy/api"
   ],
   "scripts": {
     "dev": "turbo dev",
