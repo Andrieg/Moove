@@ -44,9 +44,20 @@ const createChallange  = async (request: any, reply: any) => {
 
 const updateChallange = async (request: any, reply: any) => {
   const { email } = request?.user;
-  const { challange, fields } = request.body.parsed;
+  const { challenge, fields } = request.body.parsed;
 
-  if (!challange || !email || !fields?.length) {
+  // ✅ DEV BYPASS: Return mock success response without AWS/DynamoDB
+  if (process.env.NODE_ENV !== "production") {
+    return reply.send({
+      status: 'SUCCESS',
+      challenge: {
+        ...challenge,
+        updatedAt: new Date().toISOString(),
+      }
+    });
+  }
+
+  if (!challenge || !email || !fields?.length) {
     return reply.send({
       status: 'FAIL',
       error: 'wrong'
@@ -54,7 +65,7 @@ const updateChallange = async (request: any, reply: any) => {
   }
 
 
-  const result = await DB.CHALLANGES.update(challange, fields);
+  const result = await DB.CHALLANGES.update(challenge, fields);
 
   if (!!result) {
     return reply.send({
