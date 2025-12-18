@@ -92,20 +92,27 @@ const getAllChallanges = async (request: any, reply: any) => {
 
   // ✅ DEV BYPASS: Return mock challenges without AWS/DynamoDB
   if (process.env.NODE_ENV !== "production") {
+    // Generate dates relative to current date for better status diversity
+    const now = new Date();
+    const activeStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); // 7 days ago
+    const activeEnd = new Date(now.getTime() + 23 * 24 * 60 * 60 * 1000); // 23 days from now
+    const upcomingStart = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days from now
+    const upcomingEnd = new Date(now.getTime() + 37 * 24 * 60 * 60 * 1000); // 37 days from now
+    
     const mockChallenges = [
       {
         id: uuidv4(),
         title: "30 Day Strength Challenge",
-        startDate: "2024-12-01T00:00:00Z",
-        endDate: "2024-12-31T23:59:59Z",
+        startDate: activeStart.toISOString(),
+        endDate: activeEnd.toISOString(),
         coachId: email,
         description: "Build strength over 30 days with progressive workouts",
       },
       {
         id: uuidv4(),
         title: "New Year Fitness Challenge",
-        startDate: "2025-01-01T00:00:00Z",
-        endDate: "2025-01-31T23:59:59Z",
+        startDate: upcomingStart.toISOString(),
+        endDate: upcomingEnd.toISOString(),
         coachId: email,
         description: "Start the new year right with daily workouts",
       },
