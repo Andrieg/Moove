@@ -6,20 +6,50 @@ import DashboardLayout from "../_components/layout/DashboardLayout";
 import Card from "../_components/ui/Card";
 import Button from "../_components/ui/Button";
 import Table from "../_components/ui/Table";
-import { getChallenges } from "@moove/api-client";
+import Modal from "../_components/ui/Modal";
+import { getChallenges, deleteChallenge } from "@moove/api-client";
 import type { Challenge } from "@moove/types";
+import { useToast } from "../_components/ui/Toast";
 
 export default function ChallengesPage() {
   const router = useRouter();
+  const toast = useToast();
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [deleteModal, setDeleteModal] = useState<{ open: boolean; challenge?: Challenge }>({ open: false });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    getChallenges()
-      .then(setChallenges)
-      .finally(() => setLoading(false));
+    loadChallenges();
   }, []);
+
+  const loadChallenges = async () => {
+    try {
+      const data = await getChallenges();
+      setChallenges(data);
+    } catch (err) {
+      toast.error("Failed to load challenges");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteModal.challenge) return;
+    
+    setIsDeleting(true);
+    try {
+      await deleteChallenge(deleteModal.challenge.id);
+      toast.success("Challenge deleted successfully!");
+      setChallenges((prev) => prev.filter((c) => c.id !== deleteModal.challenge?.id));
+    } catch (err) {
+      toast.error("Failed to delete challenge");
+    } finally {
+      setIsDeleting(false);
+      setDeleteModal({ open: false });
+    }
+  };
 
   const filteredChallenges = challenges.filter((challenge) =>
     challenge.title?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -52,14 +82,6 @@ export default function ChallengesPage() {
       },
     },
     {
-      key: "participants",
-      header: "Participants",
-      width: "120px",
-      render: () => (
-        <span className="text-slate-600">{Math.floor(Math.random() * 200) + 50}</span>
-      ),
-    },
-    {
       key: "status",
       header: "Status",
       width: "100px",
@@ -85,7 +107,7 @@ export default function ChallengesPage() {
         }
         
         return (
-          <span className={`px-2 py-1 text-xs rounded-full ${className}`}>
+          <span className={`px-2 py-1 text-xs rounded-full font-medium ${className}`}>
             {status}
           </span>
         );
@@ -103,6 +125,7 @@ export default function ChallengesPage() {
               router.push(`/challenges/${challenge.id}`);
             }}
             className="p-2 hover:bg-slate-100 rounded transition"
+            title="Edit"
           >
             <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -111,9 +134,10 @@ export default function ChallengesPage() {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              // Delete handler
+              setDeleteModal({ open: true, challenge });
             }}
             className="p-2 hover:bg-red-50 rounded transition"
+            title="Delete"
           >
             <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -130,6 +154,7 @@ export default function ChallengesPage() {
         {/* Header */}
         <div className="p-6 border-b border-slate-200 flex justify-between items-center">
           <div className="flex items-center gap-4">
+            <h1 className="text-xl font-semibold text-slate-900">Challenges</h1>
             <div className="relative">
               <input
                 type="text"
@@ -148,7 +173,7 @@ export default function ChallengesPage() {
               </svg>
             </div>
             <span className="text-sm text-slate-500">
-              {filteredChallenges.length} challenges
+              {filteredChallenges.length} challenge{filteredChallenges.length !== 1 ? "s" : ""}
             </span>
           </div>
           <Button onClick={() => router.push("/challenges/new")}>
@@ -176,6 +201,36 @@ export default function ChallengesPage() {
           />
         )}
       </Card>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={deleteModal.open}
+        onClose={() => setDeleteModal({ open: false })}
+        title="Delete Challenge"
+        size="sm"
+      >
+        <div className="text-center">
+          <div className="w-12 h-12 rounded-full bg-red-100 mx-auto mb-4 flex items-center justify-center">
+            <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h4 className="text-lg font-semibold text-slate-900 mb-2">Delete "{deleteModal.challenge?.title}"?</h4>
+          <p className="text-sm text-slate-500 mb-6">
+            This action cannot be undone. The challenge and all participant data will be permanently deleted.
+          </p>
+          <div className="flex gap-3 justify-center">
+            <Button variant="outline" onClick={() => setDeleteModal({ open: false })}>
+              Cancel
+            </Button>
+            <Button variant="danger" onClick={handleDelete} disabled={isDeleting}>
+              {isDeleting ? "Deleting..." : "Delete"}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <toast.ToastContainer />
     </DashboardLayout>
   );
 }
