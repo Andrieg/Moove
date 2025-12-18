@@ -1,28 +1,36 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 :root {
   --background: #f8fafc;
-  --foreground: #0f172a;
+  --foreground: #171717;
   --primary: #308FAB;
   --primary-dark: #217E9A;
+  --primary-light: #429FBA;
   --sidebar-bg: #0f172a;
   --sidebar-text: #94a3b8;
   --sidebar-active: #308FAB;
   --card-bg: #ffffff;
-  --border: #e2e8f0;
+  --border: #E6E5E5;
+  --gray-light: #F8F8F8;
+  --text-muted: #B0B0B0;
+  --text-secondary: #636363;
+  --shadow-card: 0px 4px 20px rgba(0, 0, 0, 0.05);
+  --shadow-button: 0px 4px 20px rgba(59, 152, 179, 0.3);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: 'Inter', sans-serif;
+  --font-sans: 'Poppins', sans-serif;
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--background);
   color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Custom scrollbar */
