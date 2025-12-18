@@ -33,6 +33,7 @@ export default function Header() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("for_you");
   const [activeBottomTab, setActiveBottomTab] = useState("");
+  const [dashboardUrl, setDashboardUrl] = useState("/dashboard");
 
   const currentTab = mainTabs.find(
     (t) => t.id === activeTab || t.bottomTabs?.some((bt) => bt.link === pathname)
