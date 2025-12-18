@@ -3,12 +3,26 @@ import { v4 as uuidv4 } from 'uuid';
 
 const createChallange  = async (request: any, reply: any) => {
   const { user } = request;
-  const { challange } = request.body.parsed;
+  const { challenge } = request.body.parsed;
 
+  // ✅ DEV BYPASS: Return mock success response without AWS/DynamoDB
+  if (process.env.NODE_ENV !== "production") {
+    const newChallenge = {
+      ...challenge,
+      id: uuidv4(),
+      email: user?.email || "dev@moove.test",
+      createdAt: new Date().toISOString(),
+    };
+    
+    return reply.send({
+      status: 'SUCCESS',
+      challenge: newChallenge
+    });
+  }
 
   if (!!user?.email) {
     const result = await DB.CHALLANGES.put({
-      ...challange,
+      ...challenge,
       email: user.email,
       id: uuidv4()
     });
