@@ -4,28 +4,28 @@
 - All tests should verify the basic UI functionality
 - API calls should return mock data in dev mode
 - Navigation between pages should work correctly
+- CRUD operations should be tested for Videos and Challenges
 
 ## Features to Test
-1. Home page - displays featured workout and challenges
-2. Video detail page - shows video info, start workout, save/like buttons
-3. Challenge detail page - shows challenge info, join button, progress indicator
-4. Search page - filter functionality, recent/popular searches, instructor results
-5. Profile page - stats, activity, favorites tabs
-6. Book page - week/month calendar, class booking
-7. Community page - social feed, polls, completed cards, comments
-8. Navigation - header and bottom nav work correctly
-9. Authentication flow - onboarding, login, registration, logout
+1. Dashboard home page - displays stats, quick actions, recent content
+2. Videos page - list, search, create, edit, delete videos
+3. Challenges page - list, search, create, edit, delete challenges
+4. Toast notifications - success and error messages
+5. Delete confirmation modals - proper confirmation flow
+6. Navigation - sidebar navigation works correctly
+7. Form validation - required fields are validated
 
 ## Test Environment
-- Frontend: http://localhost:3000
+- Frontend Dashboard: http://localhost:3001
 - Legacy API: http://localhost:3005
 - Dev mode auth bypass enabled
-- Login returns token directly in dev mode
 
 ## Incorporate User Feedback
 - None at this time
 
 ## Last Test Run
-- All pages verified via screenshots
-- Authentication flow working (login redirects to home, logout redirects to onboarding)
-- Build passes successfully
+- Dashboard home page verified
+- Videos page with CRUD functionality implemented
+- Challenges page with CRUD functionality implemented
+- Delete confirmation modals working
+- Toast notifications implemented
