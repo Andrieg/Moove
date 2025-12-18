@@ -24,16 +24,16 @@ function SignupForm() {
     setError("");
 
     try {
-      // In dev mode, simulate signup and auto-login
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/legacy/auth/register`, {
+      // Register member and link to coach
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/legacy/users/member/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: formData.email,
           firstName: formData.firstName,
           lastName: formData.lastName,
-          coachSlug: coachSlug, // Link member to coach
-          role: "client",
+          brand: coachSlug, // Link member to coach's brand
+          role: "member",
         }),
       });
 
