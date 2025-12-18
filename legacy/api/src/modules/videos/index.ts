@@ -5,6 +5,20 @@ const createVideo  = async (request: any, reply: any) => {
   const { user } = request;
   const { video } = request.body.parsed;
 
+  // ✅ DEV BYPASS: Return mock success response without AWS/DynamoDB
+  if (process.env.NODE_ENV !== "production") {
+    const newVideo = {
+      ...video,
+      id: uuidv4(),
+      email: user?.email || "dev@moove.test",
+      createdAt: new Date().toISOString(),
+    };
+    
+    return reply.send({
+      status: 'SUCCESS',
+      video: newVideo
+    });
+  }
 
   if (!!user?.email) {
     const result = await DB.VIDEOS.put({
