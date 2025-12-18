@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { getCurrentUserProfile, clearToken, getVideos } from "@moove/api-client";
+import { getCurrentUserProfile, getVideos } from "@moove/api-client";
+import { clearToken } from "../_context/AuthContext";
 import Title from "../_components/atoms/Title";
 import Text from "../_components/atoms/Text";
 import Button from "../_components/atoms/Button";
