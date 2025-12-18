@@ -124,7 +124,7 @@ export default function Header() {
           <div className="flex-1 flex justify-end items-center pr-8 gap-2">
             {/* Coach Dashboard Link */}
             <a
-              href={typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:3001` : 'http://localhost:3001'}
+              href={dashboardUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="p-2 hover:bg-gray-50 rounded-full transition flex items-center gap-2 text-sm font-medium text-[#308FAB] border border-[#308FAB] px-3"
