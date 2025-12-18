@@ -51,6 +51,11 @@ export default function Header() {
     }
   }, [pathname]);
 
+  // Set dashboard URL after mount to avoid hydration mismatch
+  useEffect(() => {
+    setDashboardUrl(`${window.location.protocol}//${window.location.hostname}:3001`);
+  }, []);
+
   const handleTabClick = (tab: Tab) => {
     setActiveTab(tab.id);
     router.push(tab.link);
