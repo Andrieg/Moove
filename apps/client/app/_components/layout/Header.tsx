@@ -114,8 +114,21 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* Right Icon */}
-          <div className="flex-1 flex justify-end items-center pr-8">
+          {/* Right Icons */}
+          <div className="flex-1 flex justify-end items-center pr-8 gap-2">
+            {/* Coach Dashboard Link */}
+            <a
+              href="http://localhost:3001"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 hover:bg-gray-50 rounded-full transition flex items-center gap-2 text-sm font-medium text-[#308FAB] border border-[#308FAB] px-3"
+              title="Open Coach Dashboard"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+              </svg>
+              <span className="hidden lg:inline">Coach</span>
+            </a>
             <button
               onClick={() => router.push(rightIcon.link)}
               className="p-2 hover:bg-gray-50 rounded-full transition"
