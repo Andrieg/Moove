@@ -46,6 +46,17 @@ const updateVideo = async (request: any, reply: any) => {
   const { email } = request?.user;
   const { video, fields } = request.body.parsed;
 
+  // ✅ DEV BYPASS: Return mock success response without AWS/DynamoDB
+  if (process.env.NODE_ENV !== "production") {
+    return reply.send({
+      status: 'SUCCESS',
+      video: {
+        ...video,
+        updatedAt: new Date().toISOString(),
+      }
+    });
+  }
+
   if (!video || !email || !fields?.length) {
     return reply.send({
       status: 'FAIL',
