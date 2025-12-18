@@ -1,31 +1,52 @@
-# Test Results
+# Test Results - End-to-End Journey
 
 ## Testing Protocol
-- Dashboard is now integrated into the client app at /dashboard/*
-- Coach access only (in dev mode, all authenticated users can access)
-- Navigation between member app and dashboard works via sidebar links
+- Coach landing page at /coach/{brandSlug}
+- Member signup with coach linking
+- Client app access for members
+- Dashboard access for coaches
 
-## Features to Test
-1. Dashboard home page at /dashboard - displays stats, quick actions, recent content
-2. Videos management at /dashboard/videos - list, search, create, edit, delete
-3. Challenges management at /dashboard/challenges - list, search, create, edit, delete
-4. Navigation between member app and dashboard
-5. Toast notifications for success/error
-6. Delete confirmation modals
-7. Coach-only access protection (redirects to /onboarding if not authenticated)
+## Completed Features
 
-## Test Environment
-- Client App with integrated Dashboard: http://localhost:3000
-- Legacy API: http://localhost:3005
-- Auth flow: Login with any email, then access /dashboard
+### 1. Coach Landing Page (/coach/{brandSlug})
+- ✅ Hero section with title, description, CTA
+- ✅ About section
+- ✅ Access/What You Get section
+- ✅ Reviews section with testimonials
+- ✅ Membership/Pricing section with 7-day free trial
+- ✅ Sign In / Join Now buttons
+- ✅ Theme color customization support
 
-## Incorporate User Feedback
-- Dashboard merged into client app as /dashboard/* routes
-- Works seamlessly with Emergent preview (single app)
+### 2. Member Signup Flow
+- ✅ Signup page at /signup?coach={brandSlug}
+- ✅ Coach parameter passed correctly
+- ✅ Form with First Name, Last Name, Email
+- ✅ Auto-login after signup
+- ✅ Member linked to coach via brand
+- ✅ Redirect to client app after signup
 
-## Last Test Run
-- Client app with Coach button verified
-- Dashboard home page with stats and quick actions working
-- Videos page with CRUD functionality working
-- Challenges page with CRUD functionality working
-- Navigation between apps working
+### 3. Client App (Member View)
+- ✅ Shows after successful signup
+- ✅ Navigation: For You, Explore, Book, Profile
+- ✅ Coach button for accessing dashboard
+- ✅ Content will be filtered by coach (placeholder shown when no content)
+
+### 4. Coach Dashboard (/dashboard)
+- ✅ Videos management (CRUD)
+- ✅ Challenges management (CRUD)
+- ✅ Stats overview
+- ✅ Navigation sidebar
+- ✅ View Member App link
+
+## Test Flow
+1. Visit /coach/annamartin - Landing page loads ✓
+2. Click "Start Free Trial" - Redirects to /signup?coach=annamartin ✓
+3. Fill form and submit - Account created, redirected to client app ✓
+4. Member sees client app with their coach's content context ✓
+
+## Pending
+- Stripe integration for actual payments
+- Content filtering by coach (show only coach's content to their members)
+- Landing page editor in dashboard
+- Member management in dashboard
+
