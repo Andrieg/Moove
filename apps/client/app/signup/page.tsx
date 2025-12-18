@@ -51,7 +51,7 @@ function SignupForm() {
         }));
         
         // Redirect to client app
-        router.push("/home");
+        router.push("/");
       } else {
         setError(data.error || "Failed to create account");
       }
