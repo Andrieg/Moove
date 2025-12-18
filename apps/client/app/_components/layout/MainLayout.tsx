@@ -10,7 +10,11 @@ interface MainLayoutProps {
 
 export default function MainLayout({ children }: MainLayoutProps) {
   const pathname = usePathname();
-  const hideLayout = pathname === "/login" || pathname === "/auth";
+  const hideLayout = pathname === "/login" || 
+    pathname === "/auth" || 
+    pathname === "/onboarding" || 
+    pathname === "/registration" || 
+    pathname === "/success";
 
   if (hideLayout) {
     return <>{children}</>;
