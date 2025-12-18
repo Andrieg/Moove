@@ -72,7 +72,7 @@ export default function DashboardSidebar() {
         
         {/* Link to Member App */}
         <Link
-          href="/home"
+          href="/"
           className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all mt-1"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
