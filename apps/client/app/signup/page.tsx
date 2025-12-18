@@ -65,7 +65,7 @@ function SignupForm() {
         role: "client",
         coachSlug: coachSlug,
       }));
-      router.push("/home");
+      router.push("/");
     } finally {
       setIsLoading(false);
     }
