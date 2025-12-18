@@ -12,22 +12,26 @@ interface MainLayoutProps {
 export default function MainLayout({ children }: MainLayoutProps) {
   const pathname = usePathname();
   
-  // Pages that don't need any layout
+  // Pages that don't need any layout or auth wrapper
   const hideLayout = pathname === "/login" || 
     pathname === "/auth" || 
     pathname === "/onboarding" || 
     pathname === "/registration" || 
-    pathname === "/success";
+    pathname === "/success" ||
+    pathname === "/signup";
 
   // Dashboard pages have their own layout
   const isDashboard = pathname?.startsWith("/dashboard");
 
-  // Wrap everything in AuthProvider
-  if (hideLayout) {
-    return <AuthProvider>{children}</AuthProvider>;
+  // Coach landing pages are public - no auth wrapper needed
+  const isCoachLanding = pathname?.startsWith("/coach/");
+
+  // Public pages - no auth wrapper
+  if (hideLayout || isCoachLanding) {
+    return <>{children}</>;
   }
 
-  // Dashboard has its own layout, just provide auth context
+  // Dashboard has its own layout, provide auth context
   if (isDashboard) {
     return <AuthProvider>{children}</AuthProvider>;
   }
