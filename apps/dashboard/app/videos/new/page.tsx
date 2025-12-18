@@ -5,9 +5,12 @@ import { useRouter } from "next/navigation";
 import DashboardLayout from "../../_components/layout/DashboardLayout";
 import Card from "../../_components/ui/Card";
 import Button from "../../_components/ui/Button";
+import { createVideo } from "@moove/api-client";
+import { useToast } from "../../_components/ui/Toast";
 
 export default function NewVideoPage() {
   const router = useRouter();
+  const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -23,16 +26,25 @@ export default function NewVideoPage() {
     setIsLoading(true);
 
     try {
-      // TODO: Implement video upload API call
-      console.log("Creating video:", formData);
+      const videoData = {
+        title: formData.title,
+        description: formData.description,
+        durationSeconds: parseInt(formData.duration) * 60 || 0,
+        category: formData.category,
+        target: formData.target,
+        published: formData.published,
+      };
+
+      const response = await createVideo(videoData);
       
-      // Mock delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      alert("Video created successfully!");
-      router.push("/videos");
+      if (response.status === "SUCCESS") {
+        toast.success("Video created successfully!");
+        setTimeout(() => router.push("/videos"), 1500);
+      } else {
+        toast.error("Failed to create video");
+      }
     } catch (err) {
-      alert("Failed to create video");
+      toast.error("Failed to create video");
     } finally {
       setIsLoading(false);
     }
@@ -41,6 +53,19 @@ export default function NewVideoPage() {
   return (
     <DashboardLayout>
       <div className="max-w-3xl">
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-6">
+          <button
+            onClick={() => router.back()}
+            className="p-2 hover:bg-slate-100 rounded-lg transition"
+          >
+            <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <h1 className="text-2xl font-semibold text-slate-900">Upload Video</h1>
+        </div>
+
         <Card>
           <form onSubmit={handleSubmit}>
             <h2 className="text-lg font-semibold text-slate-900 mb-6">Video Details</h2>
@@ -99,11 +124,11 @@ export default function NewVideoPage() {
                   className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/20 focus:border-[#308FAB] bg-white"
                 >
                   <option value="">Select category</option>
-                  <option value="hiit">HIIT</option>
-                  <option value="strength">Strength</option>
-                  <option value="cardio">Cardio</option>
-                  <option value="yoga">Yoga</option>
-                  <option value="pilates">Pilates</option>
+                  <option value="HIIT">HIIT</option>
+                  <option value="Strength">Strength</option>
+                  <option value="Cardio">Cardio</option>
+                  <option value="Yoga">Yoga</option>
+                  <option value="Pilates">Pilates</option>
                 </select>
               </div>
             </div>
@@ -190,6 +215,8 @@ export default function NewVideoPage() {
           </form>
         </Card>
       </div>
+      
+      <toast.ToastContainer />
     </DashboardLayout>
   );
 }
