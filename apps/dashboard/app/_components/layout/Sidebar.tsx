@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
+import { useState, useEffect } from "react";
 
 interface NavItem {
   id: string;
@@ -25,6 +26,12 @@ const bottomNavItems: NavItem[] = [
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const [clientAppUrl, setClientAppUrl] = useState("/");
+
+  // Set client app URL after mount to avoid hydration mismatch
+  useEffect(() => {
+    setClientAppUrl(`${window.location.protocol}//${window.location.hostname}:3000`);
+  }, []);
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
