@@ -3,7 +3,26 @@ import DB from '../../services/dynamodb';
 import { sendEmail } from '../../services/ses';
 
 const registerMemberUser = async (server: any, request: any, reply: any) => {
-  const { email, coach_email, brand, target } = request.body.parsed;
+  const { email, coach_email, brand, target, firstName, lastName } = request.body.parsed;
+
+  // ✅ DEV BYPASS: Return mock success with token without AWS/DynamoDB
+  if (process.env.NODE_ENV !== "production") {
+    const id = uuidv4();
+    const token = server.jwt.sign({ email, id, brand, role: "member" });
+    
+    return reply.send({
+      status: 'SUCCESS',
+      token,
+      user: {
+        id,
+        email,
+        firstName,
+        lastName,
+        role: 'member',
+        brand,
+      }
+    });
+  }
 
   const exists = await DB.USERS.get(email);
   if (!!exists?.Items?.length) {
