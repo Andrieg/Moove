@@ -158,6 +158,13 @@ const deleteVideo = async (request: any, reply: any) => {
   const { email } = request?.user;
   const { id } = request.params;
 
+  // ✅ DEV BYPASS: Return mock success response without AWS/DynamoDB
+  if (process.env.NODE_ENV !== "production") {
+    return reply.send({
+      status: 'SUCCESS'
+    });
+  }
+
   const classroom = {
     PK: `USER#${email}`,
     SK: `VIDEO#${id}`
