@@ -24,8 +24,7 @@ function SignupForm() {
     setError("");
 
     try {
-      // In dev mode, just create user locally and redirect
-      // Store token and user data with coach association
+      // Store user data locally with coach association
       localStorage.setItem("moovefit-token", "dev-token-member-" + Date.now());
       localStorage.setItem("moovefit-user", JSON.stringify({
         email: formData.email,
@@ -33,13 +32,34 @@ function SignupForm() {
         lastName: formData.lastName,
         role: "member",
         coachSlug: coachSlug,
-        brand: coachSlug, // Associate with coach's brand
+        brand: coachSlug,
       }));
-      
-      // Redirect to client app
-      router.push("/");
+
+      // Create checkout session and redirect to payment
+      const originUrl = window.location.origin;
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/legacy/billing/checkout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          packageId: "monthly",
+          originUrl,
+          brand: coachSlug,
+          email: formData.email,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.url) {
+        // Redirect to checkout (or payment success in dev)
+        window.location.href = data.url;
+      } else {
+        // Fallback: direct to app (for dev without checkout)
+        router.push("/");
+      }
     } catch (err) {
-      setError("Failed to create account. Please try again.");
+      // Dev fallback - go directly to app
+      router.push("/");
     } finally {
       setIsLoading(false);
     }
