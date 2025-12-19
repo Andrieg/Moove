@@ -12,11 +12,32 @@ export default function HomePage() {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [coachName, setCoachName] = useState<string | null>(null);
 
   useEffect(() => {
+    // Get user data from localStorage to find their coach
+    let coachBrand: string | undefined;
+    try {
+      const userData = localStorage.getItem("moovefit-user");
+      if (userData) {
+        const user = JSON.parse(userData);
+        coachBrand = user.coachSlug || user.brand;
+        // For coach users, use their own brand
+        if (user.role === "coach") {
+          coachBrand = user.brand;
+        }
+        if (coachBrand) {
+          setCoachName(coachBrand);
+        }
+      }
+    } catch (e) {
+      console.error("Error reading user data:", e);
+    }
+
+    // Fetch content - if member has a coach, filter by their coach
     Promise.all([
-      getVideos().catch(() => []),
-      getChallenges().catch(() => []),
+      getVideos(coachBrand).catch(() => []),
+      getChallenges(coachBrand).catch(() => []),
     ])
       .then(([videosData, challengesData]) => {
         setVideos(videosData);
