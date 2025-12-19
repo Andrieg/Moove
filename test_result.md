@@ -44,6 +44,13 @@
 3. Fill form and submit - Account created, redirected to client app ✓
 4. Member sees client app with their coach's content context ✓
 
+## Landing Page Editor Test Flow
+1. Login at /login with any email ✓
+2. Navigate to /dashboard/landing ✓
+3. Edit fields in General/Hero/Content/Pricing/Reviews tabs ✓
+4. Click "Save Changes" - API call made, success toast shown ✓
+5. Visit /coach/{brand_slug} - Changes visible on public page ✓
+
 ## Pending
 - Stripe integration for actual payments
 - Content filtering by coach (show only coach's content to their members)
