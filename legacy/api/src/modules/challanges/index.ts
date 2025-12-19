@@ -82,13 +82,7 @@ const updateChallange = async (request: any, reply: any) => {
 
 const getAllChallanges = async (request: any, reply: any) => {
   const email = request?.user?.email;
-
-  if (!email) {
-    return reply.send({
-      status: 'FAIL',
-      error: 'wrong'
-    });
-  }
+  const { brand } = request.query || {};
 
   // ✅ DEV BYPASS: Return mock challenges without AWS/DynamoDB
   if (process.env.NODE_ENV !== "production") {
@@ -101,26 +95,42 @@ const getAllChallanges = async (request: any, reply: any) => {
     
     const mockChallenges = [
       {
-        id: uuidv4(),
+        id: "challenge-1",
         title: "30 Day Strength Challenge",
         startDate: activeStart.toISOString(),
         endDate: activeEnd.toISOString(),
-        coachId: email,
+        brand: "annamartin",
+        coachId: "coach@annamartin.com",
         description: "Build strength over 30 days with progressive workouts",
+        cover: { url: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400" },
       },
       {
-        id: uuidv4(),
+        id: "challenge-2",
         title: "New Year Fitness Challenge",
         startDate: upcomingStart.toISOString(),
         endDate: upcomingEnd.toISOString(),
-        coachId: email,
+        brand: "annamartin",
+        coachId: "coach@annamartin.com",
         description: "Start the new year right with daily workouts",
+        cover: { url: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400" },
       },
     ];
 
+    // Filter by brand if provided
+    const filteredChallenges = brand 
+      ? mockChallenges.filter(c => c.brand === brand)
+      : mockChallenges;
+
     return reply.send({
       status: 'SUCCESS',
-      challenges: mockChallenges
+      challenges: filteredChallenges
+    });
+  }
+
+  if (!email) {
+    return reply.send({
+      status: 'FAIL',
+      error: 'wrong'
     });
   }
 
