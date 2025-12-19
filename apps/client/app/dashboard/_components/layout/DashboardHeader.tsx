@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useAuth } from "../../../_context/AuthContext";
 
 const pageTitles: Record<string, string> = {
   "/dashboard": "Dashboard",
@@ -11,23 +12,38 @@ const pageTitles: Record<string, string> = {
   "/dashboard/live": "Live Classes",
   "/dashboard/members": "Members",
   "/dashboard/settings": "Settings",
+  "/dashboard/landing": "Landing Page",
+  "/dashboard/profile": "Profile",
 };
 
 export default function DashboardHeader() {
   const pathname = usePathname();
-  const title = pageTitles[pathname || ""] || "Dashboard";
+  const { user } = useAuth();
+  
+  // Show personalized welcome on main dashboard
+  const isHome = pathname === "/dashboard";
+  const title = isHome 
+    ? `Welcome, ${user?.firstName || "Coach"}!`
+    : (pageTitles[pathname || ""] || "Dashboard");
+
+  // Get user initials
+  const initials = user?.firstName 
+    ? user.firstName.charAt(0).toUpperCase()
+    : "C";
 
   return (
     <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6">
       <h1 className="text-xl font-semibold text-slate-900">{title}</h1>
       <div className="flex items-center gap-4">
+        {/* Messages */}
         <button className="p-2 hover:bg-slate-100 rounded-lg transition">
           <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
           </svg>
         </button>
+        {/* Profile Avatar */}
         <div className="w-8 h-8 bg-[#308FAB] rounded-full flex items-center justify-center text-white text-sm font-semibold">
-          C
+          {initials}
         </div>
       </div>
     </header>
