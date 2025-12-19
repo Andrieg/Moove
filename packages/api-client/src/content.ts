@@ -5,9 +5,11 @@ import { apiFetch } from "./http";
 
 /**
  * Legacy API: GET /videos
+ * @param brand - Optional brand/coach slug to filter content
  */
-export async function getVideos() {
-  const response = await apiFetch<{ status: string; videos: Video[] }>("/videos");
+export async function getVideos(brand?: string) {
+  const url = brand ? `/videos?brand=${encodeURIComponent(brand)}` : "/videos";
+  const response = await apiFetch<{ status: string; videos: Video[] }>(url);
   return response.videos || [];
 }
 
