@@ -5,10 +5,10 @@ interface PageProps {
   params: Promise<{ brandSlug: string }>;
 }
 
-// Mock data for development - will be replaced with API call
+// Get coach data - in dev mode returns mock data, in production would fetch from API
 async function getCoachData(brandSlug: string) {
-  // In dev, return mock data
-  const mockData = {
+  // Default mock data for "annamartin" brand
+  const defaultData = {
     brand: brandSlug,
     brand_name: "Anna Martin Fitness",
     logo: "/images/logo.svg",
@@ -47,7 +47,9 @@ async function getCoachData(brandSlug: string) {
     ],
   };
 
-  return mockData;
+  // In production, fetch from API based on brandSlug
+  // For now, return default data
+  return defaultData;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
