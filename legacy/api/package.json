@@ -31,7 +31,7 @@
     "ffmpeg-static": "^4.4.0",
     "rimraf": "^3.0.2",
     "simple-thumbnail": "^1.6.5",
-    "stripe": "^8.178.0",
+    "stripe": "^8.222.0",
     "tldjs": "^2.3.1",
     "typescript": "^4.4.3",
     "uuid": "^3.3.2",
