@@ -50,7 +50,17 @@ export default function LoginContent() {
         // DEV: If token is returned directly, auto-login
         if (result.token) {
           localStorage.setItem("moovefit-token", result.token);
-          router.push("/auth");
+          
+          // DEV: Create user with coach role for testing
+          const devUser = {
+            id: result.user || "user-" + Date.now(),
+            email: email,
+            role: "coach" as const, // Default to coach for dev login
+            createdAt: new Date().toISOString(),
+          };
+          localStorage.setItem("moovefit-user", JSON.stringify(devUser));
+          
+          router.push("/");
           return;
         }
 
