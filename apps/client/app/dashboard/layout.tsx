@@ -7,7 +7,7 @@ import DashboardSidebar from "./_components/layout/DashboardSidebar";
 import DashboardHeader from "./_components/layout/DashboardHeader";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user, isLoading, isAuthenticated } = useAuth();
+  const { user, isLoading, isAuthenticated, isCoach, showToast } = useAuth();
   const router = useRouter();
   const [isAuthorized, setIsAuthorized] = useState(false);
 
@@ -20,20 +20,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       return;
     }
 
-    // Check if user is a coach (for now, allow all authenticated users in dev mode)
-    // In production, check user.role === 'coach' or similar
-    const isCoach = user?.email?.includes("coach") || 
-                    (user as any)?.role === "coach" || 
-                    process.env.NODE_ENV !== "production";
-
+    // Check if user has coach role
     if (!isCoach) {
-      // Not a coach, redirect to member home
-      router.push("/home");
+      showToast("warning", "Access denied. This area is for coaches only.");
+      router.push("/");
       return;
     }
 
     setIsAuthorized(true);
-  }, [user, isLoading, isAuthenticated, router]);
+  }, [user, isLoading, isAuthenticated, isCoach, router, showToast]);
 
   // Show loading while checking authorization
   if (isLoading || !isAuthorized) {
