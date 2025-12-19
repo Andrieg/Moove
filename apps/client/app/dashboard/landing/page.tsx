@@ -104,12 +104,43 @@ export default function LandingPageEditor() {
     setSettings({ ...settings, plan_benefits: settings.plan_benefits.filter((_, i) => i !== index) });
   };
 
+  const [newReview, setNewReview] = useState({ name: "", text: "", rating: 5 });
+
+  const addReview = () => {
+    if (newReview.name.trim() && newReview.text.trim()) {
+      setSettings({ 
+        ...settings, 
+        reviews: [...(settings.reviews || []), { ...newReview }] 
+      });
+      setNewReview({ name: "", text: "", rating: 5 });
+    }
+  };
+
+  const removeReview = (index: number) => {
+    setSettings({ 
+      ...settings, 
+      reviews: (settings.reviews || []).filter((_, i) => i !== index) 
+    });
+  };
+
   const tabs = [
     { id: "general", label: "General" },
     { id: "hero", label: "Hero Section" },
     { id: "content", label: "Content" },
     { id: "pricing", label: "Pricing" },
+    { id: "reviews", label: "Reviews" },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="max-w-4xl flex items-center justify-center py-12">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#308FAB] mx-auto mb-4"></div>
+          <p className="text-slate-500">Loading settings...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl">
