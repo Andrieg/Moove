@@ -96,7 +96,7 @@ export default function ChallengesPage() {
             </div>
             <span className="text-sm text-slate-500">{filteredChallenges.length} challenge{filteredChallenges.length !== 1 ? "s" : ""}</span>
           </div>
-          <Button onClick={() => router.push("/dashboard/challenges/new")}>
+          <Button onClick={() => router.push("/coach/dashboard/challenges/new")}>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
             Create Challenge
           </Button>

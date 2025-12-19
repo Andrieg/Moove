@@ -117,7 +117,7 @@ export default function Header() {
           <div className="flex-1 flex justify-end items-center pr-8 gap-2">
             {/* Coach Dashboard Link */}
             <a
-              href="/dashboard"
+              href="/coach/dashboard"
               className="p-2 hover:bg-gray-50 rounded-full transition flex items-center gap-2 text-sm font-medium text-[#308FAB] border border-[#308FAB] px-3"
               title="Open Coach Dashboard"
             >

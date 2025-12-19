@@ -25,7 +25,7 @@ export default function NewChallengePage() {
         type: formData.type,
         visibility: formData.visibility,
       });
-      if (response.status === "SUCCESS") { toast.success("Challenge created!"); setTimeout(() => router.push("/dashboard/challenges"), 1500); }
+      if (response.status === "SUCCESS") { toast.success("Challenge created!"); setTimeout(() => router.push("/coach/dashboard/challenges"), 1500); }
       else toast.error("Failed to create challenge");
     } catch { toast.error("Failed to create challenge"); }
     finally { setIsLoading(false); }

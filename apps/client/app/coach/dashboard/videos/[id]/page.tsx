@@ -30,7 +30,7 @@ export default function EditVideoPage({ params }: { params: Promise<{ id: string
     try {
       await updateVideo({ id, ...formData }, Object.keys(formData));
       toast.success("Video updated!");
-      setTimeout(() => router.push("/dashboard/videos"), 1500);
+      setTimeout(() => router.push("/coach/dashboard/videos"), 1500);
     } catch { toast.error("Failed to update video"); }
     finally { setIsSaving(false); }
   };
@@ -40,7 +40,7 @@ export default function EditVideoPage({ params }: { params: Promise<{ id: string
     try {
       await deleteVideo(id);
       toast.success("Video deleted!");
-      setTimeout(() => router.push("/dashboard/videos"), 1500);
+      setTimeout(() => router.push("/coach/dashboard/videos"), 1500);
     } catch { toast.error("Failed to delete video"); }
     finally { setIsDeleting(false); setShowDeleteModal(false); }
   };

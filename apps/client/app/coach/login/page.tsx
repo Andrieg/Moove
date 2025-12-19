@@ -55,7 +55,7 @@ function CoachLoginForm() {
     const token = `dev-token-coach-${Date.now()}`;
     login(user, token);
     showToast("success", `Welcome back!`);
-    router.push("/dashboard");
+    router.push("/coach/dashboard");
   };
 
   // Screen 1: Login Form

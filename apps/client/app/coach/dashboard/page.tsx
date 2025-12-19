@@ -66,15 +66,15 @@ export default function DashboardHome() {
       <Card>
         <h2 className="text-lg font-semibold text-slate-900 mb-4">Quick Actions</h2>
         <div className="flex flex-wrap gap-3">
-          <Button onClick={() => router.push("/dashboard/videos/new")}>
+          <Button onClick={() => router.push("/coach/dashboard/videos/new")}>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
             Upload Video
           </Button>
-          <Button variant="secondary" onClick={() => router.push("/dashboard/challenges/new")}>
+          <Button variant="secondary" onClick={() => router.push("/coach/dashboard/challenges/new")}>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
             Create Challenge
           </Button>
-          <Button variant="outline" onClick={() => router.push("/dashboard/live/new")}>
+          <Button variant="outline" onClick={() => router.push("/coach/dashboard/live/new")}>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
             Schedule Live Class
           </Button>
@@ -87,7 +87,7 @@ export default function DashboardHome() {
         <Card>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold text-slate-900">Recent Videos</h2>
-            <Button variant="outline" size="sm" onClick={() => router.push("/dashboard/videos")}>View All</Button>
+            <Button variant="outline" size="sm" onClick={() => router.push("/coach/dashboard/videos")}>View All</Button>
           </div>
           {loading ? (
             <div className="text-center py-8 text-slate-500">Loading...</div>
@@ -115,7 +115,7 @@ export default function DashboardHome() {
         <Card>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold text-slate-900">Recent Challenges</h2>
-            <Button variant="outline" size="sm" onClick={() => router.push("/dashboard/challenges")}>View All</Button>
+            <Button variant="outline" size="sm" onClick={() => router.push("/coach/dashboard/challenges")}>View All</Button>
           </div>
           {loading ? (
             <div className="text-center py-8 text-slate-500">Loading...</div>

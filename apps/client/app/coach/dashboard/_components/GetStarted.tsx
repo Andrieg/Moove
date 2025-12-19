@@ -98,7 +98,7 @@ export default function GetStarted() {
                 <Link href={item.href} className="text-sm text-[#308FAB] hover:underline">
                   Add class
                 </Link>
-                <Link href="/dashboard/videos/new" className="text-sm text-[#308FAB] hover:underline">
+                <Link href="/coach/dashboard/videos/new" className="text-sm text-[#308FAB] hover:underline">
                   Add video
                 </Link>
               </div>

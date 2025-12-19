@@ -45,7 +45,7 @@ export default function EditChallengePage({ params }: { params: Promise<{ id: st
         visibility: formData.visibility,
       }, Object.keys(formData));
       toast.success("Challenge updated!");
-      setTimeout(() => router.push("/dashboard/challenges"), 1500);
+      setTimeout(() => router.push("/coach/dashboard/challenges"), 1500);
     } catch { toast.error("Failed to update challenge"); }
     finally { setIsSaving(false); }
   };
@@ -55,7 +55,7 @@ export default function EditChallengePage({ params }: { params: Promise<{ id: st
     try {
       await deleteChallenge(id);
       toast.success("Challenge deleted!");
-      setTimeout(() => router.push("/dashboard/challenges"), 1500);
+      setTimeout(() => router.push("/coach/dashboard/challenges"), 1500);
     } catch { toast.error("Failed to delete challenge"); }
     finally { setIsDeleting(false); setShowDeleteModal(false); }
   };

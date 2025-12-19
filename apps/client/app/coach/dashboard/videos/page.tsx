@@ -86,7 +86,7 @@ export default function VideosPage() {
             </div>
             <span className="text-sm text-slate-500">{filteredVideos.length} video{filteredVideos.length !== 1 ? "s" : ""}</span>
           </div>
-          <Button onClick={() => router.push("/dashboard/videos/new")}>
+          <Button onClick={() => router.push("/coach/dashboard/videos/new")}>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
             Upload Video
           </Button>

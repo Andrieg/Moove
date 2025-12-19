@@ -13,7 +13,7 @@ interface NavItem {
 
 // Navigation items matching the reference design
 const navItems: NavItem[] = [
-  { id: "home", label: "Home", icon: "home", href: "/dashboard" },
+  { id: "home", label: "Home", icon: "home", href: "/coach/dashboard" },
   { id: "profile", label: "Profile", icon: "user", href: "/dashboard/profile" },
   { id: "members", label: "Members", icon: "users", href: "/dashboard/members" },
   { id: "library", label: "Library", icon: "folder", href: "/dashboard/videos" },

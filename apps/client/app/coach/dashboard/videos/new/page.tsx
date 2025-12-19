@@ -18,7 +18,7 @@ export default function NewVideoPage() {
     setIsLoading(true);
     try {
       const response = await createVideo({ title: formData.title, description: formData.description, durationSeconds: parseInt(formData.duration) * 60 || 0, category: formData.category, target: formData.target, published: formData.published });
-      if (response.status === "SUCCESS") { toast.success("Video created!"); setTimeout(() => router.push("/dashboard/videos"), 1500); }
+      if (response.status === "SUCCESS") { toast.success("Video created!"); setTimeout(() => router.push("/coach/dashboard/videos"), 1500); }
       else toast.error("Failed to create video");
     } catch { toast.error("Failed to create video"); }
     finally { setIsLoading(false); }

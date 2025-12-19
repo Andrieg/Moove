@@ -104,7 +104,7 @@ function CoachRegisterForm() {
     login(user, token);
     showToast("success", `Welcome, ${profileData.firstName}! Your coach account has been created.`);
     setIsLoading(false);
-    router.push("/dashboard");
+    router.push("/coach/dashboard");
   };
 
   // Screen 1: Email Input
