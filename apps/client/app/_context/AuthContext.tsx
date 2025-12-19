@@ -115,7 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     storeLogout();
-    router.push("/onboarding");
+    router.push("/login");
   };
 
   const handleSetUser = (newUser: User) => {
