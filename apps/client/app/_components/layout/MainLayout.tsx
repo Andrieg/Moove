@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import Header from "./Header";
 import BottomNav from "./BottomNav";
 import { AuthProvider } from "../../_context/AuthContext";
+import GlobalToast from "../GlobalToast";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -17,6 +18,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
     pathname === "/auth" || 
     pathname === "/onboarding" || 
     pathname === "/registration" || 
+    pathname === "/register" ||
     pathname === "/success" ||
     pathname === "/signup";
 
@@ -29,14 +31,24 @@ export default function MainLayout({ children }: MainLayoutProps) {
   // Payment pages are public
   const isPayment = pathname?.startsWith("/payment/");
 
-  // Public pages - no auth wrapper
+  // Public pages - no auth wrapper but include GlobalToast
   if (hideLayout || isCoachLanding || isPayment) {
-    return <>{children}</>;
+    return (
+      <>
+        {children}
+        <GlobalToast />
+      </>
+    );
   }
 
   // Dashboard has its own layout, provide auth context
   if (isDashboard) {
-    return <AuthProvider>{children}</AuthProvider>;
+    return (
+      <AuthProvider>
+        {children}
+        <GlobalToast />
+      </AuthProvider>
+    );
   }
 
   // Check if page has bottom tabs (Explore section)
@@ -52,6 +64,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
         {children}
       </main>
       <BottomNav />
+      <GlobalToast />
     </AuthProvider>
   );
 }
