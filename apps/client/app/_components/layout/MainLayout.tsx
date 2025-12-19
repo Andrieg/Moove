@@ -33,6 +33,16 @@ export default function MainLayout({ children }: MainLayoutProps) {
   // Payment pages are public
   const isPayment = pathname?.startsWith("/payment/");
 
+  // Register page needs AuthProvider for useAuth hook but no layout
+  if (isRegister) {
+    return (
+      <AuthProvider>
+        {children}
+        <GlobalToast />
+      </AuthProvider>
+    );
+  }
+
   // Public pages - no auth wrapper but include GlobalToast
   if (hideLayout || isCoachLanding || isPayment) {
     return (
