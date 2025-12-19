@@ -5,23 +5,7 @@ import { useRouter } from "next/navigation";
 import Card from "../_components/ui/Card";
 import Button from "../_components/ui/Button";
 import { useToast } from "../_components/ui/Toast";
-
-interface LandingPageSettings {
-  brand_name: string;
-  brand_slug: string;
-  theme_color: string;
-  about: string;
-  hero_title: string;
-  hero_description: string;
-  hero_image: string;
-  access_title: string;
-  access_description: string;
-  access_image: string;
-  plan_title: string;
-  plan_price: number;
-  plan_benefits: string[];
-  reviews: { name: string; text: string; rating: number }[];
-}
+import { getLandingPageSettings, saveLandingPageSettings, type LandingPageSettings } from "@moove/api-client";
 
 const defaultSettings: LandingPageSettings = {
   brand_name: "My Fitness",
@@ -44,26 +28,66 @@ export default function LandingPageEditor() {
   const router = useRouter();
   const toast = useToast();
   const [settings, setSettings] = useState<LandingPageSettings>(defaultSettings);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [newBenefit, setNewBenefit] = useState("");
   const [activeTab, setActiveTab] = useState<"general" | "hero" | "content" | "pricing">("general");
 
   useEffect(() => {
-    // Load existing settings from localStorage or API
-    const saved = localStorage.getItem("coach-landing-settings");
-    if (saved) {
-      setSettings(JSON.parse(saved));
-    }
+    // Load existing settings from API
+    const loadSettings = async () => {
+      setIsLoading(true);
+      try {
+        // First check localStorage for the current brand slug
+        const savedSlug = localStorage.getItem("coach-brand-slug") || "annamartin";
+        const apiSettings = await getLandingPageSettings(savedSlug);
+        
+        if (apiSettings) {
+          setSettings(apiSettings);
+          // Cache to localStorage as backup
+          localStorage.setItem("coach-landing-settings", JSON.stringify(apiSettings));
+        } else {
+          // Fallback to localStorage
+          const saved = localStorage.getItem("coach-landing-settings");
+          if (saved) {
+            setSettings(JSON.parse(saved));
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load settings:", err);
+        // Fallback to localStorage
+        const saved = localStorage.getItem("coach-landing-settings");
+        if (saved) {
+          setSettings(JSON.parse(saved));
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadSettings();
   }, []);
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Save to localStorage for dev mode
-      localStorage.setItem("coach-landing-settings", JSON.stringify(settings));
-      toast.success("Landing page saved successfully!");
+      // Save to API
+      const result = await saveLandingPageSettings(settings);
+      
+      if (result.status === "SUCCESS") {
+        // Also save brand slug to localStorage for persistence
+        localStorage.setItem("coach-brand-slug", settings.brand_slug);
+        localStorage.setItem("coach-landing-settings", JSON.stringify(settings));
+        toast.success("Landing page saved successfully!");
+      } else {
+        // API failed, fall back to localStorage only
+        localStorage.setItem("coach-landing-settings", JSON.stringify(settings));
+        toast.success("Saved locally (API unavailable)");
+      }
     } catch (err) {
-      toast.error("Failed to save changes");
+      // Fallback to localStorage
+      localStorage.setItem("coach-landing-settings", JSON.stringify(settings));
+      toast.error("API error - saved locally");
     } finally {
       setIsSaving(false);
     }
