@@ -377,6 +377,83 @@ export default function LandingPageEditor() {
         </Card>
       )}
 
+      {/* Reviews Section */}
+      {activeTab === "reviews" && (
+        <Card>
+          <h2 className="text-lg font-semibold text-slate-900 mb-6">Customer Reviews</h2>
+          
+          <div className="space-y-6">
+            {/* Existing Reviews */}
+            {(settings.reviews || []).length > 0 && (
+              <div className="space-y-3">
+                <label className="block text-sm font-medium text-slate-700">Current Reviews</label>
+                {(settings.reviews || []).map((review, idx) => (
+                  <div key={idx} className="p-4 bg-slate-50 rounded-lg">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <span className="font-medium text-slate-900">{review.name}</span>
+                        <div className="flex gap-0.5 mt-1">
+                          {[...Array(5)].map((_, i) => (
+                            <svg key={i} className={`w-4 h-4 ${i < review.rating ? "text-yellow-400" : "text-slate-200"}`} fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                            </svg>
+                          ))}
+                        </div>
+                      </div>
+                      <button onClick={() => removeReview(idx)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                      </button>
+                    </div>
+                    <p className="text-sm text-slate-600 italic">"{review.text}"</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Add New Review */}
+            <div className="border-t border-slate-200 pt-6">
+              <label className="block text-sm font-medium text-slate-700 mb-4">Add New Review</label>
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  value={newReview.name}
+                  onChange={(e) => setNewReview({ ...newReview, name: e.target.value })}
+                  placeholder="Reviewer name (e.g., Sarah K.)"
+                  className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/20 focus:border-[#308FAB]"
+                />
+                <textarea
+                  value={newReview.text}
+                  onChange={(e) => setNewReview({ ...newReview, text: e.target.value })}
+                  placeholder="Review text..."
+                  rows={2}
+                  className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/20 focus:border-[#308FAB] resize-none"
+                />
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-slate-600">Rating:</span>
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setNewReview({ ...newReview, rating: star })}
+                          className="focus:outline-none"
+                        >
+                          <svg className={`w-6 h-6 ${star <= newReview.rating ? "text-yellow-400" : "text-slate-200"}`} fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                          </svg>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <Button variant="secondary" onClick={addReview}>Add Review</Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Card>
+      )}
+
       <toast.ToastContainer />
     </div>
   );
