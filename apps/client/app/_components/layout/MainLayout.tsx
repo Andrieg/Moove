@@ -26,6 +26,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
     pathname?.startsWith("/register") ||
     pathname === "/coach/register" ||
     pathname === "/coach/login" ||
+    pathname === "/coach/onboarding" ||
     pathname === "/client/register" ||
     pathname === "/client/login";
 
