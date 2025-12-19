@@ -13,14 +13,16 @@ interface MainLayoutProps {
 export default function MainLayout({ children }: MainLayoutProps) {
   const pathname = usePathname();
   
-  // Pages that don't need any layout or auth wrapper
+  // Pages that don't need any layout (but may need auth wrapper)
   const hideLayout = pathname === "/login" || 
     pathname === "/auth" || 
     pathname === "/onboarding" || 
     pathname === "/registration" || 
-    pathname === "/register" ||
     pathname === "/success" ||
     pathname === "/signup";
+
+  // Register page needs auth provider but no layout
+  const isRegister = pathname === "/register" || pathname?.startsWith("/register");
 
   // Dashboard pages have their own layout
   const isDashboard = pathname?.startsWith("/dashboard");
