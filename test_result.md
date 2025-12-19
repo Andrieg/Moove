@@ -59,6 +59,15 @@
 - ✅ Members redirected to home with toast when accessing coach areas
 - ✅ Global toast notifications via useAppStore
 
+## Coach Account Creation Journey (Updated to Match Reference Design)
+- ✅ Step 1: Email input with "SEND ME A LOGIN LINK" button (black bg, white card)
+- ✅ Step 2: "Create account link sent!" confirmation with checkmark icon
+- ✅ Step 3: "Let's get to know you" - First Name, Last Name, Brand Name
+- ✅ Color Theme picker with 8 color options and checkmark selection
+- ✅ Dashboard redirect with "Welcome, {name}!" and personalized greeting
+- ✅ Updated sidebar navigation (Home, Profile, Members, Library, Live, Challenges, Add link, Support)
+- ✅ Get Started checklist for new coaches
+
 ## Pending
 - Stripe integration for actual payments
 - Content filtering by coach (show only coach's content to their members)
