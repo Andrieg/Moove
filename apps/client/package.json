@@ -9,11 +9,12 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@moove/api-client": "*",
+    "@moove/types": "*",
     "next": "16.0.10",
     "react": "19.2.1",
     "react-dom": "19.2.1",
-    "@moove/types": "*",
-    "@moove/api-client": "*"
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
