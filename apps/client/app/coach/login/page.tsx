@@ -61,9 +61,9 @@ function CoachLoginForm() {
   // Screen 1: Login Form
   if (step === "login") {
     return (
-      <div className="min-h-screen bg-black flex flex-col">
+      <div className="min-h-screen bg-white flex flex-col">
         <header className="p-6">
-          <Image src="/images/logo.svg" alt="Moove" width={100} height={32} className="invert" />
+          <Image src="/images/logo.svg" alt="Moove" width={100} height={32} className="" />
         </header>
 
         <main className="flex-1 flex items-center justify-center px-4">
@@ -122,7 +122,7 @@ function CoachLoginForm() {
 
         <footer className="py-6 text-center">
           <p className="text-xs text-gray-500 mb-2">Powered by</p>
-          <Image src="/images/logo.svg" alt="Moove" width={80} height={24} className="mx-auto invert opacity-50" />
+          <Image src="/images/logo.svg" alt="Moove" width={80} height={24} className="mx-auto opacity-50" />
           <div className="flex items-center justify-center gap-4 mt-3 text-xs text-gray-500">
             <Link href="#" className="hover:text-gray-400">Terms and Conditions</Link>
             <span>|</span>
@@ -135,9 +135,9 @@ function CoachLoginForm() {
 
   // Screen 2: Login Link Sent
   return (
-    <div className="min-h-screen bg-black flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       <header className="p-6">
-        <Image src="/images/logo.svg" alt="Moove" width={100} height={32} className="invert" />
+        <Image src="/images/logo.svg" alt="Moove" width={100} height={32} className="" />
       </header>
 
       <main className="flex-1 flex items-center justify-center px-4">
@@ -169,7 +169,7 @@ function CoachLoginForm() {
 
       <footer className="py-6 text-center">
         <p className="text-xs text-gray-500 mb-2">Powered by</p>
-        <Image src="/images/logo.svg" alt="Moove" width={80} height={24} className="mx-auto invert opacity-50" />
+        <Image src="/images/logo.svg" alt="Moove" width={80} height={24} className="mx-auto opacity-50" />
         <div className="flex items-center justify-center gap-4 mt-3 text-xs text-gray-500">
           <Link href="#" className="hover:text-gray-400">Terms and Conditions</Link>
           <span>|</span>
@@ -184,7 +184,7 @@ export default function CoachLoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="min-h-screen bg-white flex items-center justify-center">
           <div className="w-8 h-8 border-4 border-[#308FAB] border-t-transparent rounded-full animate-spin"></div>
         </div>
       }
