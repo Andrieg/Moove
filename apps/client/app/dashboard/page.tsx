@@ -37,6 +37,11 @@ export default function DashboardHome() {
 
   return (
     <div className="space-y-6">
+      {/* Get Started Section for New Coaches */}
+      {showGetStarted && (
+        <GetStarted />
+      )}
+
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat) => (
