@@ -57,9 +57,11 @@ export async function deleteVideo(id: string) {
 
 /**
  * Legacy API: GET /challenges
+ * @param brand - Optional brand/coach slug to filter content
  */
-export async function getChallenges() {
-  const response = await apiFetch<{ status: string; challenges: Challenge[] }>("/challenges");
+export async function getChallenges(brand?: string) {
+  const url = brand ? `/challenges?brand=${encodeURIComponent(brand)}` : "/challenges";
+  const response = await apiFetch<{ status: string; challenges: Challenge[] }>(url);
   return response.challenges || [];
 }
 
