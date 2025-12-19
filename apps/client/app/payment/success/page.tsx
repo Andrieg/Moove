@@ -19,8 +19,10 @@ function PaymentSuccessContent() {
     // Poll for payment status
     const checkStatus = async () => {
       try {
+        // Use API URL directly in dev, or through proxy in production
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3005";
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || ""}/legacy/billing/checkout/status/${sessionId}`
+          `${apiUrl}/billing/checkout/status/${sessionId}`
         );
         const data = await response.json();
 
