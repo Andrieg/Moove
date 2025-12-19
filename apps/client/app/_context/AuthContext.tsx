@@ -32,6 +32,7 @@ const PUBLIC_ROUTES = [
   "/register",
   "/success",
   "/coach",
+  "/client",
   "/signup",
   "/payment",
 ];
