@@ -47,6 +47,18 @@
 ## Pending
 - Stripe integration for actual payments
 - Content filtering by coach (show only coach's content to their members)
-- Landing page editor in dashboard
 - Member management in dashboard
+
+## Completed (New)
+
+### 5. Landing Page Editor (/dashboard/landing)
+- ✅ Full CRUD functionality via API
+- ✅ General settings (brand name, slug, theme color, about)
+- ✅ Hero section (title, description, image URL)
+- ✅ Content section ("What You Get" with title, description, image)
+- ✅ Pricing section (plan name, price, benefits list)
+- ✅ Reviews section (add/remove reviews with ratings)
+- ✅ API endpoints: GET/POST /landingpage/settings/:brandSlug
+- ✅ Changes persist in memory and reflect on public landing page
+- ✅ Toast notifications for save success/failure
 
