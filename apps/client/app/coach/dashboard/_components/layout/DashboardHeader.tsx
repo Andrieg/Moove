@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "../../../../_context/AuthContext";
 
@@ -19,6 +20,24 @@ const pageTitles: Record<string, string> = {
 export default function DashboardHeader() {
   const pathname = usePathname();
   const { user } = useAuth();
+  const [themeColor, setThemeColor] = useState("#308FAB");
+
+  useEffect(() => {
+    const savedColor = localStorage.getItem("moove_theme_color");
+    if (savedColor) {
+      setThemeColor(savedColor);
+    } else {
+      const savedUser = localStorage.getItem("moovefit-user");
+      if (savedUser) {
+        try {
+          const userObj = JSON.parse(savedUser);
+          if (userObj.themeColor) {
+            setThemeColor(userObj.themeColor);
+          }
+        } catch (e) {}
+      }
+    }
+  }, []);
   
   // Show personalized welcome on main dashboard
   const isHome = pathname === "/coach/dashboard";
@@ -42,7 +61,10 @@ export default function DashboardHeader() {
           </svg>
         </button>
         {/* Profile Avatar */}
-        <div className="w-8 h-8 bg-[#308FAB] rounded-full flex items-center justify-center text-white text-sm font-semibold">
+        <div 
+          className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold"
+          style={{ backgroundColor: themeColor }}
+        >
           {initials}
         </div>
       </div>
