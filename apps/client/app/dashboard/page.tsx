@@ -4,20 +4,26 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Card from "./_components/ui/Card";
 import Button from "./_components/ui/Button";
+import GetStarted from "./_components/GetStarted";
 import { getVideos, getChallenges } from "@moove/api-client";
+import { useAuth } from "../_context/AuthContext";
 import type { Video, Challenge } from "@moove/types";
 
 export default function DashboardHome() {
   const router = useRouter();
+  const { user } = useAuth();
   const [videos, setVideos] = useState<Video[]>([]);
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showGetStarted, setShowGetStarted] = useState(true);
 
   useEffect(() => {
     Promise.all([getVideos(), getChallenges()])
       .then(([videosData, challengesData]) => {
         setVideos(videosData);
         setChallenges(challengesData);
+        // Show "Get Started" if coach hasn't created any content yet
+        setShowGetStarted(videosData.length === 0 && challengesData.length === 0);
       })
       .finally(() => setLoading(false));
   }, []);
