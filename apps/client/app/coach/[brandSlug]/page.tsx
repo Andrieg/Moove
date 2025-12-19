@@ -50,8 +50,8 @@ async function getCoachData(brandSlug: string) {
   const defaultData = getDefaultData(brandSlug);
   
   try {
-    // Build API URL - use internal URL for server-side fetch
-    const apiBaseUrl = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:3000/legacy";
+    // Build API URL - use LEGACY_API_URL for server-side fetch (direct to Fastify)
+    const apiBaseUrl = process.env.LEGACY_API_URL || "http://127.0.0.1:3005";
     const url = `${apiBaseUrl}/landingpage/settings/${encodeURIComponent(brandSlug)}`;
     
     const response = await fetch(url, {
