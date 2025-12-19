@@ -26,8 +26,11 @@ export default function MainLayout({ children }: MainLayoutProps) {
   // Coach landing pages are public - no auth wrapper needed
   const isCoachLanding = pathname?.startsWith("/coach/");
 
+  // Payment pages are public
+  const isPayment = pathname?.startsWith("/payment/");
+
   // Public pages - no auth wrapper
-  if (hideLayout || isCoachLanding) {
+  if (hideLayout || isCoachLanding || isPayment) {
     return <>{children}</>;
   }
 
