@@ -29,11 +29,14 @@ export default function MainLayout({ children }: MainLayoutProps) {
     pathname === "/client/register" ||
     pathname === "/client/login";
 
-  // Dashboard pages have their own layout
-  const isDashboard = pathname?.startsWith("/dashboard");
+  // Dashboard pages have their own layout (now under /coach/dashboard)
+  const isDashboard = pathname?.startsWith("/coach/dashboard");
 
-  // Coach landing pages are public - no auth wrapper needed
-  const isCoachLanding = pathname?.startsWith("/coach/");
+  // Coach landing pages are public - but exclude dashboard, login, register
+  const isCoachLanding = pathname?.startsWith("/coach/") && 
+    !pathname?.startsWith("/coach/dashboard") &&
+    !pathname?.startsWith("/coach/login") &&
+    !pathname?.startsWith("/coach/register");
 
   // Payment pages are public
   const isPayment = pathname?.startsWith("/payment/");
