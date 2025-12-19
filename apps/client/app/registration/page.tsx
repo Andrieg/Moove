@@ -149,7 +149,7 @@ export default function RegistrationPage() {
         <footer className="mt-12 text-center">
           <Text color="white/60" size="0.8rem">
             Already have an account?{" "}
-            <Link href="/login" className="text-white underline">
+            <Link href="/coach/login" className="text-white underline">
               Log in
             </Link>
           </Text>

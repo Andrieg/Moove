@@ -52,7 +52,7 @@ export default function SuccessPage() {
         <footer className="mt-12">
           <Text color="white/60" size="0.8rem">
             Didn't receive the email?{" "}
-            <Link href="/login" className="text-white underline">
+            <Link href="/coach/login" className="text-white underline">
               Try again
             </Link>
           </Text>

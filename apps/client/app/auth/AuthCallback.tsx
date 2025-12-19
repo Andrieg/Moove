@@ -24,7 +24,7 @@ export default function AuthCallback() {
 
       if (!token) {
         setError("No authentication token found");
-        setTimeout(() => router.push("/login"), 2000);
+        setTimeout(() => router.push("/coach/login"), 2000);
         return;
       }
 
@@ -44,7 +44,7 @@ export default function AuthCallback() {
         console.error("Auth error:", err);
         setError("Authentication failed. Please try again.");
         localStorage.removeItem("moovefit-token");
-        setTimeout(() => router.push("/login"), 2000);
+        setTimeout(() => router.push("/coach/login"), 2000);
       }
     };
 

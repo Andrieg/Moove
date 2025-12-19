@@ -12,7 +12,7 @@ export default function Nav() {
 
   function logout() {
     clearToken();
-    window.location.href = "/login";
+    window.location.href = "/coach/login";
   }
 
   return (
@@ -38,7 +38,7 @@ export default function Nav() {
           </button>
         </>
       ) : (
-        <a href="/login">Login</a>
+        <a href="/coach/login">Login</a>
       )}
     </nav>
   );

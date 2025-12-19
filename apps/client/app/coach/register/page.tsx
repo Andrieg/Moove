@@ -166,7 +166,7 @@ function CoachRegisterForm() {
 
               <p className="text-center text-xs text-gray-400 mt-6">
                 Already have an account?{" "}
-                <Link href="/login" className="text-[#308FAB] font-medium">Sign in</Link>
+                <Link href="/coach/login" className="text-[#308FAB] font-medium">Sign in</Link>
               </p>
             </div>
           </div>
