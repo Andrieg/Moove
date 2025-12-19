@@ -25,7 +25,6 @@ const USER_KEY = "moovefit-user";
 // Public routes that don't require authentication
 const PUBLIC_ROUTES = [
   "/",
-  "/onboarding",
   "/login",
   "/auth",
   "/registration",
