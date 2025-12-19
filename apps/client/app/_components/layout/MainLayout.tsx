@@ -21,11 +21,13 @@ export default function MainLayout({ children }: MainLayoutProps) {
     pathname === "/success" ||
     pathname === "/signup";
 
-  // Registration pages need auth provider but no layout
-  const isRegister = pathname === "/register" || 
+  // Registration and login pages need auth provider but no layout
+  const isAuthPage = pathname === "/register" || 
     pathname?.startsWith("/register") ||
     pathname === "/coach/register" ||
-    pathname === "/client/register";
+    pathname === "/coach/login" ||
+    pathname === "/client/register" ||
+    pathname === "/client/login";
 
   // Dashboard pages have their own layout
   const isDashboard = pathname?.startsWith("/dashboard");
