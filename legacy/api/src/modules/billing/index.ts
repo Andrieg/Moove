@@ -1,261 +1,226 @@
 import Stripe from 'stripe';
-import DB from '../../services/dynamodb';
+import { v4 as uuidv4 } from 'uuid';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2020-08-27',
+// Initialize Stripe with test key
+const stripe = new Stripe(process.env.STRIPE_API_KEY || 'sk_test_emergent', {
+  apiVersion: '2024-12-18.acacia',
 });
 
+// In-memory store for payment transactions (in production, use database)
+const paymentTransactions: Map<string, any> = new Map();
 
-const getBilling  = async (request: any, reply: any) => {
-  const { user } = request;
+// Define membership packages (prices are in smallest currency unit - pence for GBP)
+const PACKAGES = {
+  monthly: {
+    id: 'monthly',
+    name: 'Monthly Membership',
+    price: 29.99,
+    currency: 'gbp',
+    interval: 'month',
+    trialDays: 7,
+  },
+};
 
-  if (!!user?.email) {
-    const result = await DB.USERS.get(user.email);
-    if (!!result?.Items?.length) {
-      const exists: any = result.Items[0];
+/**
+ * Create a Stripe Checkout Session for subscription
+ */
+const createCheckoutSession = async (request: any, reply: any) => {
+  const { packageId, originUrl, brand, email } = request.body;
 
-      if (!!exists.acc_stripe_id && typeof exists.acc_stripe_id === 'string') {
-        const billingResult = await DB.BILLING.get(exists.acc_stripe_id);
+  // ✅ DEV BYPASS: Return mock checkout URL
+  if (process.env.NODE_ENV !== "production") {
+    const sessionId = 'cs_test_' + uuidv4();
+    const mockUrl = `${originUrl}/payment/success?session_id=${sessionId}`;
+    
+    // Store transaction
+    paymentTransactions.set(sessionId, {
+      id: sessionId,
+      status: 'pending',
+      payment_status: 'unpaid',
+      amount: PACKAGES.monthly.price,
+      currency: PACKAGES.monthly.currency,
+      brand,
+      email,
+      created_at: new Date().toISOString(),
+    });
 
-        if (billingResult?.Items?.length) {
-          return reply.send({
-            status: 'SUCCESS',
-            data:  billingResult.Items[0],
-          });
-        }
-
-        return reply.send({
-          status: 'SUCCESS',
-          data: {}
-        });
-      }
-    }
-  
     return reply.send({
+      status: 'SUCCESS',
+      url: mockUrl,
+      sessionId,
+    });
+  }
+
+  try {
+    // Get package details (server-side only)
+    const pkg = PACKAGES[packageId as keyof typeof PACKAGES] || PACKAGES.monthly;
+
+    // Build URLs from frontend origin
+    const successUrl = `${originUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`;
+    const cancelUrl = `${originUrl}/coach/${brand}`;
+
+    // Create Stripe checkout session
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: pkg.currency,
+            product_data: {
+              name: pkg.name,
+            },
+            unit_amount: Math.round(pkg.price * 100), // Convert to pence
+            recurring: {
+              interval: pkg.interval as Stripe.Price.Recurring.Interval,
+            },
+          },
+          quantity: 1,
+        },
+      ],
+      subscription_data: {
+        trial_period_days: pkg.trialDays,
+        metadata: {
+          brand,
+          email,
+        },
+      },
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      customer_email: email,
+      metadata: {
+        brand,
+        email,
+        package_id: packageId,
+      },
+    });
+
+    // Store transaction record
+    paymentTransactions.set(session.id, {
+      id: session.id,
+      status: 'pending',
+      payment_status: 'unpaid',
+      amount: pkg.price,
+      currency: pkg.currency,
+      brand,
+      email,
+      created_at: new Date().toISOString(),
+    });
+
+    return reply.send({
+      status: 'SUCCESS',
+      url: session.url,
+      sessionId: session.id,
+    });
+  } catch (error: any) {
+    console.error('Stripe error:', error);
+    return reply.status(500).send({
       status: 'FAIL',
-      error: 'wrong'
+      error: error.message,
     });
   }
 };
 
-const createMembership = async (request: any, reply: any) => {
-  const { user } = request;
-  const { price, title, benefits } = request.body.parsed;
+/**
+ * Get checkout session status
+ */
+const getCheckoutStatus = async (request: any, reply: any) => {
+  const { sessionId } = request.params;
 
-
-  if (!!user?.email) {
-    const result = await DB.USERS.get(user.email);
-    if (!!result?.Items?.length) {
-      const exists: any = result.Items[0];
-
-      if (!!exists.acc_stripe_id && typeof exists.acc_stripe_id === 'string') {
-        const billingResult: any = await DB.BILLING.get(exists.acc_stripe_id);
-
-        if (!!billingResult?.Items?.length) {
-          const billing: any = billingResult.Items[0];
-
-          if (!billing?.membership) {
-            const stripe_price = await stripe.prices.create({
-              nickname: title,
-              product_data: {
-                name: title
-              },
-              unit_amount_decimal: `${parseFloat(price) * 100}`,
-              currency: exists.currency,
-              recurring: {
-                interval: 'month',
-                usage_type: 'licensed',
-              },
-            }, { stripeAccount: exists.acc_stripe_id });
-  
-            if (!!stripe_price) {
-              const membership = {
-                title,
-                benefits,
-                price: price,
-                price_id: stripe_price.id,
-                product_id: stripe_price.product,
-              }
-  
-              billing.membership = membership;
-              await DB.BILLING.update(billing, ['membership']);
-  
-              return reply.send({
-                status: 'SUCCESS',
-                data: billing
-              });
-            }
-          }
-        }
-      }
+  // ✅ DEV BYPASS: Return mock success status
+  if (process.env.NODE_ENV !== "production") {
+    const transaction = paymentTransactions.get(sessionId);
+    
+    // Simulate successful payment
+    if (transaction) {
+      transaction.status = 'complete';
+      transaction.payment_status = 'paid';
+      paymentTransactions.set(sessionId, transaction);
     }
-  }
 
-  return reply.send({
-    status: 'FAIL',
-    error: 'wrong',
-    code: 1001,
-  });
-}
-
-const updateMembership = async (request: any, reply: any) => {
-  const { user } = request;
-  const { price, title, benefits } = request.body.parsed;
-
-  if (!!user?.email) {
-    const result = await DB.USERS.get(user.email);
-    if (!!result?.Items?.length) {
-      const exists: any = result.Items[0];
-
-      if (!!exists.acc_stripe_id && typeof exists.acc_stripe_id === 'string') {
-        const billingResult: any = await DB.BILLING.get(exists.acc_stripe_id);
-
-        if (!!billingResult?.Items?.length) {
-          const billing: any = billingResult.Items[0];
-
-          if (!!billing?.membership) {
-            await stripe.prices.update(billing.membership.price_id, { active: false }, { stripeAccount: exists.acc_stripe_id}); 
-            const stripe_price = await stripe.prices.create({
-              nickname: title,
-              product: billing.membership.product_id,
-              unit_amount_decimal: `${parseFloat(price) * 100}`,
-              currency: exists.currency,
-              recurring: {
-                interval: 'month',
-                usage_type: 'licensed',
-              },
-            }, { stripeAccount: exists.acc_stripe_id });
-  
-            if (!!stripe_price) {
-              const membership = {
-                title,
-                benefits,
-                price: price,
-                price_id: stripe_price.id,
-                product_id: stripe_price.product,
-              }
-  
-              billing.membership = membership;
-              await DB.BILLING.update(billing, ['membership']);
-  
-              return reply.send({
-                status: 'SUCCESS',
-                data: billing
-              });
-            }
-          }
-        }
-      }
-    }
-  }
-
-  return reply.send({
-    status: 'FAIL',
-    error: 'wrong',
-    code: 1001,
-  });
-};
-
-const getMembershipPlan = async (request: any, reply: any) => {
-  const { user } = request;
-  const { email } = request.query;
-
-  if (!user) {
     return reply.send({
-      status: 'FAIL',
-      error: 'wrong',
-      code: 1001,
+      status: 'SUCCESS',
+      payment_status: 'paid',
+      checkout_status: 'complete',
+      amount: transaction?.amount || 29.99,
+      currency: transaction?.currency || 'gbp',
     });
   }
 
-  if (!!email) {
-    const result = await DB.USERS.get(email);
-    if (!!result?.Items?.length) {
-      const exists: any = result.Items[0];
-
-      if (!!exists.acc_stripe_id && typeof exists.acc_stripe_id === 'string') {
-        const billingResult = await DB.BILLING.get(exists.acc_stripe_id);
-
-        if (billingResult?.Items?.length) {
-          return reply.send({
-            status: 'SUCCESS',
-            data:  {
-              ...billingResult.Items[0].membership,
-              acc_stripe_id: exists.acc_stripe_id,
-              currency: exists?.currency,
-            }
-          });
-        }
-
-        return reply.send({
-          status: 'SUCCESS',
-          data: {}
-        });
-      }
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    
+    // Update stored transaction
+    const transaction = paymentTransactions.get(sessionId);
+    if (transaction) {
+      transaction.status = session.status;
+      transaction.payment_status = session.payment_status;
+      paymentTransactions.set(sessionId, transaction);
     }
-  
+
     return reply.send({
+      status: 'SUCCESS',
+      payment_status: session.payment_status,
+      checkout_status: session.status,
+      amount: session.amount_total ? session.amount_total / 100 : 0,
+      currency: session.currency,
+    });
+  } catch (error: any) {
+    return reply.status(500).send({
       status: 'FAIL',
-      error: 'wrong'
+      error: error.message,
     });
   }
 };
 
-const cancelMembership = async (request: any, reply: any) => {
-  const { user } = request;
+/**
+ * Handle Stripe webhook
+ */
+const handleWebhook = async (request: any, reply: any) => {
+  const sig = request.headers['stripe-signature'];
+  const body = request.body;
 
-  if (!!user?.email) {
-    const result = await DB.USERS.get(user.email);
-    if (!!result?.Items?.length) {
-      const exists: any = result.Items[0];
-
-      if (!!exists) {
-        const resultCoach = await DB.USERS.get(exists.coach_email);
-        if (!!resultCoach?.Items?.length) {
-          const existsCoach: any = resultCoach.Items[0];
-          const customer: any = await stripe.customers.retrieve(
-            exists.id,
-            { expand: ['subscriptions'] },
-            { stripeAccount: existsCoach.acc_stripe_id }
-          );
-
-
-          const subscription = customer.subscriptions.data.find(sub => sub.status === 'active')
-          console.log('s', subscription);
-          if (subscription) {
-            const result = await stripe.subscriptions.del(subscription.id, { stripeAccount: existsCoach.acc_stripe_id });
-            console.log('result', result);
-          }
-
-          const memberResult = await DB.MEMBERS.get(exists.coach_email, exists.email);
-          if (!!memberResult?.Items?.length) {
-            const member: any = memberResult.Items[0];
-            member.status = 'cancel';
-            await DB.USERS.update(member, ['status']);
-          }
-
-          return reply.send({
-            status: 'SUCCESS',
-            data: {
-              user: result
-            }
-          });
-        } 
-      }
-    }
+  // ✅ DEV BYPASS: Just acknowledge
+  if (process.env.NODE_ENV !== "production") {
+    return reply.send({ received: true });
   }
 
-  return reply.send({
-    status: 'FAIL',
-    error: 'wrong'
-  });
-};
+  try {
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    if (!webhookSecret) {
+      throw new Error('Webhook secret not configured');
+    }
 
+    const event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
+
+    switch (event.type) {
+      case 'checkout.session.completed':
+        const session = event.data.object as Stripe.Checkout.Session;
+        console.log('Payment successful:', session.id);
+        
+        // Update transaction
+        const transaction = paymentTransactions.get(session.id);
+        if (transaction) {
+          transaction.status = 'complete';
+          transaction.payment_status = 'paid';
+          paymentTransactions.set(session.id, transaction);
+        }
+        break;
+
+      case 'customer.subscription.deleted':
+        console.log('Subscription cancelled');
+        break;
+    }
+
+    return reply.send({ received: true });
+  } catch (error: any) {
+    console.error('Webhook error:', error);
+    return reply.status(400).send({ error: error.message });
+  }
+};
 
 export {
-  getBilling,
-  createMembership,
-  updateMembership,
-  getMembershipPlan,
-  cancelMembership,
+  createCheckoutSession,
+  getCheckoutStatus,
+  handleWebhook,
 };
