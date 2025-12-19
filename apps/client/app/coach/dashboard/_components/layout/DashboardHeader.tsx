@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useAuth } from "../../../_context/AuthContext";
+import { useAuth } from "../../../../_context/AuthContext";
 
 const pageTitles: Record<string, string> = {
   "/coach/dashboard": "Dashboard",

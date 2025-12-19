@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../_context/AuthContext";
+import { useAuth } from "../../_context/AuthContext";
 import DashboardSidebar from "./_components/layout/DashboardSidebar";
 import DashboardHeader from "./_components/layout/DashboardHeader";
 
