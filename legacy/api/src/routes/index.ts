@@ -569,6 +569,61 @@ const routes = fp(async (server, opts, next) => {
     preValidation: [server.authenticate],
     handler: (request, reply) => postFavourite(request, reply)
   });
+
+  // ============== BILLING / CHECKOUT ==============
+  
+  // Create checkout session for subscription
+  server.route({
+    url: '/billing/checkout',
+    logLevel: 'warn',
+    method: ['POST'],
+    handler: async (request: any, reply: any) => {
+      const { packageId, originUrl, brand, email } = request.body;
+      
+      // DEV BYPASS: Return mock checkout success URL
+      if (process.env.NODE_ENV !== "production") {
+        const sessionId = 'cs_test_' + Date.now();
+        const successUrl = `${originUrl}/payment/success?session_id=${sessionId}`;
+        
+        return reply.send({
+          status: 'SUCCESS',
+          url: successUrl,
+          sessionId,
+        });
+      }
+      
+      // In production, use real Stripe integration
+      return reply.send({
+        status: 'FAIL',
+        error: 'Stripe not configured',
+      });
+    }
+  });
+
+  // Get checkout session status
+  server.route({
+    url: '/billing/checkout/status/:sessionId',
+    logLevel: 'warn',
+    method: ['GET'],
+    handler: async (request: any, reply: any) => {
+      const { sessionId } = request.params;
+      
+      // DEV BYPASS: Return mock success
+      if (process.env.NODE_ENV !== "production") {
+        return reply.send({
+          status: 'SUCCESS',
+          payment_status: 'paid',
+          checkout_status: 'complete',
+          sessionId,
+        });
+      }
+      
+      return reply.send({
+        status: 'FAIL',
+        error: 'Stripe not configured',
+      });
+    }
+  });
 });
 
 export default routes;
