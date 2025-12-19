@@ -11,17 +11,19 @@ interface NavItem {
   href: string;
 }
 
+// Navigation items matching the reference design
 const navItems: NavItem[] = [
-  { id: "home", label: "Dashboard", icon: "home", href: "/dashboard" },
-  { id: "landing", label: "Landing Page", icon: "globe", href: "/dashboard/landing" },
-  { id: "videos", label: "Videos", icon: "play", href: "/dashboard/videos" },
-  { id: "challenges", label: "Challenges", icon: "fire", href: "/dashboard/challenges" },
-  { id: "live", label: "Live Classes", icon: "live", href: "/dashboard/live" },
+  { id: "home", label: "Home", icon: "home", href: "/dashboard" },
+  { id: "profile", label: "Profile", icon: "user", href: "/dashboard/profile" },
   { id: "members", label: "Members", icon: "users", href: "/dashboard/members" },
+  { id: "library", label: "Library", icon: "folder", href: "/dashboard/videos" },
+  { id: "live", label: "Live", icon: "wifi", href: "/dashboard/live" },
+  { id: "challenges", label: "Challenges", icon: "flag", href: "/dashboard/challenges" },
+  { id: "addlink", label: "Add link", icon: "link", href: "/dashboard/links" },
 ];
 
 const bottomNavItems: NavItem[] = [
-  { id: "settings", label: "Settings", icon: "settings", href: "/dashboard/settings" },
+  { id: "support", label: "Support", icon: "headset", href: "/dashboard/support" },
 ];
 
 export default function DashboardSidebar() {
