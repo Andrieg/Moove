@@ -51,6 +51,14 @@
 4. Click "Save Changes" - API call made, success toast shown ✓
 5. Visit /coach/{brand_slug} - Changes visible on public page ✓
 
+## Coach/Member Roles + Zustand Implementation
+- ✅ Global state management with Zustand (useAppStore)
+- ✅ Coach registration at /register?type=coach
+- ✅ Member registration at /register
+- ✅ Role-based route protection for /dashboard/*
+- ✅ Members redirected to home with toast when accessing coach areas
+- ✅ Global toast notifications via useAppStore
+
 ## Pending
 - Stripe integration for actual payments
 - Content filtering by coach (show only coach's content to their members)
