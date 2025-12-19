@@ -570,6 +570,129 @@ const routes = fp(async (server, opts, next) => {
     handler: (request, reply) => postFavourite(request, reply)
   });
 
+  // ============== LANDING PAGE SETTINGS (DEV MOCK) ==============
+  
+  // In-memory store for landing page settings (dev mode only)
+  const landingPageSettingsStore: Record<string, any> = {
+    // Default mock data for "annamartin"
+    annamartin: {
+      brand_name: "Anna Martin Fitness",
+      brand_slug: "annamartin",
+      theme_color: "#308FAB",
+      about: "I'm Anna Martin, a certified personal trainer with over 10 years of experience helping people transform their lives through fitness. My approach combines effective workout routines with sustainable nutrition guidance to help you achieve lasting results.",
+      hero_title: "Transform Your Body, Transform Your Life",
+      hero_description: "Join my exclusive fitness program and get access to personalized workouts, nutrition plans, and 24/7 support to help you reach your goals.",
+      hero_image: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800",
+      access_title: "What You'll Get Access To",
+      access_description: "Unlimited access to 100+ workout videos, weekly live classes, personalized meal plans, and a supportive community of like-minded individuals.",
+      access_image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800",
+      plan_title: "Monthly Membership",
+      plan_price: 29.99,
+      plan_benefits: [
+        "100+ workout videos",
+        "Weekly live classes",
+        "Personalized meal plans",
+        "Private community access",
+        "Monthly check-ins",
+        "7-day free trial",
+      ],
+      reviews: [
+        { name: "Sarah K.", text: "Anna's program completely changed my life! I've lost 20 pounds and feel stronger than ever.", rating: 5 },
+        { name: "Mike T.", text: "The workouts are challenging but doable. Great variety and Anna is so supportive!", rating: 5 },
+        { name: "Emma L.", text: "Best investment I've made in my health. The community is amazing!", rating: 5 },
+      ],
+      logo: "/images/logo.svg",
+      currency: "GBP",
+    }
+  };
+
+  // GET landing page settings by brand slug (public)
+  server.route({
+    url: '/landingpage/settings/:brandSlug',
+    logLevel: 'warn',
+    method: ['GET'],
+    handler: async (request: any, reply: any) => {
+      const { brandSlug } = request.params;
+      
+      // DEV BYPASS: Return from in-memory store or default
+      if (process.env.NODE_ENV !== "production") {
+        const settings = landingPageSettingsStore[brandSlug];
+        
+        if (settings) {
+          return reply.send({
+            status: 'SUCCESS',
+            settings,
+          });
+        }
+        
+        // Return default template for new brands
+        return reply.send({
+          status: 'SUCCESS',
+          settings: {
+            brand_name: "My Fitness",
+            brand_slug: brandSlug,
+            theme_color: "#308FAB",
+            about: "Welcome to my fitness program! I'm here to help you achieve your health and fitness goals.",
+            hero_title: "Transform Your Body, Transform Your Life",
+            hero_description: "Join my exclusive fitness program and get access to personalized workouts, nutrition plans, and 24/7 support.",
+            hero_image: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800",
+            access_title: "What You'll Get Access To",
+            access_description: "Unlimited access to workout videos, live classes, meal plans, and a supportive community.",
+            access_image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800",
+            plan_title: "Monthly Membership",
+            plan_price: 29.99,
+            plan_benefits: ["100+ workout videos", "Weekly live classes", "Personalized meal plans", "Private community access", "7-day free trial"],
+            reviews: [],
+            logo: "/images/logo.svg",
+            currency: "GBP",
+          },
+        });
+      }
+      
+      // In production, fetch from DB
+      return reply.send({
+        status: 'FAIL',
+        error: 'Not implemented in production',
+      });
+    }
+  });
+
+  // POST save landing page settings (authenticated)
+  server.route({
+    url: '/landingpage/settings',
+    logLevel: 'warn',
+    method: ['POST'],
+    handler: async (request: any, reply: any) => {
+      const { settings } = request.body;
+      
+      if (!settings || !settings.brand_slug) {
+        return reply.send({
+          status: 'FAIL',
+          error: 'Missing settings or brand_slug',
+        });
+      }
+      
+      // DEV BYPASS: Save to in-memory store
+      if (process.env.NODE_ENV !== "production") {
+        landingPageSettingsStore[settings.brand_slug] = {
+          ...settings,
+          updated_at: new Date().toISOString(),
+        };
+        
+        return reply.send({
+          status: 'SUCCESS',
+          settings: landingPageSettingsStore[settings.brand_slug],
+        });
+      }
+      
+      // In production, save to DB
+      return reply.send({
+        status: 'FAIL',
+        error: 'Not implemented in production',
+      });
+    }
+  });
+
   // ============== BILLING / CHECKOUT ==============
   
   // Create checkout session for subscription
