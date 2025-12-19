@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useAuth } from "../../_context/AuthContext";
+import { useAuth } from "../../../_context/AuthContext";
 
 interface SetupItem {
   title: string;

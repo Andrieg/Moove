@@ -6,7 +6,7 @@ import Card from "./_components/ui/Card";
 import Button from "./_components/ui/Button";
 import GetStarted from "./_components/GetStarted";
 import { getVideos, getChallenges } from "@moove/api-client";
-import { useAuth } from "../_context/AuthContext";
+import { useAuth } from "../../_context/AuthContext";
 import type { Video, Challenge } from "@moove/types";
 
 export default function DashboardHome() {
