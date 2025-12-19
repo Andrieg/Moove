@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 const tabs = [
   { id: "account", label: "Account", href: "/coach/dashboard/profile/account" },
   { id: "brand", label: "Brand", href: "/coach/dashboard/profile/brand" },
+  { id: "membership", label: "Membership", href: "/coach/dashboard/profile/membership" },
 ];
 
 export default function ProfileTabs() {
