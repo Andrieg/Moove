@@ -38,8 +38,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
   // Payment pages are public
   const isPayment = pathname?.startsWith("/payment/");
 
-  // Register page needs AuthProvider for useAuth hook but no layout
-  if (isRegister) {
+  // Auth pages (register/login) need AuthProvider for useAuth hook but no layout
+  if (isAuthPage) {
     return (
       <AuthProvider>
         {children}
