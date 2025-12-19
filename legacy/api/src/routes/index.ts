@@ -663,7 +663,9 @@ const routes = fp(async (server, opts, next) => {
     logLevel: 'warn',
     method: ['POST'],
     handler: async (request: any, reply: any) => {
-      const { settings } = request.body;
+      // Body parser wraps content in request.body.parsed
+      const body = request.body?.parsed || request.body;
+      const { settings } = body;
       
       if (!settings || !settings.brand_slug) {
         return reply.send({
