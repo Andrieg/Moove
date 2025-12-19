@@ -24,16 +24,20 @@ function SignupForm() {
     setError("");
 
     try {
-      // Store user data locally with coach association
-      localStorage.setItem("moovefit-token", "dev-token-member-" + Date.now());
-      localStorage.setItem("moovefit-user", JSON.stringify({
+      // Store user data locally with coach association and member role
+      const user = {
+        id: "member-" + Date.now(),
         email: formData.email,
         firstName: formData.firstName,
         lastName: formData.lastName,
-        role: "member",
+        role: "member" as const,
         coachSlug: coachSlug,
         brand: coachSlug,
-      }));
+        createdAt: new Date().toISOString(),
+      };
+      const token = "dev-token-member-" + Date.now();
+      localStorage.setItem("moovefit-token", token);
+      localStorage.setItem("moovefit-user", JSON.stringify(user));
 
       // Create checkout session and redirect to payment
       const originUrl = window.location.origin;
