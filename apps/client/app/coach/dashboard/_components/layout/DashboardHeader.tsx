@@ -4,16 +4,16 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "../../../_context/AuthContext";
 
 const pageTitles: Record<string, string> = {
-  "/dashboard": "Dashboard",
-  "/dashboard/videos": "Videos",
-  "/dashboard/videos/new": "Upload Video",
-  "/dashboard/challenges": "Challenges",
-  "/dashboard/challenges/new": "Create Challenge",
-  "/dashboard/live": "Live Classes",
-  "/dashboard/members": "Members",
-  "/dashboard/settings": "Settings",
-  "/dashboard/landing": "Landing Page",
-  "/dashboard/profile": "Profile",
+  "/coach/dashboard": "Dashboard",
+  "/coach/dashboard/videos": "Videos",
+  "/coach/dashboard/videos/new": "Upload Video",
+  "/coach/dashboard/challenges": "Challenges",
+  "/coach/dashboard/challenges/new": "Create Challenge",
+  "/coach/dashboard/live": "Live Classes",
+  "/coach/dashboard/members": "Members",
+  "/coach/dashboard/settings": "Settings",
+  "/coach/dashboard/landing": "Landing Page",
+  "/coach/dashboard/profile": "Profile",
 };
 
 export default function DashboardHeader() {
@@ -21,7 +21,7 @@ export default function DashboardHeader() {
   const { user } = useAuth();
   
   // Show personalized welcome on main dashboard
-  const isHome = pathname === "/dashboard";
+  const isHome = pathname === "/coach/dashboard";
   const title = isHome 
     ? `Welcome, ${user?.firstName || "Coach"}!`
     : (pageTitles[pathname || ""] || "Dashboard");
