@@ -97,7 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Not authenticated and trying to access protected route
     if (!isAuthenticated && !isPublicRoute) {
-      router.push("/login");
+      router.push("/coach/login");
       return;
     }
 
