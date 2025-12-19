@@ -82,48 +82,46 @@ const updateVideo = async (request: any, reply: any) => {
 
 const getVideos = async (request: any, reply: any) => {
   const email = request?.user?.email;
-
-  if (!email) {
-    return reply.send({
-      status: 'FAIL',
-      error: 'wrong'
-    });
-  }
+  const { brand } = request.query || {};
 
   // ✅ DEV BYPASS: Return mock videos without AWS/DynamoDB
   if (process.env.NODE_ENV !== "production") {
+    // Mock videos with brand association
     const mockVideos = [
       {
-        id: uuidv4(),
+        id: "video-1",
         title: "Full Body HIIT Workout",
         durationSeconds: 1800,
         published: true,
-        coachId: email,
-        cover: { url: "" },
+        brand: "annamartin",
+        coachId: "coach@annamartin.com",
+        cover: { url: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400" },
         description: "High-intensity interval training for full body conditioning",
         target: "Full Body",
         goal: "Fat Loss",
         type: "HIIT",
       },
       {
-        id: uuidv4(),
-        title: "Yoga Flow",
+        id: "video-2",
+        title: "Yoga Flow for Beginners",
         durationSeconds: 2400,
         published: true,
-        coachId: email,
-        cover: { url: "" },
+        brand: "annamartin",
+        coachId: "coach@annamartin.com",
+        cover: { url: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400" },
         description: "Relaxing yoga flow to improve flexibility and mindfulness",
         target: "Full Body",
         goal: "Flexibility",
         type: "Yoga",
       },
       {
-        id: uuidv4(),
-        title: "Strength Training",
+        id: "video-3",
+        title: "Upper Body Strength Training",
         durationSeconds: 2700,
         published: true,
-        coachId: email,
-        cover: { url: "" },
+        brand: "annamartin",
+        coachId: "coach@annamartin.com",
+        cover: { url: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400" },
         description: "Build muscle with compound movements",
         target: "Upper Body",
         goal: "Muscle Gain",
@@ -131,9 +129,21 @@ const getVideos = async (request: any, reply: any) => {
       },
     ];
 
+    // Filter by brand if provided
+    const filteredVideos = brand 
+      ? mockVideos.filter(v => v.brand === brand)
+      : mockVideos;
+
     return reply.send({
       status: 'SUCCESS',
-      videos: mockVideos
+      videos: filteredVideos
+    });
+  }
+
+  if (!email) {
+    return reply.send({
+      status: 'FAIL',
+      error: 'wrong'
     });
   }
 
