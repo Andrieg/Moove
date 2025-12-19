@@ -35,14 +35,34 @@ export default function DashboardSidebar() {
     return pathname?.startsWith(href);
   };
 
+  // Get theme color for active state
+  const [themeColor, setThemeColor] = useState("#308FAB");
+  useEffect(() => {
+    const savedColor = localStorage.getItem("moove_theme_color");
+    if (savedColor) {
+      setThemeColor(savedColor);
+    } else {
+      const savedUser = localStorage.getItem("moovefit-user");
+      if (savedUser) {
+        try {
+          const user = JSON.parse(savedUser);
+          if (user.themeColor) {
+            setThemeColor(user.themeColor);
+          }
+        } catch (e) {}
+      }
+    }
+  }, []);
+
   const NavButton = ({ item }: { item: NavItem }) => (
     <button
       onClick={() => router.push(item.href)}
       className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
         isActive(item.href)
-          ? "bg-[#308FAB] text-white"
+          ? "text-white"
           : "text-slate-400 hover:bg-slate-800 hover:text-white"
       }`}
+      style={isActive(item.href) ? { backgroundColor: themeColor } : undefined}
     >
       <span className="w-5 h-5 flex items-center justify-center">
         {item.icon === "home" && <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>}
