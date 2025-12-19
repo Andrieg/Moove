@@ -48,8 +48,13 @@ export default function GlobalToast() {
           {toastIcons[toast.type]}
           <span className="font-medium text-sm flex-1">{toast.message}</span>
           <button
-            onClick={() => removeToast(toast.id)}
-            className="hover:opacity-70 transition"
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              removeToast(toast.id);
+            }}
+            className="hover:opacity-70 transition p-1"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
