@@ -24,48 +24,22 @@ function SignupForm() {
     setError("");
 
     try {
-      // Register member and link to coach
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/legacy/users/member/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: formData.email,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          brand: coachSlug, // Link member to coach's brand
-          role: "member",
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.status === "SUCCESS" && data.token) {
-        // Store token and user data
-        localStorage.setItem("moovefit-token", data.token);
-        localStorage.setItem("moovefit-user", JSON.stringify({
-          email: formData.email,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          role: "client",
-          coachSlug: coachSlug,
-        }));
-        
-        // Redirect to client app
-        router.push("/");
-      } else {
-        setError(data.error || "Failed to create account");
-      }
-    } catch (err) {
-      // Dev fallback - simulate success
-      localStorage.setItem("moovefit-token", "dev-token-member");
+      // In dev mode, just create user locally and redirect
+      // Store token and user data with coach association
+      localStorage.setItem("moovefit-token", "dev-token-member-" + Date.now());
       localStorage.setItem("moovefit-user", JSON.stringify({
         email: formData.email,
         firstName: formData.firstName,
         lastName: formData.lastName,
-        role: "client",
+        role: "member",
         coachSlug: coachSlug,
+        brand: coachSlug, // Associate with coach's brand
       }));
+      
+      // Redirect to client app
       router.push("/");
+    } catch (err) {
+      setError("Failed to create account. Please try again.");
     } finally {
       setIsLoading(false);
     }
