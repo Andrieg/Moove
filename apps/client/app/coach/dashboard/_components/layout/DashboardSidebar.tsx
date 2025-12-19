@@ -31,7 +31,7 @@ export default function DashboardSidebar() {
   const router = useRouter();
 
   const isActive = (href: string) => {
-    if (href === "/dashboard") return pathname === "/dashboard";
+    if (href === "/coach/dashboard") return pathname === "/coach/dashboard";
     return pathname?.startsWith(href);
   };
 
