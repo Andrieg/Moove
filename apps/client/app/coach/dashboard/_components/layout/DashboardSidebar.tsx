@@ -14,16 +14,16 @@ interface NavItem {
 // Navigation items matching the reference design
 const navItems: NavItem[] = [
   { id: "home", label: "Home", icon: "home", href: "/coach/dashboard" },
-  { id: "profile", label: "Profile", icon: "user", href: "/dashboard/profile" },
-  { id: "members", label: "Members", icon: "users", href: "/dashboard/members" },
-  { id: "library", label: "Library", icon: "folder", href: "/dashboard/videos" },
-  { id: "live", label: "Live", icon: "wifi", href: "/dashboard/live" },
-  { id: "challenges", label: "Challenges", icon: "flag", href: "/dashboard/challenges" },
-  { id: "addlink", label: "Add link", icon: "link", href: "/dashboard/links" },
+  { id: "profile", label: "Profile", icon: "user", href: "/coach/dashboard/profile" },
+  { id: "members", label: "Members", icon: "users", href: "/coach/dashboard/members" },
+  { id: "library", label: "Library", icon: "folder", href: "/coach/dashboard/videos" },
+  { id: "live", label: "Live", icon: "wifi", href: "/coach/dashboard/live" },
+  { id: "challenges", label: "Challenges", icon: "flag", href: "/coach/dashboard/challenges" },
+  { id: "addlink", label: "Add link", icon: "link", href: "/coach/dashboard/links" },
 ];
 
 const bottomNavItems: NavItem[] = [
-  { id: "support", label: "Support", icon: "headset", href: "/dashboard/support" },
+  { id: "support", label: "Support", icon: "headset", href: "/coach/dashboard/support" },
 ];
 
 export default function DashboardSidebar() {
