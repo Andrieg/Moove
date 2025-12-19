@@ -36,7 +36,7 @@ const PUBLIC_ROUTES = [
 ];
 
 // Routes that require coach role
-const COACH_ROUTES = ["/dashboard"];
+const COACH_ROUTES = ["/coach/dashboard"];
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
