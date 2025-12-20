@@ -17,8 +17,23 @@ export async function getVideos(brand?: string) {
  * Legacy API: GET /videos/:id
  */
 export async function getVideoById(id: string) {
-  const response = await apiFetch<{ status: string; video: Video }>(`/videos/${id}`);
-  return response.video;
+  try {
+    const response = await apiFetch<{ status: string; video: Video }>(`/videos/${id}`);
+    return response.video;
+  } catch (err) {
+    console.warn("API unavailable for getVideoById, using localStorage fallback");
+    // Fallback: get from localStorage cache
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("moove_videos_cache");
+      if (stored) {
+        try {
+          const videos = JSON.parse(stored) as Video[];
+          return videos.find(v => v.id === id) || null;
+        } catch {}
+      }
+    }
+    return null;
+  }
 }
 
 /**
