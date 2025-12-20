@@ -2,116 +2,127 @@
 The user's initial goal was to rebuild a legacy React application into a modern Next.js application within a monorepo. This evolved based on a detailed Product Requirements Document (PRD) and user feedback.
 
 The final, clarified requirement is to build a full end-to-end platform, Moove, where:
-1.  **Coaches** can sign up, access a dashboard to manage their public landing page, and manage their content (videos, challenges).
-2.  **Members** can visit a coach's public landing page, sign up for a subscription via Stripe, and access a client application that shows only the content from their specific coach.
+1.  **Coaches** can sign up, log in, manage their public landing page, set up their profile (account and brand), define membership offerings, and manage their content.
+2.  **Members** can visit a coach's public landing page, sign up for a subscription via Stripe (currently mocked), and access a client application that shows only the content from their specific coach.
 
 The project involves integrating three distinct legacy repositories (, , ) into a single, cohesive Next.js application running on a Fastify API backend.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A single Next.js monorepo application () that serves all user roles (public visitors, authenticated members, and coaches). The original separate coach dashboard application has been successfully merged into the main client app under the  route to ensure compatibility with the preview environment.
+A single Next.js monorepo application () serves all user roles. The backend is a Fastify API with mocked data.
 
-The following key user journeys are implemented and functional with mock data:
--   **Coach Landing Page**: A public-facing, customizable marketing page is available at .
--   **Member Signup & Payment**: A complete member acquisition flow is in place. Users can sign up from the coach's landing page, go through a mock Stripe checkout, and land on a payment success page.
--   **Authenticated Client App**: After signup, members are directed to the main client app, which correctly filters content to display only items associated with their subscribed coach.
--   **Coach Dashboard**: A functional dashboard exists at , allowing coaches to perform CRUD operations on videos and challenges. A new UI for a Landing Page Editor has been created but is not yet connected to the backend.
+Key implemented features:
+-   **Role-Based Auth & Routes**: Separate registration and login flows for coaches (, ) and clients (, ). The system correctly enforces role-based access to the coach dashboard.
+-   **Coach Onboarding**: A multi-step UI flow for new coaches at  to set up their profile (name, brand) and select a dynamic theme color.
+-   **Dynamic Theming**: The coach's selected theme color is applied across their entire dashboard experience, including buttons, active states, and avatars.
+-   **Coach Dashboard**: Located at , it includes a landing page editor, and a profile section with Account, Brand, and Membership tabs.
+-   **Landing Page Editor**: A fully functional editor at  that allows coaches to customize their public page () with data saved via a mock API.
+-   **Coach Profile**: A complete profile management section at  where coaches can edit their personal Account details and Brand settings (name, logo, currency, theme). Data is persisted to localStorage.
+-   **Global State**: Zustand has been integrated for global state management, primarily for authentication and user data.
 
 **Last working item**:
--   **Last item agent was working**: Building the UI for the **Landing Page Editor** within the coach dashboard (). This feature allows coaches to customize their public-facing landing page.
+-   **Last item agent was working**: Implementing the **Coach Dashboard Membership Page** as per user specifications. The agent has successfully built the page route (), the components for the empty state (), the membership card (), and the Add Membership modal ().
 -   **Status**: IN PROGRESS
--   **Agent Testing Done**: Y (Verified the UI via screenshot).
--   **Which testing method agent to use?**: Frontend testing agent to validate the editor's full functionality after the backend is connected.
+-   **Agent Testing Done**: Y (Agent successfully verified the empty state UI via screenshot).
+-   **Which testing method agent to use?**: Frontend testing agent to test the full membership creation flow: opening the modal, form validation, submitting the form, and verifying the new membership card appears on the page.
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
-There are no blocking issues at this time. The previous React hydration error has been resolved.
+-   **Issue 1: Bottom Navigation Visibility (P2)**
+    -   **Description**: A low-priority UI issue where some bottom navigation buttons have visibility problems in automated tests. This was deferred from a previous session.
+    -   **Status**: NOT STARTED
 
 **In progress Task List**:
--   **Task 1: Complete Landing Page Editor Backend Integration (P0)**
-    -   **Where to resume**: The UI at  currently saves settings to . The next steps are to:
-        1.  Create  and  endpoints in the legacy API () to persist landing page settings.
-        2.  Update the shared  to include functions for these new endpoints.
-        3.  Refactor the landing page editor to use the API for fetching and saving data instead of .
-        4.  Update the public landing page () to dynamically load its content from the new API endpoints.
-    -   **What will be achieved with this?**: Coaches will be able to save and publish changes to their public landing page directly from the dashboard.
+-   **Task 1: Complete Membership Page Implementation (P0)**
+    -   **Where to resume**: The agent has successfully created the UI components and verified the empty state. The next step is to test the functionality of the + ADD MEMBERSHIP button, which should open the , and then test the form submission within the modal to create a new membership and display it as a .
+    -   **What will be achieved with this?**: Coaches will be able to create and view their membership offerings from the dashboard, completing a core feature requirement.
     -   **Status**: IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?**: both
-    -   **Blocked on something**: None
+    -   **Should Test frontend/backend/both after fix?**: frontend
+    -   **Blocked on something**: None.
 
 **Upcoming and Future Tasks**
 
 Upcoming Tasks:
--   P1: **Refine Content Management to Match PRD**: Refactor the dashboard's content management. Instead of separate Videos and Challenges CRUD, implement a unified Offering (title, price) and Content (orderable list of video URLs) model as specified in the PRD.
--   P2: **Harden Stripe Integration**: Implement server-side verification of the Stripe session on the payment success page and add backend webhooks (, etc.) to reliably manage user subscription status.
+-   P1: **Harden Stripe Integration**: Implement server-side verification of the Stripe session on the payment success page and add backend webhooks (, etc.) to reliably manage user subscription status.
 
 Future Tasks:
--   **Implement Coach/Client Roles**: Update the authentication flow to formally recognize coach vs. client user roles to properly secure the dashboard.
--   **Global State Management**: Introduce a global state manager (e.g., Zustand) for cleaner session and user data handling across the app.
--   **Comprehensive E2E Testing**: Add end-to-end tests for the complete coach and member journeys.
+-   **Global State Management Refinements**: Further refactor components to leverage the new Zustand store for cleaner data flow.
+-   **Comprehensive E2E Testing**: Add end-to-end tests for the complete coach and member journeys now that the core flows are established.
 
 **Completed work in this session**
--   **Application Merger**: Successfully merged the separate coach dashboard app into the main client app, creating a unified Next.js application at  that handles all routes and roles.
--   **Coach Landing Page**: Built a dynamic, public-facing landing page for coaches at , based on the legacy  as a reference.
--   **End-to-End Member Journey**: Implemented the full member lifecycle: discovering a coach's page, signing up, completing a mock payment with Stripe, and accessing the client app with correctly filtered content.
--   **Content Filtering**: The client application's main page now correctly fetches and displays only the content associated with the logged-in member's coach.
--   **Stripe Integration (v1)**: Added a basic Stripe checkout flow, including API endpoints for session creation and status polling, and a payment success UI.
--   **Landing Page Editor UI**: Created the complete user interface for a landing page editor within the coach dashboard, including tabs for general settings, hero section, and pricing.
--   **Hydration Error Fix**: Resolved a critical React hydration error caused by server-client mismatch in URL generation.
+-   **Landing Page Editor Backend Integration**: Connected the UI to legacy API mock endpoints, enabling coaches to save and publish changes.
+-   **Role-Based Access Control & State Management**: Implemented coach vs member roles using Zustand for robust state management and route protection.
+-   **New Auth & Onboarding Flows**: Created a multi-step, visually distinct registration and login experience for coaches (, , ) and clients (, ).
+-   **Route Restructuring**: Migrated all coach-specific pages under the  route group (e.g., ) and removed obsolete routes like  and .
+-   **Dynamic Coach Theming**: Implemented a system where coaches select a theme color during onboarding, which is then dynamically applied across their dashboard UI.
+-   **Coach Profile Implementation**: Built the  section with Account and Brand tabs, matching user-provided designs and using localStorage for data persistence.
+-   **Membership Page Scaffolding**: Created the necessary routes, pages, and UI components for the new Membership management feature.
 
 **Earlier issues found/mentioned but not fixed**
 -   **Bottom Navigation Visibility**: A low-priority UI issue where some bottom navigation buttons have visibility problems in automated tests. This has been deferred.
 
 **Known issue recurrence from previous fork**
--   **Legacy API Mock Bypasses**: The recurring need to add development-mode bypasses for new endpoints in the legacy Fastify API () remains. This is the established pattern for developing without live AWS credentials.
--   **Recurrence count**: High (occurred multiple times this session).
--   **Status**: IN PROGRESS (part of the development workflow).
+-   **Legacy API Mock Bypasses**: The established pattern of creating mock data handlers in the legacy Fastify API () for new features remains the standard development workflow. This is not a bug but a required step for development without live credentials.
+-   **Recurrence count**: High.
+-   **Status**: IN PROGRESS (as part of the development workflow).
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Monorepo**: A single Turborepo managing all code.
--   **Frontend**: A unified Next.js (App Router) application serving all roles, styled with Tailwind CSS.
--   **Backend**: A legacy Fastify API providing data, authentication, and payment services, modified with mock data bypasses for development.
--   **Authentication**: A JWT-based magic link flow managed by a React Context ().
--   **Payments**: Integration with Stripe for subscription checkout using test keys.
+-   **Monorepo**: Turborepo manages the Next.js frontend and legacy Fastify backend.
+-   **Frontend**: A unified Next.js (App Router) application.
+-   **Styling**: Tailwind CSS with a dynamic theming system based on user preference.
+-   **State Management**: Zustand for global state (auth, user, theme).
+-   **Backend**: A legacy Fastify API modified with mock data bypasses for development.
+-   **Authentication**: JWT-based magic link flow managed by  and Zustand.
 
 **key DB schema**
-No direct database is used. All data is mocked within the legacy API handlers, following the conceptual data models defined in the PRD: , , , .
+All data is mocked in the API or stored in  for development.
+-   : { id, name, email, role: 'coach' | 'member', brandName, themeColor }
+-   : { brand_name, hero, pricing, reviews, etc. }
+-   : { id, title, description, priceMonthly, currency, benefits }
 
 **changes in tech stack**
--   The architecture was consolidated from two Next.js apps into one.
--   The  npm package was added to the legacy API for payment processing.
+-   Added  for global state management.
 
 **All files of reference**
--   : The new Landing Page Editor UI.
--   : The public coach landing page.
--   : The member signup page.
--   : Key layout file that conditionally renders UI based on the route (public, client, or dashboard).
--   : The new module for Stripe integration.
--   : Defines all backend endpoints.
+-   : The main page for the current task.
+-   : The modal for creating a new membership.
+-   : New coach profile setup page.
+-   : Core auth logic, integrated with Zustand.
+-   : Manages dynamic UI theming.
+-   : The central Zustand store.
+-   : New multi-step coach registration flow.
+-   : New coach login page.
+-   : The main dashboard entry point.
+-   : Main layout for the coach dashboard.
+-   : Defines all backend endpoints and mock handlers.
+-   : Updated  type with .
+-   : New  type.
 
 **Areas that need refactoring**:
--   **API URL Standardization**: API calls are a mix of relative paths and hardcoded  URLs. This should be standardized to use a single environment variable for the API base URL.
--   **PRD Alignment**: The dashboard's content management (Videos, Challenges) should be refactored to align with the PRD's simpler Offering and Content (video URLs) model.
+-   **API URL Standardization**: API calls are a mix of relative paths and hardcoded  URLs. This should be standardized to use a single environment variable () for all server-side fetches.
 
 **key api endpoints**
--   : Registers a new member under a coach's brand.
--   : Fetches filtered content for a specific coach.
--   : Initiates a Stripe payment flow.
--   : Polls for the result of a Stripe payment.
+-   : Fetches landing page settings.
+-   : Saves landing page settings.
+-   The user registration/login endpoints are handled by the legacy API's  routes. No new API endpoints were created for profile/membership; they use  as a fallback.
 
 **Critical Info for New Agent**
--   The entire application (public pages, client app, coach dashboard) now runs as a **single Next.js app** inside . The  directory is obsolete.
--   The end-to-end member journey is fully implemented with mock data: Coach Landing Page → Member Signup → Stripe Checkout → Client App with filtered content.
--   Your immediate task is to connect the new **Landing Page Editor UI** to the backend so that coaches can save their customizations.
+-   Your immediate task is to complete the **Membership page implementation**. You need to test and ensure the Add Membership modal works correctly for creating and displaying a membership.
+-   All coach-related functionality is now organized under the  route. The dashboard is at .
+-   Authentication state is managed globally by Zustand () but interacted with via the  hook from .
+-   The UI theme for a logged-in coach is dynamic. It is set during onboarding and stored in .
+-   For new features like Profile and Membership, the current pattern is to implement the full UI and use  as a data persistence fallback to ensure the feature is demonstrable.
 
 **documents and test_reports created in this job**
 -   
 -   
 -   
+-   
+-    (Continuously updated)
 
 **Last 10 User Messages and any pending HUMAN messages**
 1.  
@@ -126,28 +137,33 @@ No direct database is used. All data is mocked within the legacy API handlers, f
 10. 
 
 **Project Health Check:**
--   **Broken**: Nothing is broken. The core end-to-end flow is fully functional.
--   **Mocked**: The entire backend is mocked. All data is hardcoded in the API, and Stripe operates in test mode.
+-   **Broken**: Nothing is critically broken.
+-   **Mocked**: The entire backend data layer is mocked within the API. Stripe is in test mode. The new Profile and Membership features use  for data persistence as a development fallback.
 
 **3rd Party Integrations**
--   **Stripe**: Used for subscription payments. The integration uses the test key available in the system environment.
+-   **Stripe**: Used for subscription payments (test mode).
 -   **AWS DynamoDB**: The production database is fully bypassed in development using mock data handlers in the API.
 
 **Testing status**
--   **Testing agent used after significant changes**: YES. The testing agent successfully validated the merged application and dashboard functionality with a 90% success rate.
+-   **Testing agent used after significant changes**: YES. The testing agent was used successfully after implementing roles, the new onboarding flow, and the profile pages, reporting 95-100% success rates.
 -   **Troubleshoot agent used after agent stuck in loop**: NO.
--   **Test files created**: Test reports are in .  has been updated.
+-   **Test files created**: 
 -   **Known regressions**: None.
 
 **Credentials to test flow:**
--   **Member Signup Flow**:
+-   **Coach Signup & Onboarding Flow**:
     1.  Navigate to .
-    2.  Click any Join or Start Free Trial button to go to the signup page.
-    3.  Complete the form to proceed through the mock Stripe checkout and access the client app.
--   **Coach Dashboard Access**:
+    2.  Enter an email and submit to simulate the magic link flow.
+    3.  You will be redirected to .
+    4.  Fill out the profile details, choose a theme color, and save.
+    5.  You will land on the dashboard at .
+-   **Coach Login Flow**:
     1.  Navigate to .
-    2.  Enter any email and click SEND ME A LOGIN LINK to auto-login.
-    3.  Once on the client app's home page, click the Coach button in the top-right header.
+    2.  Enter any email to simulate a magic link login.
+    3.  You will be logged in and redirected to the dashboard.
+-   **Client Signup Flow**:
+    1.  Navigate to .
+    2.  Complete the form to register as a member. You will be redirected to the home page ().
 
 **What agent forgot to execute**
--   The agent built the UI for the landing page editor but did not implement the corresponding backend endpoints to make it functional. The data is currently only saved to . This is captured as the highest-priority In progress Task.</analysis>
+-   The agent has been diligent in following user requests. The task Refine Content Management to Match PRD was explicitly canceled by the user and therefore not executed. No other tasks were forgotten.</analysis>
