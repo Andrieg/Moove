@@ -3,14 +3,84 @@ import { apiFetch } from "./http";
 
 // ============== VIDEOS ==============
 
+const VIDEOS_CACHE_KEY = "moove_videos_cache";
+
+// Generate mock video data for dev fallback
+function generateMockVideos(): Video[] {
+  return [
+    {
+      id: "video-1",
+      title: "Full Body HIIT Workout",
+      durationSeconds: 1800,
+      thumbnailUrl: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400",
+      published: true,
+      createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      description: "High-intensity interval training targeting all major muscle groups. Great for burning calories and building endurance.",
+      target: "full-body",
+      category: "cardio",
+      fitnessGoal: "lose-weight",
+      featured: false,
+    } as Video,
+    {
+      id: "video-2",
+      title: "Core Strength Basics",
+      durationSeconds: 1200,
+      thumbnailUrl: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400",
+      published: true,
+      createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+      description: "Build a strong core foundation with these beginner-friendly exercises.",
+      target: "core",
+      category: "strength",
+      fitnessGoal: "build-muscle",
+      featured: true,
+    } as Video,
+    {
+      id: "video-3",
+      title: "Upper Body Sculpt",
+      durationSeconds: 2700,
+      thumbnailUrl: "https://images.unsplash.com/photo-1581009146145-b5ef050c149a?w=400",
+      published: false,
+      createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      description: "Tone and strengthen your arms, shoulders, chest and back.",
+      target: "upper-body",
+      category: "strength",
+      fitnessGoal: "stay-toned",
+      featured: false,
+    } as Video,
+  ];
+}
+
+function getStoredVideos(): Video[] {
+  if (typeof window === "undefined") return [];
+  const stored = localStorage.getItem(VIDEOS_CACHE_KEY);
+  if (stored) {
+    try {
+      return JSON.parse(stored);
+    } catch {}
+  }
+  // Initialize with mock data
+  const mockVideos = generateMockVideos();
+  localStorage.setItem(VIDEOS_CACHE_KEY, JSON.stringify(mockVideos));
+  return mockVideos;
+}
+
 /**
  * Legacy API: GET /videos
  * @param brand - Optional brand/coach slug to filter content
  */
 export async function getVideos(brand?: string) {
-  const url = brand ? `/videos?brand=${encodeURIComponent(brand)}` : "/videos";
-  const response = await apiFetch<{ status: string; videos: Video[] }>(url);
-  return response.videos || [];
+  try {
+    const url = brand ? `/videos?brand=${encodeURIComponent(brand)}` : "/videos";
+    const response = await apiFetch<{ status: string; videos: Video[] }>(url);
+    // Cache the results
+    if (typeof window !== "undefined" && response.videos) {
+      localStorage.setItem(VIDEOS_CACHE_KEY, JSON.stringify(response.videos));
+    }
+    return response.videos || [];
+  } catch (err) {
+    console.warn("API unavailable for getVideos, using localStorage fallback");
+    return getStoredVideos();
+  }
 }
 
 /**
