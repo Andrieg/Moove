@@ -7,6 +7,7 @@ const tabs = [
   { id: "account", label: "Account", href: "/coach/dashboard/profile/account" },
   { id: "brand", label: "Brand", href: "/coach/dashboard/profile/brand" },
   { id: "membership", label: "Membership", href: "/coach/dashboard/profile/membership" },
+  { id: "landing-page", label: "Landing Page", href: "/coach/dashboard/profile/landing-page" },
 ];
 
 export default function ProfileTabs() {
