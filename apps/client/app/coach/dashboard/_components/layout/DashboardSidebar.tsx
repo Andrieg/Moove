@@ -10,31 +10,17 @@ interface NavItem {
   label: string;
   icon: string;
   href: string;
-  children?: { id: string; label: string; href: string; icon?: string }[];
 }
 
 // Navigation items matching the reference design
 const navItems: NavItem[] = [
   { id: "home", label: "Home", icon: "home", href: "/coach/dashboard" },
-  { 
-    id: "profile", 
-    label: "Profile", 
-    icon: "user", 
-    href: "/coach/dashboard/profile",
-    children: [
-      { id: "settings", label: "Settings", href: "/coach/dashboard/profile/account", icon: "settings" },
-      { id: "membership", label: "Membership", href: "/coach/dashboard/profile/membership", icon: "membership" },
-      { id: "payment", label: "Payment", href: "/coach/dashboard/profile/payment", icon: "payment" },
-      { id: "subscription", label: "Subscription", href: "/coach/dashboard/profile/subscription", icon: "subscription" },
-      { id: "landing-page", label: "Landing Page", href: "/coach/dashboard/landing-page", icon: "landing" },
-      { id: "reviews", label: "Reviews", href: "/coach/dashboard/profile/reviews", icon: "reviews" },
-    ],
-  },
+  { id: "profile", label: "Profile", icon: "user", href: "/coach/dashboard/profile" },
   { id: "members", label: "Members", icon: "users", href: "/coach/dashboard/members" },
   { id: "library", label: "Library", icon: "folder", href: "/coach/dashboard/videos" },
   { id: "live", label: "Live", icon: "wifi", href: "/coach/dashboard/live" },
   { id: "challenges", label: "Challenges", icon: "flag", href: "/coach/dashboard/challenges" },
-  { id: "addlink", label: "Add Link", icon: "link", href: "/coach/dashboard/links" },
+  { id: "addlink", label: "Add link", icon: "link", href: "/coach/dashboard/links" },
 ];
 
 const bottomNavItems: NavItem[] = [
