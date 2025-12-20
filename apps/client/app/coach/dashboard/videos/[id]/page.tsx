@@ -79,15 +79,30 @@ export default function EditVideoPage({ params }: { params: Promise<{ id: string
       .then((video) => {
         if (video) {
           const v = video as any;
+          // Map duration to closest available option
+          const durationMinutes = Math.floor((video.durationSeconds || 0) / 60);
+          const validDurations = ["15", "30", "45", "60"];
+          const maxLength = validDurations.includes(String(durationMinutes)) 
+            ? String(durationMinutes) 
+            : "45";
+          
+          // Normalize target area value
+          const targetArea = v.target ? v.target.toLowerCase().replace(/\s+/g, "-") : "full-body";
+          const validTargets = ["upper-body", "full-body", "core", "lower-body"];
+          
+          // Normalize type value
+          const typeValue = (v.category || v.type || "strength").toLowerCase();
+          const validTypes = ["cardio", "strength", "calm"];
+          
           setFormData({
             title: video.title || "",
             description: v.description || "",
-            maxLength: String(Math.floor((video.durationSeconds || 0) / 60)) || "45",
+            maxLength,
             videoFile: v.videoUrl || "",
             coverImage: video.thumbnailUrl || "",
-            targetArea: v.target || "full-body",
+            targetArea: validTargets.includes(targetArea) ? targetArea : "full-body",
             fitnessGoal: v.fitnessGoal || "lose-weight",
-            type: v.category || v.type || "strength",
+            type: validTypes.includes(typeValue) ? typeValue : "strength",
             visibility: video.published ? "publish" : "draft",
             featured: v.featured || false,
           });
