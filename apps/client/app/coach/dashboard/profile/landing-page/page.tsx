@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useToast } from "../_components/ui/Toast";
-import Button from "../_components/ui/Button";
+import { useToast } from "../../_components/ui/Toast";
+import Button from "../../_components/ui/Button";
 import HeroSection from "./_components/HeroSection";
 import AccessSection from "./_components/AccessSection";
 import type { LandingPageConfig } from "@moove/types";
