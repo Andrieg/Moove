@@ -123,16 +123,11 @@ export async function updateVideo(video: Partial<Video>, fields: string[]) {
     console.warn("API unavailable for updateVideo, using localStorage fallback");
     // Fallback: update in localStorage
     if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("moove_videos_cache");
-      if (stored) {
-        try {
-          const videos = JSON.parse(stored) as Video[];
-          const index = videos.findIndex(v => v.id === video.id);
-          if (index >= 0) {
-            videos[index] = { ...videos[index], ...video };
-            localStorage.setItem("moove_videos_cache", JSON.stringify(videos));
-          }
-        } catch {}
+      const videos = getStoredVideos();
+      const index = videos.findIndex(v => v.id === video.id);
+      if (index >= 0) {
+        videos[index] = { ...videos[index], ...video };
+        localStorage.setItem(VIDEOS_CACHE_KEY, JSON.stringify(videos));
       }
     }
     return { status: "SUCCESS" };
