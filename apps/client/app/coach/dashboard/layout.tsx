@@ -16,7 +16,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     // Check if user is authenticated
     if (!isAuthenticated) {
-      router.push("/onboarding");
+      router.push("/coach/login");
       return;
     }
 
