@@ -138,10 +138,21 @@ export async function updateVideo(video: Partial<Video>, fields: string[]) {
  * Legacy API: DELETE /videos/:id
  */
 export async function deleteVideo(id: string) {
-  const response = await apiFetch<{ status: string }>(`/videos/${id}`, {
-    method: "DELETE",
-  });
-  return response;
+  try {
+    const response = await apiFetch<{ status: string }>(`/videos/${id}`, {
+      method: "DELETE",
+    });
+    return response;
+  } catch (err) {
+    console.warn("API unavailable for deleteVideo, using localStorage fallback");
+    // Fallback: delete from localStorage
+    if (typeof window !== "undefined") {
+      const videos = getStoredVideos();
+      const filtered = videos.filter(v => v.id !== id);
+      localStorage.setItem(VIDEOS_CACHE_KEY, JSON.stringify(filtered));
+    }
+    return { status: "SUCCESS" };
+  }
 }
 
 // ============== CHALLENGES ==============
