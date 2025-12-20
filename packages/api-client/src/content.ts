@@ -93,16 +93,8 @@ export async function getVideoById(id: string) {
   } catch (err) {
     console.warn("API unavailable for getVideoById, using localStorage fallback");
     // Fallback: get from localStorage cache
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("moove_videos_cache");
-      if (stored) {
-        try {
-          const videos = JSON.parse(stored) as Video[];
-          return videos.find(v => v.id === id) || null;
-        } catch {}
-      }
-    }
-    return null;
+    const videos = getStoredVideos();
+    return videos.find(v => v.id === id) || null;
   }
 }
 
