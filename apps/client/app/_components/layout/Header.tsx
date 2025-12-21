@@ -59,11 +59,8 @@ export default function Header() {
 
   // Get right icon based on current page
   const getRightIcon = () => {
-    if (pathname === "/" || pathname === "/explore" || pathname.startsWith("/community") || pathname.startsWith("/challenges") || pathname.startsWith("/videos")) {
+    if (pathname === "/" || pathname === "/explore" || pathname.startsWith("/challenges") || pathname.startsWith("/videos")) {
       return { icon: "/icons/search.svg", link: "/search", alt: "Search" };
-    }
-    if (pathname === "/book") {
-      return { icon: "/icons/calendar-add.svg", link: "/book/appointment", alt: "Add Booking" };
     }
     if (pathname === "/profile" || pathname.startsWith("/profile")) {
       return { icon: "/icons/header-settings-icon.svg", link: "/profile/settings", alt: "Settings" };
