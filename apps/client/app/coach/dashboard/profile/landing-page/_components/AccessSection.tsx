@@ -63,7 +63,7 @@ export default function AccessSection({ value, onChange, errors }: AccessSection
         <textarea
           value={value.description}
           onChange={(e) => updateField("description", e.target.value)}
-          placeholder="Details about your Acces"
+          placeholder="Details about your Access"
           rows={3}
           className={`w-full px-4 py-3 rounded-lg border ${
             errors.description ? "border-red-300" : "border-slate-200"
@@ -72,35 +72,6 @@ export default function AccessSection({ value, onChange, errors }: AccessSection
         {errors.description && (
           <p className="text-sm text-red-500 mt-1">{errors.description}</p>
         )}
-      </div>
-
-      {/* Review Toggle */}
-      <div>
-        <label className="block text-sm font-medium text-slate-700 mb-3">
-          Review
-        </label>
-        <div className="flex gap-6">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              name="showReviews"
-              checked={value.showReviews === true}
-              onChange={() => updateField("showReviews", true)}
-              className="w-4 h-4 text-[#308FAB] border-slate-300 focus:ring-[#308FAB]"
-            />
-            <span className="text-sm text-slate-700">Show</span>
-          </label>
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              name="showReviews"
-              checked={value.showReviews === false}
-              onChange={() => updateField("showReviews", false)}
-              className="w-4 h-4 text-[#308FAB] border-slate-300 focus:ring-[#308FAB]"
-            />
-            <span className="text-sm text-slate-700">Hide</span>
-          </label>
-        </div>
       </div>
 
       {/* Membership Toggle */}
