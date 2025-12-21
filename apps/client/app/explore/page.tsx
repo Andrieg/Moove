@@ -24,8 +24,8 @@ export default function ExplorePage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="inline-block w-16 h-16 border-4 border-[#308FAB] border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-gray-600">Loading content...</p>
+          <div className="inline-block w-12 h-12 border-4 border-[#308FAB] border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-slate-600">Loading content...</p>
         </div>
       </div>
     );
