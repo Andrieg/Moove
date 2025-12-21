@@ -46,9 +46,11 @@ function ClientRegisterForm() {
     setStep("link-sent");
   };
 
-  // Step 2: Handle "OK" click
+  // Step 2: Handle "OK" click - redirect to onboarding
   const handleLinkSentOk = () => {
-    setStep("profile");
+    // Store email for the onboarding page
+    localStorage.setItem("moove_pending_email", email);
+    router.push("/client/onboarding");
   };
 
   // Step 3: Handle profile save
