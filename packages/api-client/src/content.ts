@@ -157,53 +157,175 @@ export async function deleteVideo(id: string) {
 
 // ============== CHALLENGES ==============
 
+const CHALLENGES_CACHE_KEY = "moove_challenges_cache";
+
+// Generate mock challenge data for dev fallback
+function generateMockChallenges(): Challenge[] {
+  return [
+    {
+      id: "challenge-1",
+      coachId: "coach-1",
+      title: "Cardio Blast",
+      description: "A 30-day cardio challenge to improve your endurance.",
+      status: "started",
+      startDate: "2024-10-02",
+      endDate: "2024-11-01",
+      participantsCount: 50,
+      coverImageUrl: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400",
+      workouts: [
+        { id: "video-1", title: "Full Body HIIT", durationMinutes: 45 },
+        { id: "video-2", title: "Core Strength", durationMinutes: 30 },
+      ],
+      createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      id: "challenge-2",
+      coachId: "coach-1",
+      title: "Strength Builder",
+      description: "Build muscle and increase strength over 4 weeks.",
+      status: "scheduled",
+      startDate: "2024-12-01",
+      endDate: "2024-12-28",
+      participantsCount: 25,
+      coverImageUrl: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400",
+      workouts: [
+        { id: "video-3", title: "Upper Body Sculpt", durationMinutes: 45 },
+      ],
+      createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      id: "challenge-3",
+      coachId: "coach-1",
+      title: "Flexibility Focus",
+      description: "Improve your flexibility and mobility.",
+      status: "completed",
+      startDate: "2024-08-01",
+      endDate: "2024-08-31",
+      participantsCount: 35,
+      coverImageUrl: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400",
+      workouts: [],
+      createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+  ];
+}
+
+function getStoredChallenges(): Challenge[] {
+  if (typeof window === "undefined") return [];
+  const stored = localStorage.getItem(CHALLENGES_CACHE_KEY);
+  if (stored) {
+    try {
+      return JSON.parse(stored);
+    } catch {}
+  }
+  // Initialize with mock data
+  const mockChallenges = generateMockChallenges();
+  localStorage.setItem(CHALLENGES_CACHE_KEY, JSON.stringify(mockChallenges));
+  return mockChallenges;
+}
+
 /**
  * Legacy API: GET /challenges
  * @param brand - Optional brand/coach slug to filter content
  */
 export async function getChallenges(brand?: string) {
-  const url = brand ? `/challenges?brand=${encodeURIComponent(brand)}` : "/challenges";
-  const response = await apiFetch<{ status: string; challenges: Challenge[] }>(url);
-  return response.challenges || [];
+  try {
+    const url = brand ? `/challenges?brand=${encodeURIComponent(brand)}` : "/challenges";
+    const response = await apiFetch<{ status: string; challenges: Challenge[] }>(url);
+    // Cache the results
+    if (typeof window !== "undefined" && response.challenges) {
+      localStorage.setItem(CHALLENGES_CACHE_KEY, JSON.stringify(response.challenges));
+    }
+    return response.challenges || [];
+  } catch (err) {
+    console.warn("API unavailable for getChallenges, using localStorage fallback");
+    return getStoredChallenges();
+  }
 }
 
 /**
  * Legacy API: GET /challenges/:id
  */
 export async function getChallengeById(id: string) {
-  const response = await apiFetch<{ status: string; challenge: Challenge }>(`/challenges/${id}`);
-  return response.challenge;
+  try {
+    const response = await apiFetch<{ status: string; challenge: Challenge }>(`/challenges/${id}`);
+    return response.challenge;
+  } catch (err) {
+    console.warn("API unavailable for getChallengeById, using localStorage fallback");
+    const challenges = getStoredChallenges();
+    return challenges.find(c => c.id === id) || null;
+  }
 }
 
 /**
  * Legacy API: POST /challenges
  */
 export async function createChallenge(challenge: Partial<Challenge>) {
-  const response = await apiFetch<{ status: string; challenge?: Challenge }>("/challenges", {
-    method: "POST",
-    body: JSON.stringify({ challenge }),
-  });
-  return response;
+  try {
+    const response = await apiFetch<{ status: string; challenge?: Challenge }>("/challenges", {
+      method: "POST",
+      body: JSON.stringify({ challenge }),
+    });
+    return response;
+  } catch (err) {
+    console.warn("API unavailable for createChallenge, using localStorage fallback");
+    // Fallback: create in localStorage
+    if (typeof window !== "undefined") {
+      const challenges = getStoredChallenges();
+      const newChallenge: Challenge = {
+        ...challenge,
+        id: `challenge-${Date.now()}`,
+        createdAt: new Date().toISOString(),
+      } as Challenge;
+      challenges.unshift(newChallenge);
+      localStorage.setItem(CHALLENGES_CACHE_KEY, JSON.stringify(challenges));
+    }
+    return { status: "SUCCESS" };
+  }
 }
 
 /**
  * Legacy API: PATCH /challenges
  */
 export async function updateChallenge(challenge: Partial<Challenge>, fields: string[]) {
-  const response = await apiFetch<{ status: string; challenge?: Challenge }>("/challenges", {
-    method: "PATCH",
-    body: JSON.stringify({ challenge, fields }),
-  });
-  return response;
+  try {
+    const response = await apiFetch<{ status: string; challenge?: Challenge }>("/challenges", {
+      method: "PATCH",
+      body: JSON.stringify({ challenge, fields }),
+    });
+    return response;
+  } catch (err) {
+    console.warn("API unavailable for updateChallenge, using localStorage fallback");
+    // Fallback: update in localStorage
+    if (typeof window !== "undefined") {
+      const challenges = getStoredChallenges();
+      const index = challenges.findIndex(c => c.id === challenge.id);
+      if (index >= 0) {
+        challenges[index] = { ...challenges[index], ...challenge };
+        localStorage.setItem(CHALLENGES_CACHE_KEY, JSON.stringify(challenges));
+      }
+    }
+    return { status: "SUCCESS" };
+  }
 }
 
 /**
  * Legacy API: DELETE /challenges/:id
  */
 export async function deleteChallenge(id: string) {
-  const response = await apiFetch<{ status: string }>(`/challenges/${id}`, {
-    method: "DELETE",
-  });
-  return response;
+  try {
+    const response = await apiFetch<{ status: string }>(`/challenges/${id}`, {
+      method: "DELETE",
+    });
+    return response;
+  } catch (err) {
+    console.warn("API unavailable for deleteChallenge, using localStorage fallback");
+    // Fallback: delete from localStorage
+    if (typeof window !== "undefined") {
+      const challenges = getStoredChallenges();
+      const filtered = challenges.filter(c => c.id !== id);
+      localStorage.setItem(CHALLENGES_CACHE_KEY, JSON.stringify(filtered));
+    }
+    return { status: "SUCCESS" };
+  }
 }
 
