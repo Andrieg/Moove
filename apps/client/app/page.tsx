@@ -85,10 +85,10 @@ export default function HomePage() {
   const allVideos = videos;
 
   return (
-    <div className="pb-8">
+    <div className="pb-8 pt-4">
       {/* Featured Section */}
       {featured && (
-        <div className="container mx-auto px-4 pt-4">
+        <div className="px-4 pt-4">
           <FeaturedCard
             classroom={{
               id: featured.id,
