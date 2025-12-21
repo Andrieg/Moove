@@ -1,10 +1,10 @@
-import React from 'react';
+import React from "react";
 
 interface TitleProps {
   children: React.ReactNode;
-  size?: 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl' | string;
-  weight?: '400' | '500' | '600' | '700' | string;
-  color?: string;
+  size?: "sm" | "base" | "lg" | "xl" | "2xl" | "3xl";
+  weight?: "400" | "500" | "600" | "700";
+  color?: "primary" | "secondary" | "muted" | "inverse" | string;
   center?: boolean;
   noWrap?: boolean;
   className?: string;
@@ -13,48 +13,52 @@ interface TitleProps {
 
 export default function Title({
   children,
-  size = 'xl',
-  weight = '700',
+  size = "xl",
+  weight = "700",
   color,
   center = false,
   noWrap = false,
-  className = '',
+  className = "",
   onClick,
 }: TitleProps) {
   const sizeClasses: Record<string, string> = {
-    sm: 'text-[1rem]',
-    base: 'text-[1.1rem]',
-    lg: 'text-[1.3rem]',
-    xl: 'text-[1.5rem]',
-    '2xl': 'text-[1.8rem]',
-    '3xl': 'text-[2rem]',
+    sm: "text-base",
+    base: "text-lg",
+    lg: "text-xl",
+    xl: "text-2xl",
+    "2xl": "text-3xl",
+    "3xl": "text-4xl",
   };
 
   const weightClasses: Record<string, string> = {
-    '400': 'font-normal',
-    '500': 'font-medium',
-    '600': 'font-semibold',
-    '700': 'font-bold',
+    "400": "font-normal",
+    "500": "font-medium",
+    "600": "font-semibold",
+    "700": "font-bold",
   };
 
-  const centerClass = center ? 'text-center' : '';
-  const nowrapClass = noWrap ? 'whitespace-nowrap' : '';
-  const clickClass = onClick ? 'cursor-pointer' : '';
+  const colorClasses: Record<string, string> = {
+    primary: "text-slate-900",
+    secondary: "text-slate-600",
+    muted: "text-slate-500",
+    inverse: "text-white",
+  };
+
+  const centerClass = center ? "text-center" : "";
+  const nowrapClass = noWrap ? "whitespace-nowrap" : "";
+  const clickClass = onClick ? "cursor-pointer" : "";
+  const sizeClass = sizeClasses[size] || sizeClasses.xl;
+  const weightClass = weightClasses[weight] || "font-bold";
   
-  // Handle custom size (like "1.3rem") vs predefined size
-  const isCustomSize = size.includes('rem') || size.includes('px');
-  const sizeClass = isCustomSize ? '' : (sizeClasses[size] || sizeClasses.xl);
-  const customSizeStyle = isCustomSize ? { fontSize: size } : {};
-  
-  // Handle weight
-  const weightClass = weightClasses[weight] || 'font-bold';
-  
-  const colorStyle = color ? { color } : {};
+  // Determine color - use preset or custom
+  const isPresetColor = color && colorClasses[color];
+  const colorClass = isPresetColor ? colorClasses[color] : "";
+  const colorStyle = color && !isPresetColor ? { color } : {};
 
   return (
     <span
-      className={`font-sans ${sizeClass} ${weightClass} ${centerClass} ${nowrapClass} ${clickClass} ${className}`}
-      style={{ ...colorStyle, ...customSizeStyle }}
+      className={`font-sans ${sizeClass} ${weightClass} ${colorClass} ${centerClass} ${nowrapClass} ${clickClass} ${className}`}
+      style={colorStyle}
       onClick={onClick}
     >
       {children}

@@ -1,53 +1,53 @@
 "use client";
 
-import React from 'react';
+import React from "react";
 
 interface ButtonProps {
   children: React.ReactNode;
   onClick?: (e?: React.MouseEvent) => void;
-  variant?: 'primary' | 'secondary' | 'outline' | 'transparent';
-  size?: 'small' | 'default';
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "danger";
+  size?: "sm" | "md" | "lg";
   fullWidth?: boolean;
   className?: string;
-  type?: 'button' | 'submit' | 'reset';
+  type?: "button" | "submit" | "reset";
   disabled?: boolean;
-  noShadow?: boolean;
 }
 
 export default function Button({
   children,
   onClick,
-  variant = 'secondary',
-  size = 'default',
+  variant = "secondary",
+  size = "md",
   fullWidth = false,
-  className = '',
-  type = 'button',
+  className = "",
+  type = "button",
   disabled = false,
-  noShadow = false,
 }: ButtonProps) {
-  const baseClasses = 'font-semibold uppercase transition-all duration-200 outline-none font-sans border-0';
+  const baseClasses = "font-semibold rounded-lg transition-all duration-200 inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed";
   
   const variantClasses = {
-    primary: `bg-gradient-to-br from-[#429FBA] to-[#217E9A] text-white ${noShadow ? '' : 'shadow-[0px_4px_20px_rgba(59,152,179,0.3)]'}`,
-    secondary: `bg-white text-[#308FAB] ${noShadow ? '' : 'shadow-[0px_4px_20px_rgba(59,152,179,0.3)]'}`,
-    outline: 'bg-transparent border-2 border-white text-white shadow-none',
-    transparent: 'bg-transparent border border-[#308FAB] text-[#308FAB] shadow-none',
+    primary: "bg-[#308FAB] text-white hover:bg-[#217E9A] shadow-sm",
+    secondary: "bg-slate-100 text-slate-700 hover:bg-slate-200",
+    outline: "border border-slate-200 text-slate-700 hover:bg-slate-50 bg-white",
+    ghost: "text-slate-600 hover:bg-slate-100",
+    danger: "bg-red-500 text-white hover:bg-red-600",
   };
 
   const sizeClasses = {
-    small: 'px-4 py-1.5 text-[0.8rem] rounded-full',
-    default: 'px-6 py-3 text-[1rem] rounded-full',
+    sm: "px-3 py-1.5 text-sm",
+    md: "px-4 py-2.5 text-sm",
+    lg: "px-6 py-3 text-base",
   };
 
-  const widthClass = fullWidth ? 'w-full' : '';
-  const disabledClass = disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:scale-[1.02]';
+  const widthClass = fullWidth ? "w-full" : "";
+  const cursorClass = disabled ? "" : "cursor-pointer";
 
   return (
     <button
       type={type}
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
-      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${widthClass} ${disabledClass} ${className}`}
+      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${widthClass} ${cursorClass} ${className}`}
     >
       {children}
     </button>
