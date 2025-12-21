@@ -196,19 +196,19 @@ export default function LandingPageClient({ data, brandSlug }: Props) {
         <section className="py-16 lg:py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-lg mx-auto">
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Join Now</h2>
-              <p className="text-gray-500 mb-8">We are glad that you have decided to join us.</p>
+              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-2">Join Now</h2>
+              <p className="text-slate-500 mb-8">We are glad that you have decided to join us.</p>
               
               <div
-                className="rounded-2xl p-8 border-2"
+                className="rounded-xl p-8 border-2"
                 style={{ borderColor: `${themeColor}40` }}
               >
-                <h3 className="text-xl font-bold text-gray-900 mb-4">{data.plan.title}</h3>
+                <h3 className="text-xl font-bold text-slate-900 mb-4">{data.plan.title}</h3>
                 <div className="mb-6">
-                  <span className="text-4xl font-bold text-gray-900">
+                  <span className="text-4xl font-bold text-slate-900">
                     {currencySymbol}{data.plan.price}
                   </span>
-                  <span className="text-gray-500 ml-1">/ month</span>
+                  <span className="text-slate-500 ml-1">/ month</span>
                 </div>
                 <ul className="space-y-4 mb-8">
                   {data.plan.benefits.map((benefit, idx) => (
@@ -216,14 +216,14 @@ export default function LandingPageClient({ data, brandSlug }: Props) {
                       <svg className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: themeColor }} fill="currentColor" viewBox="0 0 24 24">
                         <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                       </svg>
-                      <span className="text-gray-700">{benefit}</span>
+                      <span className="text-slate-700">{benefit}</span>
                     </li>
                   ))}
                 </ul>
                 <button
                   onClick={handleJoinClick}
                   style={{ background: `linear-gradient(135deg, ${themeColor}, ${themeColor}dd)` }}
-                  className="w-full py-4 text-white font-semibold rounded-full hover:opacity-90 transition shadow-lg text-base uppercase tracking-wide"
+                  className="w-full py-4 text-white font-semibold rounded-lg hover:opacity-90 transition shadow-sm text-base uppercase tracking-wide"
                 >
                   Join
                 </button>
@@ -234,16 +234,16 @@ export default function LandingPageClient({ data, brandSlug }: Props) {
       )}
 
       {/* Footer */}
-      <footer className="py-12 border-t border-gray-100">
+      <footer className="py-12 border-t border-slate-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center gap-6">
-            <p className="text-sm text-gray-400">Powered by</p>
-            <span className="text-3xl font-bold text-gray-900">moove</span>
+            <p className="text-sm text-slate-400">Powered by</p>
+            <span className="text-3xl font-bold text-slate-900">moove</span>
             <div className="flex gap-6">
-              <Link href="#" className="text-sm text-gray-500 hover:text-gray-700 underline">
+              <Link href="#" className="text-sm text-slate-500 hover:text-slate-700 underline">
                 Terms and Conditions
               </Link>
-              <Link href="#" className="text-sm text-gray-500 hover:text-gray-700 underline">
+              <Link href="#" className="text-sm text-slate-500 hover:text-slate-700 underline">
                 Privacy Policy
               </Link>
             </div>
