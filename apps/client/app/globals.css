@@ -195,3 +195,33 @@ a:focus-visible {
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+/* Better text spacing */
+.leading-relaxed {
+  line-height: 1.7;
+}
+
+p, .text-body {
+  line-height: 1.6;
+}
+
+/* Section header alignment fix */
+.section-header {
+  text-align: left;
+}
+
+/* Container for client app - full width on mobile, constrained on desktop */
+.app-container {
+  width: 100%;
+  max-width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .app-container {
+    max-width: 100%;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
