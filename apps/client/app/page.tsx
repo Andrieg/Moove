@@ -160,7 +160,7 @@ export default function HomePage() {
           ))}
         </Category>
       ) : (
-        <div className="container mx-auto px-4 py-12 text-center">
+        <div className="px-4 py-12 text-center">
           <p className="text-gray-500 text-lg">No content available yet.</p>
           <p className="text-gray-400 mt-2">Check back soon for new workouts and challenges!</p>
         </div>
