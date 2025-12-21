@@ -25,14 +25,7 @@ const tabs: NavTab[] = [
     title: "Explore",
     icon: "/icons/explore.svg",
     iconActive: "/icons/exploreFilled.svg",
-    links: ["/explore", "/community", "/challenges", "/videos"],
-  },
-  {
-    id: "book",
-    title: "Book",
-    icon: "/icons/book.svg",
-    iconActive: "/icons/bookFilled.svg",
-    links: ["/book"],
+    links: ["/explore", "/challenges", "/videos"],
   },
   {
     id: "chat",
