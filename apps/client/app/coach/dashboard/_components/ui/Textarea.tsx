@@ -11,18 +11,26 @@ interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
 
 const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ label, error, helperText, className = "", rows = 3, ...props }, ref) => {
+    const textareaClasses = [
+      forms.textarea,
+      error ? forms.inputError : "",
+      props.disabled ? forms.inputDisabled : "",
+      props.readOnly ? forms.inputReadonly : "",
+      className,
+    ].filter(Boolean).join(" ");
+
     return (
       <div>
         {label && (
-          <label className={`block ${typography.label} mb-2`}>
+          <label className={forms.label}>
             {label}
-            {props.required && " *"}
+            {props.required && <span className={forms.labelRequired}>*</span>}
           </label>
         )}
         <textarea
           ref={ref}
           rows={rows}
-          className={`${forms.textarea} ${error ? forms.inputError : ""} ${props.disabled ? forms.inputDisabled : ""} ${props.readOnly ? forms.inputReadonly : ""} ${className}`}
+          className={textareaClasses}
           {...props}
         />
         {error && <p className={`${typography.error} mt-1`}>{error}</p>}

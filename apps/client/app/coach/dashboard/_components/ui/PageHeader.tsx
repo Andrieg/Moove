@@ -1,6 +1,6 @@
 "use client";
 
-import { typography } from "./design-system";
+import { typography, transitions, icons } from "./design-system";
 
 interface PageHeaderProps {
   title: string;
@@ -19,12 +19,12 @@ export default function PageHeader({ title, subtitle, count, backLink, actions }
       {backLink && (
         <button
           onClick={backLink.onClick}
-          className="flex items-center gap-2 text-slate-500 hover:text-slate-700 mb-4 transition-colors"
+          className={`flex items-center gap-2 text-slate-500 hover:text-slate-700 mb-4 ${transitions.base}`}
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className={icons.sizes.sm} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          <span className="text-sm">{backLink.label}</span>
+          <span className={typography.bodySmall}>{backLink.label}</span>
         </button>
       )}
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -32,11 +32,11 @@ export default function PageHeader({ title, subtitle, count, backLink, actions }
           <h1 className={typography.h1}>
             {title}
             {typeof count === "number" && (
-              <span className="text-slate-400 font-normal"> ({count})</span>
+              <span className="text-slate-400 font-normal ml-2">({count})</span>
             )}
           </h1>
           {subtitle && (
-            <p className="text-sm text-slate-500 mt-1">{subtitle}</p>
+            <p className={`${typography.bodySmall} mt-1`}>{subtitle}</p>
           )}
         </div>
         {actions && <div className="flex items-center gap-3">{actions}</div>}
