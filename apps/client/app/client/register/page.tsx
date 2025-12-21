@@ -81,30 +81,35 @@ function ClientRegisterForm() {
     router.push("/");
   };
 
+  // Input classes for consistency
+  const inputClasses = "w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/20 focus:border-[#308FAB] text-sm text-slate-900 placeholder-slate-400 bg-white transition-colors";
+  const buttonClasses = "w-full py-3 bg-[#308FAB] text-white font-semibold rounded-lg hover:bg-[#217E9A] transition disabled:opacity-50 text-sm";
+  const labelClasses = "block text-sm font-medium text-slate-700 mb-2";
+
   // Screen 1: Email Input
   if (step === "email") {
     return (
       <div className="min-h-screen bg-white flex flex-col">
         <header className="p-6">
-          <Image src="/images/logo.svg" alt="Moove" width={100} height={32} className="" />
+          <Image src="/images/logo.svg" alt="Moove" width={100} height={32} />
         </header>
 
         <main className="flex-1 flex items-center justify-center px-4">
           <div className="w-full max-w-sm">
-            <div className="bg-white rounded-2xl p-8">
-              <h1 className="text-xl font-semibold text-gray-900 mb-6 text-center">
+            <div className="bg-white rounded-xl p-8">
+              <h1 className="text-xl font-semibold text-slate-900 mb-6 text-center">
                 Create an Account
               </h1>
 
               <form onSubmit={handleEmailSubmit}>
                 <div className="mb-4">
-                  <label className="block text-sm text-gray-600 mb-2">Email</label>
+                  <label className={labelClasses}>Email</label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="forexample@gmail.com"
-                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/20 focus:border-[#308FAB] text-sm"
+                    className={inputClasses}
                   />
                 </div>
 
@@ -113,9 +118,9 @@ function ClientRegisterForm() {
                     type="checkbox"
                     checked={termsAccepted}
                     onChange={(e) => setTermsAccepted(e.target.checked)}
-                    className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#308FAB] focus:ring-[#308FAB]"
+                    className="mt-0.5 w-4 h-4 rounded border-slate-300 text-[#308FAB] focus:ring-[#308FAB]"
                   />
-                  <span className="text-xs text-gray-500 leading-relaxed">
+                  <span className="text-xs text-slate-500 leading-relaxed">
                     I confirm that I have read and agree to the{" "}
                     <Link href="#" className="text-[#308FAB] font-medium">Terms & Conditions</Link>{" "}
                     and{" "}
@@ -129,22 +134,18 @@ function ClientRegisterForm() {
                   </div>
                 )}
 
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full py-3 bg-[#308FAB] text-white font-medium rounded-lg hover:bg-[#217E9A] transition disabled:opacity-50 text-sm"
-                >
+                <button type="submit" disabled={isLoading} className={buttonClasses}>
                   {isLoading ? "SENDING..." : "SEND ME A LOGIN LINK"}
                 </button>
               </form>
 
-              <p className="text-center text-xs text-gray-400 mt-6">
+              <p className="text-center text-xs text-slate-400 mt-6">
                 Already have an account?{" "}
                 <Link href="/client/login" className="text-[#308FAB] font-medium">Sign in</Link>
               </p>
 
-              <div className="mt-4 pt-4 border-t border-gray-100 text-center">
-                <p className="text-xs text-gray-400">
+              <div className="mt-4 pt-4 border-t border-slate-100 text-center">
+                <p className="text-xs text-slate-400">
                   Are you a coach?{" "}
                   <Link href="/coach/register" className="text-[#308FAB] font-medium">Register here</Link>
                 </p>
@@ -154,12 +155,12 @@ function ClientRegisterForm() {
         </main>
 
         <footer className="py-6 text-center">
-          <p className="text-xs text-gray-500 mb-2">Powered by</p>
+          <p className="text-xs text-slate-500 mb-2">Powered by</p>
           <Image src="/images/logo.svg" alt="Moove" width={80} height={24} className="mx-auto opacity-50" />
-          <div className="flex items-center justify-center gap-4 mt-3 text-xs text-gray-500">
-            <Link href="#" className="hover:text-gray-400">Terms and Conditions</Link>
+          <div className="flex items-center justify-center gap-4 mt-3 text-xs text-slate-500">
+            <Link href="#" className="hover:text-slate-700 transition">Terms and Conditions</Link>
             <span>|</span>
-            <Link href="#" className="hover:text-gray-400">Privacy Policy</Link>
+            <Link href="#" className="hover:text-slate-700 transition">Privacy Policy</Link>
           </div>
         </footer>
       </div>
@@ -171,25 +172,22 @@ function ClientRegisterForm() {
     return (
       <div className="min-h-screen bg-white flex flex-col">
         <header className="p-6">
-          <Image src="/images/logo.svg" alt="Moove" width={100} height={32} className="" />
+          <Image src="/images/logo.svg" alt="Moove" width={100} height={32} />
         </header>
 
         <main className="flex-1 flex items-center justify-center px-4">
           <div className="w-full max-w-sm">
-            <div className="bg-white rounded-2xl p-8 text-center">
+            <div className="bg-white rounded-xl p-8 text-center">
               <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-[#308FAB]/10 flex items-center justify-center">
                 <svg className="w-10 h-10 text-[#308FAB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
 
-              <h1 className="text-xl font-semibold text-gray-900 mb-2">Account link sent!</h1>
-              <p className="text-sm text-gray-500 mb-6">Please check your email inbox for your login link.</p>
+              <h1 className="text-xl font-semibold text-slate-900 mb-2">Account link sent!</h1>
+              <p className="text-sm text-slate-500 mb-6">Please check your email inbox for your login link.</p>
 
-              <button
-                onClick={handleLinkSentOk}
-                className="w-full py-3 bg-[#308FAB] text-white font-medium rounded-lg hover:bg-[#217E9A] transition text-sm"
-              >
+              <button onClick={handleLinkSentOk} className={buttonClasses}>
                 OK
               </button>
             </div>
@@ -197,12 +195,12 @@ function ClientRegisterForm() {
         </main>
 
         <footer className="py-6 text-center">
-          <p className="text-xs text-gray-500 mb-2">Powered by</p>
+          <p className="text-xs text-slate-500 mb-2">Powered by</p>
           <Image src="/images/logo.svg" alt="Moove" width={80} height={24} className="mx-auto opacity-50" />
-          <div className="flex items-center justify-center gap-4 mt-3 text-xs text-gray-500">
-            <Link href="#" className="hover:text-gray-400">Terms and Conditions</Link>
+          <div className="flex items-center justify-center gap-4 mt-3 text-xs text-slate-500">
+            <Link href="#" className="hover:text-slate-700 transition">Terms and Conditions</Link>
             <span>|</span>
-            <Link href="#" className="hover:text-gray-400">Privacy Policy</Link>
+            <Link href="#" className="hover:text-slate-700 transition">Privacy Policy</Link>
           </div>
         </footer>
       </div>
@@ -213,35 +211,35 @@ function ClientRegisterForm() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <header className="p-6">
-        <Image src="/images/logo.svg" alt="Moove" width={100} height={32} className="" />
+        <Image src="/images/logo.svg" alt="Moove" width={100} height={32} />
       </header>
 
       <main className="flex-1 flex items-center justify-center px-4">
         <div className="w-full max-w-sm">
-          <div className="bg-white rounded-2xl p-8">
-            <h1 className="text-xl font-semibold text-gray-900 mb-6 text-center">Let's get to know you</h1>
+          <div className="bg-white rounded-xl p-8">
+            <h1 className="text-xl font-semibold text-slate-900 mb-6 text-center">Let's get to know you</h1>
 
             <form onSubmit={handleProfileSave}>
               <div className="space-y-4 mb-6">
                 <div>
-                  <label className="block text-sm text-gray-600 mb-2">First Name</label>
+                  <label className={labelClasses}>First Name</label>
                   <input
                     type="text"
                     value={profileData.firstName}
                     onChange={(e) => setProfileData({ ...profileData, firstName: e.target.value })}
                     placeholder="First Name"
-                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/20 focus:border-[#308FAB] text-sm"
+                    className={inputClasses}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-600 mb-2">Last Name</label>
+                  <label className={labelClasses}>Last Name</label>
                   <input
                     type="text"
                     value={profileData.lastName}
                     onChange={(e) => setProfileData({ ...profileData, lastName: e.target.value })}
                     placeholder="Last Name"
-                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/20 focus:border-[#308FAB] text-sm"
+                    className={inputClasses}
                   />
                 </div>
               </div>
@@ -252,11 +250,7 @@ function ClientRegisterForm() {
                 </div>
               )}
 
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full py-3 bg-[#308FAB] text-white font-medium rounded-lg hover:bg-[#217E9A] transition disabled:opacity-50 text-sm"
-              >
+              <button type="submit" disabled={isLoading} className={buttonClasses}>
                 {isLoading ? "SAVING..." : "SAVE"}
               </button>
             </form>
@@ -265,12 +259,12 @@ function ClientRegisterForm() {
       </main>
 
       <footer className="py-6 text-center">
-        <p className="text-xs text-gray-500 mb-2">Powered by</p>
+        <p className="text-xs text-slate-500 mb-2">Powered by</p>
         <Image src="/images/logo.svg" alt="Moove" width={80} height={24} className="mx-auto opacity-50" />
-        <div className="flex items-center justify-center gap-4 mt-3 text-xs text-gray-500">
-          <Link href="#" className="hover:text-gray-400">Terms and Conditions</Link>
+        <div className="flex items-center justify-center gap-4 mt-3 text-xs text-slate-500">
+          <Link href="#" className="hover:text-slate-700 transition">Terms and Conditions</Link>
           <span>|</span>
-          <Link href="#" className="hover:text-gray-400">Privacy Policy</Link>
+          <Link href="#" className="hover:text-slate-700 transition">Privacy Policy</Link>
         </div>
       </footer>
     </div>
