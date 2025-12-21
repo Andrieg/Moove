@@ -32,7 +32,6 @@ export default function DashboardHome() {
     { label: "Total Videos", value: videos.length, icon: "play", color: "bg-blue-500" },
     { label: "Active Challenges", value: challenges.length, icon: "fire", color: "bg-orange-500" },
     { label: "Total Members", value: 156, icon: "users", color: "bg-green-500" },
-    { label: "Live Classes", value: 12, icon: "live", color: "bg-purple-500" },
   ];
 
   return (
