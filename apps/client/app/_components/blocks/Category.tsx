@@ -28,9 +28,9 @@ export default function Category({
         withBorder ? "border-b border-gray-100 pb-8" : ""
       }`}
     >
-      {/* Header */}
+      {/* Header - Always left aligned */}
       {(title || link) && (
-        <div className="container mx-auto px-4 mb-4">
+        <div className="px-4 mb-4">
           <div className="flex justify-between items-center">
             {title && (
               <Title color="black" size="lg" weight="700">
@@ -50,9 +50,9 @@ export default function Category({
             )}
           </div>
           {subtitle && (
-            <div className="mt-2">
+            <div className="mt-1">
               {typeof subtitle === "string" ? (
-                <p className="text-base font-medium">{subtitle}</p>
+                <p className="text-sm text-gray-500 leading-relaxed">{subtitle}</p>
               ) : (
                 subtitle
               )}
@@ -71,7 +71,7 @@ export default function Category({
             msOverflowStyle: "none",
           }}
         >
-          <div className="flex px-4">{children}</div>
+          <div className="flex px-4 gap-4">{children}</div>
         </div>
       </div>
     </section>
