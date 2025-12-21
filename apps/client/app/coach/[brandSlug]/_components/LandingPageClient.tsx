@@ -152,8 +152,8 @@ export default function LandingPageClient({ data, brandSlug }: Props) {
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">About</h2>
-            <p className="text-lg text-gray-600 leading-relaxed">{mergedData.about}</p>
+            <h2 className="text-3xl font-bold text-slate-900 mb-6">About</h2>
+            <p className="text-lg text-slate-600 leading-relaxed">{mergedData.about}</p>
           </div>
         </div>
       </section>
@@ -168,21 +168,21 @@ export default function LandingPageClient({ data, brandSlug }: Props) {
                 <img
                   src={mergedData.access.cover.url}
                   alt={mergedData.access.title}
-                  className="rounded-2xl shadow-xl w-full"
+                  className="rounded-xl shadow-lg w-full"
                 />
               </div>
             </div>
             <div className="order-1 lg:order-2">
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6 leading-tight">
+              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6 leading-tight">
                 {mergedData.access.title}
               </h2>
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+              <p className="text-lg text-slate-600 mb-8 leading-relaxed">
                 {mergedData.access.description}
               </p>
               <button
                 onClick={handleFreeTrialClick}
                 style={{ background: `linear-gradient(135deg, ${themeColor}, ${themeColor}dd)` }}
-                className="px-8 py-4 text-white font-semibold rounded-full hover:opacity-90 transition shadow-lg text-base uppercase tracking-wide"
+                className="px-8 py-4 text-white font-semibold rounded-lg hover:opacity-90 transition shadow-sm text-base uppercase tracking-wide"
               >
                 Free Trial
               </button>
