@@ -19,6 +19,11 @@ function CoachLoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Consistent styling classes
+  const inputClasses = "w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/20 focus:border-[#308FAB] text-sm text-slate-900 placeholder-slate-400 bg-white transition-colors";
+  const buttonClasses = "w-full py-3 bg-[#308FAB] text-white font-semibold rounded-lg hover:bg-[#217E9A] transition disabled:opacity-50 text-sm uppercase";
+  const labelClasses = "block text-sm font-medium text-slate-700 mb-2";
+
   // Handle login submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,17 +35,13 @@ function CoachLoginForm() {
     }
 
     setIsLoading(true);
-    
-    // Simulate API call to send login link
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    
     setIsLoading(false);
     setStep("link-sent");
   };
 
   // Handle OK click (simulate clicking magic link for dev)
   const handleOk = () => {
-    // In dev mode, auto-login as coach
     const user: User = {
       id: "coach-" + Date.now(),
       email: email,
@@ -63,25 +64,25 @@ function CoachLoginForm() {
     return (
       <div className="min-h-screen bg-white flex flex-col">
         <header className="p-6">
-          <Image src="/images/logo.svg" alt="Moove" width={100} height={32} className="" />
+          <Image src="/images/logo.svg" alt="Moove" width={100} height={32} />
         </header>
 
         <main className="flex-1 flex items-center justify-center px-4">
           <div className="w-full max-w-sm">
-            <div className="bg-white rounded-2xl p-8">
-              <h1 className="text-xl font-semibold text-gray-900 mb-6 text-center">
+            <div className="bg-white rounded-xl p-8">
+              <h1 className="text-xl font-semibold text-slate-900 mb-6 text-center">
                 Sign In
               </h1>
 
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
-                  <label className="block text-sm text-gray-600 mb-2">Your Email</label>
+                  <label className={labelClasses}>Your Email</label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="forexample@gmail.com"
-                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/20 focus:border-[#308FAB] text-sm"
+                    className={inputClasses}
                   />
                 </div>
 
@@ -90,9 +91,9 @@ function CoachLoginForm() {
                     type="checkbox"
                     checked={keepLoggedIn}
                     onChange={(e) => setKeepLoggedIn(e.target.checked)}
-                    className="w-4 h-4 rounded border-gray-300 text-[#308FAB] focus:ring-[#308FAB]"
+                    className="w-4 h-4 rounded border-slate-300 text-[#308FAB] focus:ring-[#308FAB]"
                   />
-                  <span className="text-sm text-gray-600">Keep me logged in</span>
+                  <span className="text-sm text-slate-600">Keep me logged in</span>
                 </label>
 
                 {error && (
@@ -101,16 +102,12 @@ function CoachLoginForm() {
                   </div>
                 )}
 
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full py-3 bg-[#308FAB] text-white font-medium rounded-lg hover:bg-[#217E9A] transition disabled:opacity-50 text-sm uppercase"
-                >
+                <button type="submit" disabled={isLoading} className={buttonClasses}>
                   {isLoading ? "Sending..." : "Send me a login link"}
                 </button>
               </form>
 
-              <p className="text-center text-sm text-gray-500 mt-6">
+              <p className="text-center text-sm text-slate-500 mt-6">
                 Don't have an account?{" "}
                 <Link href="/coach/register" className="text-[#308FAB] font-medium">
                   Sign Up
@@ -121,12 +118,12 @@ function CoachLoginForm() {
         </main>
 
         <footer className="py-6 text-center">
-          <p className="text-xs text-gray-500 mb-2">Powered by</p>
+          <p className="text-xs text-slate-500 mb-2">Powered by</p>
           <Image src="/images/logo.svg" alt="Moove" width={80} height={24} className="mx-auto opacity-50" />
-          <div className="flex items-center justify-center gap-4 mt-3 text-xs text-gray-500">
-            <Link href="#" className="hover:text-gray-400">Terms and Conditions</Link>
+          <div className="flex items-center justify-center gap-4 mt-3 text-xs text-slate-500">
+            <Link href="#" className="hover:text-slate-700 transition">Terms and Conditions</Link>
             <span>|</span>
-            <Link href="#" className="hover:text-gray-400">Privacy Policy</Link>
+            <Link href="#" className="hover:text-slate-700 transition">Privacy Policy</Link>
           </div>
         </footer>
       </div>
@@ -137,12 +134,12 @@ function CoachLoginForm() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <header className="p-6">
-        <Image src="/images/logo.svg" alt="Moove" width={100} height={32} className="" />
+        <Image src="/images/logo.svg" alt="Moove" width={100} height={32} />
       </header>
 
       <main className="flex-1 flex items-center justify-center px-4">
         <div className="w-full max-w-sm">
-          <div className="bg-white rounded-2xl p-8 text-center">
+          <div className="bg-white rounded-xl p-8 text-center">
             {/* Success Icon */}
             <div className="w-20 h-20 mx-auto mb-6 rounded-full border-4 border-[#308FAB] flex items-center justify-center">
               <svg className="w-10 h-10 text-[#308FAB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -150,17 +147,14 @@ function CoachLoginForm() {
               </svg>
             </div>
 
-            <h1 className="text-xl font-semibold text-gray-900 mb-2">
+            <h1 className="text-xl font-semibold text-slate-900 mb-2">
               Login link sent
             </h1>
-            <p className="text-sm text-gray-500 mb-6">
+            <p className="text-sm text-slate-500 mb-6">
               Please check your email inbox for your login link.
             </p>
 
-            <button
-              onClick={handleOk}
-              className="w-full py-3 bg-[#308FAB] text-white font-medium rounded-lg hover:bg-[#217E9A] transition text-sm uppercase"
-            >
+            <button onClick={handleOk} className={buttonClasses}>
               OK
             </button>
           </div>
@@ -168,12 +162,12 @@ function CoachLoginForm() {
       </main>
 
       <footer className="py-6 text-center">
-        <p className="text-xs text-gray-500 mb-2">Powered by</p>
+        <p className="text-xs text-slate-500 mb-2">Powered by</p>
         <Image src="/images/logo.svg" alt="Moove" width={80} height={24} className="mx-auto opacity-50" />
-        <div className="flex items-center justify-center gap-4 mt-3 text-xs text-gray-500">
-          <Link href="#" className="hover:text-gray-400">Terms and Conditions</Link>
+        <div className="flex items-center justify-center gap-4 mt-3 text-xs text-slate-500">
+          <Link href="#" className="hover:text-slate-700 transition">Terms and Conditions</Link>
           <span>|</span>
-          <Link href="#" className="hover:text-gray-400">Privacy Policy</Link>
+          <Link href="#" className="hover:text-slate-700 transition">Privacy Policy</Link>
         </div>
       </footer>
     </div>
