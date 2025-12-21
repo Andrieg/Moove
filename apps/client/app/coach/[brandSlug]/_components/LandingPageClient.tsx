@@ -87,15 +87,15 @@ export default function LandingPageClient({ data, brandSlug }: Props) {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
+      <header className="sticky top-0 z-50 bg-white border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href={`/coach/${brandSlug}`} className="flex items-center">
-              <span className="text-2xl font-bold text-gray-900">moove</span>
+              <span className="text-2xl font-bold text-slate-900">moove</span>
             </Link>
             <Link
               href={`/client/login?coach=${brandSlug}`}
-              className="px-5 py-2 text-sm font-semibold text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200 transition"
+              className="px-5 py-2 text-sm font-semibold text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition"
             >
               SIGN IN
             </Link>
