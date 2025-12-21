@@ -196,8 +196,8 @@ export default function ExplorePage() {
       {/* Empty State */}
       {videos.length === 0 && (
         <div className="container mx-auto px-4 py-12 text-center">
-          <p className="text-gray-500 text-lg">No workouts available yet.</p>
-          <p className="text-gray-400 mt-2">
+          <p className="text-slate-500 text-lg">No workouts available yet.</p>
+          <p className="text-slate-400 mt-2">
             Check back soon for new content!
           </p>
         </div>
