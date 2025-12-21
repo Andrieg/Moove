@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -29,7 +29,6 @@ interface LandingPageData {
     benefits: string[];
   };
   currency: string;
-  reviews?: { name: string; text: string; rating: number }[];
 }
 
 interface Props {
@@ -37,13 +36,50 @@ interface Props {
   brandSlug: string;
 }
 
+const STORAGE_KEY = "moove_landing_page_config";
+
 export default function LandingPageClient({ data, brandSlug }: Props) {
-  const [isLoggedIn] = useState(false);
+  const [localConfig, setLocalConfig] = useState<any>(null);
   const themeColor = data.theme_color || "#308FAB";
 
+  // Load config from localStorage on client side
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        setLocalConfig(JSON.parse(saved));
+      }
+    } catch (err) {
+      console.error("Failed to load local config:", err);
+    }
+  }, []);
+
+  // Merge local config with default data
+  const mergedData = {
+    ...data,
+    brand_name: localConfig?.hero?.title || data.brand_name,
+    about: localConfig?.hero?.about || data.about,
+    hero: {
+      ...data.hero,
+      title: localConfig?.hero?.title || data.hero.title,
+      description: localConfig?.hero?.description || data.hero.description,
+      cover: { url: localConfig?.hero?.coverImageUrl || data.hero.cover.url },
+      video: localConfig?.hero?.trailerVideoUrl ? { url: localConfig.hero.trailerVideoUrl, thumbnail: "" } : data.hero.video,
+    },
+    access: {
+      ...data.access,
+      title: localConfig?.access?.title || data.access.title,
+      description: localConfig?.access?.description || data.access.description,
+      cover: { url: localConfig?.access?.coverImageUrl || data.access.cover.url },
+    },
+  };
+
   const handleJoinClick = () => {
-    // Redirect to signup with brand context
-    window.location.href = `/signup?coach=${brandSlug}`;
+    window.location.href = `/client/register?coach=${brandSlug}`;
+  };
+
+  const handleFreeTrialClick = () => {
+    window.location.href = `/client/register?coach=${brandSlug}&trial=true`;
   };
 
   const currencySymbol = data.currency === "GBP" ? "£" : data.currency === "USD" ? "$" : "€";
@@ -54,169 +90,130 @@ export default function LandingPageClient({ data, brandSlug }: Props) {
       <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link href={`/coach/${brandSlug}`} className="flex items-center gap-2">
-              <div className="relative w-32 h-10">
-                <Image src={data.logo} alt={data.brand_name} fill className="object-contain" />
-              </div>
+            <Link href={`/coach/${brandSlug}`} className="flex items-center">
+              <span className="text-2xl font-bold text-gray-900">moove</span>
             </Link>
-            <div className="flex items-center gap-4">
-              <Link
-                href={isLoggedIn ? "/home" : `/login?coach=${brandSlug}`}
-                className="text-sm font-medium text-gray-600 hover:text-gray-900 transition"
-              >
-                {isLoggedIn ? "Dashboard" : "Sign In"}
-              </Link>
-              <button
-                onClick={handleJoinClick}
-                style={{ backgroundColor: themeColor }}
-                className="px-5 py-2.5 text-white text-sm font-semibold rounded-full hover:opacity-90 transition shadow-lg"
-              >
-                Join Now
-              </button>
-            </div>
+            <Link
+              href={`/client/login?coach=${brandSlug}`}
+              className="px-5 py-2 text-sm font-semibold text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200 transition"
+            >
+              SIGN IN
+            </Link>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="py-16 lg:py-24">
+      <section className="py-16 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="order-2 lg:order-1">
+            <div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
-                {data.hero.title}
+                {mergedData.brand_name}
               </h1>
               <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                {data.hero.description}
+                {mergedData.hero.description}
               </p>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap items-center gap-4">
                 <button
-                  onClick={handleJoinClick}
-                  style={{ backgroundColor: themeColor }}
-                  className="px-8 py-4 text-white font-semibold rounded-full hover:opacity-90 transition shadow-lg text-lg"
+                  onClick={handleFreeTrialClick}
+                  style={{ background: `linear-gradient(135deg, ${themeColor}, ${themeColor}dd)` }}
+                  className="px-8 py-4 text-white font-semibold rounded-full hover:opacity-90 transition shadow-lg text-base uppercase tracking-wide"
                 >
-                  Start Free Trial
+                  Free Trial
                 </button>
-                {data.hero.video && (
-                  <button className="px-8 py-4 bg-gray-100 text-gray-700 font-semibold rounded-full hover:bg-gray-200 transition flex items-center gap-2">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                    Watch Trailer
+                {mergedData.hero.video && (
+                  <button className="flex items-center gap-3 text-gray-700 hover:text-gray-900 transition">
+                    <div 
+                      className="w-12 h-12 rounded-full flex items-center justify-center border-2"
+                      style={{ borderColor: themeColor }}
+                    >
+                      <svg className="w-5 h-5 ml-1" style={{ color: themeColor }} fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </div>
+                    <span className="font-medium">WATCH TRAILER</span>
                   </button>
                 )}
               </div>
-              <p className="text-sm text-gray-500 mt-4">✓ 7-day free trial • Cancel anytime</p>
             </div>
-            <div className="order-1 lg:order-2">
-              <div className="relative">
-                <div
-                  className="absolute -inset-4 rounded-3xl opacity-20 blur-2xl"
-                  style={{ backgroundColor: themeColor }}
-                />
-                <img
-                  src={data.hero.cover.url}
-                  alt={data.hero.title}
-                  className="relative rounded-2xl shadow-2xl w-full aspect-[4/3] object-cover"
-                />
-              </div>
+            <div className="relative">
+              <img
+                src={mergedData.hero.cover.url}
+                alt={mergedData.hero.title}
+                className="rounded-2xl shadow-2xl w-full aspect-[4/5] object-cover"
+              />
             </div>
           </div>
         </div>
       </section>
 
       {/* About Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
             <h2 className="text-3xl font-bold text-gray-900 mb-6">About</h2>
-            <p className="text-lg text-gray-600 leading-relaxed">{data.about}</p>
+            <p className="text-lg text-gray-600 leading-relaxed">{mergedData.about}</p>
           </div>
         </div>
       </section>
 
       {/* Access Section */}
-      <section className="py-16 lg:py-24">
+      <section className="py-16 lg:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="relative">
-              <div
-                className="absolute -inset-4 rounded-3xl opacity-20 blur-2xl"
-                style={{ backgroundColor: themeColor }}
-              />
-              <img
-                src={data.access.cover.url}
-                alt={data.access.title}
-                className="relative rounded-2xl shadow-2xl w-full aspect-[4/3] object-cover"
-              />
+            <div className="order-2 lg:order-1">
+              <div className="relative">
+                {/* Device mockups placeholder - showing multi-device access */}
+                <img
+                  src={mergedData.access.cover.url}
+                  alt={mergedData.access.title}
+                  className="rounded-2xl shadow-xl w-full"
+                />
+              </div>
             </div>
-            <div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
-                {data.access.title}
+            <div className="order-1 lg:order-2">
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6 leading-tight">
+                {mergedData.access.title}
               </h2>
               <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                {data.access.description}
+                {mergedData.access.description}
               </p>
               <button
-                onClick={handleJoinClick}
-                style={{ backgroundColor: themeColor }}
-                className="px-8 py-4 text-white font-semibold rounded-full hover:opacity-90 transition shadow-lg"
+                onClick={handleFreeTrialClick}
+                style={{ background: `linear-gradient(135deg, ${themeColor}, ${themeColor}dd)` }}
+                className="px-8 py-4 text-white font-semibold rounded-full hover:opacity-90 transition shadow-lg text-base uppercase tracking-wide"
               >
-                Get Access Now
+                Free Trial
               </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Reviews Section */}
-      {data.reviews && data.reviews.length > 0 && (
-        <section className="py-16 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">What Members Say</h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              {data.reviews.map((review, idx) => (
-                <div key={idx} className="bg-white p-6 rounded-2xl shadow-sm">
-                  <div className="flex gap-1 mb-4">
-                    {[...Array(review.rating)].map((_, i) => (
-                      <svg key={i} className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                      </svg>
-                    ))}
-                  </div>
-                  <p className="text-gray-600 mb-4 italic">"{review.text}"</p>
-                  <p className="font-semibold text-gray-900">{review.name}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Membership/Pricing Section */}
+      {/* Join Now / Membership Section */}
       {data.membership && (
-        <section className="py-16 lg:py-24">
+        <section className="py-16 lg:py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Join Now</h2>
-              <p className="text-lg text-gray-600">Start your transformation today with a 7-day free trial</p>
-            </div>
             <div className="max-w-lg mx-auto">
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Join Now</h2>
+              <p className="text-gray-500 mb-8">We are glad that you have decided to join us.</p>
+              
               <div
-                className="rounded-3xl p-8 shadow-xl border-2"
-                style={{ borderColor: themeColor }}
+                className="rounded-2xl p-8 border-2"
+                style={{ borderColor: `${themeColor}40` }}
               >
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">{data.plan.title}</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">{data.plan.title}</h3>
                 <div className="mb-6">
-                  <span className="text-5xl font-bold" style={{ color: themeColor }}>
+                  <span className="text-4xl font-bold text-gray-900">
                     {currencySymbol}{data.plan.price}
                   </span>
-                  <span className="text-gray-500">/month</span>
+                  <span className="text-gray-500 ml-1">/ month</span>
                 </div>
-                <ul className="space-y-3 mb-8">
+                <ul className="space-y-4 mb-8">
                   {data.plan.benefits.map((benefit, idx) => (
-                    <li key={idx} className="flex items-center gap-3">
-                      <svg className="w-5 h-5 flex-shrink-0" style={{ color: themeColor }} fill="currentColor" viewBox="0 0 24 24">
+                    <li key={idx} className="flex items-start gap-3">
+                      <svg className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: themeColor }} fill="currentColor" viewBox="0 0 24 24">
                         <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                       </svg>
                       <span className="text-gray-700">{benefit}</span>
@@ -225,12 +222,11 @@ export default function LandingPageClient({ data, brandSlug }: Props) {
                 </ul>
                 <button
                   onClick={handleJoinClick}
-                  style={{ backgroundColor: themeColor }}
-                  className="w-full py-4 text-white font-semibold rounded-full hover:opacity-90 transition shadow-lg text-lg"
+                  style={{ background: `linear-gradient(135deg, ${themeColor}, ${themeColor}dd)` }}
+                  className="w-full py-4 text-white font-semibold rounded-full hover:opacity-90 transition shadow-lg text-base uppercase tracking-wide"
                 >
-                  Start 7-Day Free Trial
+                  Join
                 </button>
-                <p className="text-center text-sm text-gray-500 mt-4">No credit card required to start</p>
               </div>
             </div>
           </div>
@@ -238,18 +234,18 @@ export default function LandingPageClient({ data, brandSlug }: Props) {
       )}
 
       {/* Footer */}
-      <footer className="py-8 border-t border-gray-200">
+      <footer className="py-12 border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="relative w-24 h-8">
-                <Image src={data.logo} alt={data.brand_name} fill className="object-contain" />
-              </div>
-            </div>
-            <p className="text-sm text-gray-500">© {new Date().getFullYear()} {data.brand_name}. All rights reserved.</p>
+          <div className="flex flex-col items-center gap-6">
+            <p className="text-sm text-gray-400">Powered by</p>
+            <span className="text-3xl font-bold text-gray-900">moove</span>
             <div className="flex gap-6">
-              <Link href="#" className="text-sm text-gray-500 hover:text-gray-700">Privacy Policy</Link>
-              <Link href="#" className="text-sm text-gray-500 hover:text-gray-700">Terms of Service</Link>
+              <Link href="#" className="text-sm text-gray-500 hover:text-gray-700 underline">
+                Terms and Conditions
+              </Link>
+              <Link href="#" className="text-sm text-gray-500 hover:text-gray-700 underline">
+                Privacy Policy
+              </Link>
             </div>
           </div>
         </div>
