@@ -69,9 +69,9 @@ export default function ExplorePage() {
   ];
 
   return (
-    <div className="pb-8">
+    <div className="pb-8 pt-4">
       {/* Page Title */}
-      <div className="container mx-auto px-4 pt-4 pb-2">
+      <div className="px-4 pt-4 pb-2">
         <Title color="black" size="2xl" weight="700">
           Explore Workouts
         </Title>
