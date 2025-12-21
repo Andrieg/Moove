@@ -28,7 +28,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
     pathname === "/coach/login" ||
     pathname === "/coach/onboarding" ||
     pathname === "/client/register" ||
-    pathname === "/client/login";
+    pathname === "/client/login" ||
+    pathname === "/client/onboarding";
 
   // Dashboard pages have their own layout (now under /coach/dashboard)
   const isDashboard = pathname?.startsWith("/coach/dashboard");
