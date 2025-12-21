@@ -19,12 +19,10 @@ const mainTabs: Tab[] = [
     link: "/explore",
     bottomTabs: [
       { id: "workouts", title: "Workouts", link: "/explore" },
-      { id: "community", title: "Community", link: "/community" },
       { id: "challenges", title: "Challenges", link: "/challenges" },
       { id: "videos", title: "Videos", link: "/videos" },
     ],
   },
-  { id: "book", title: "Book", link: "/book" },
   { id: "profile", title: "Profile", link: "/profile" },
 ];
 
