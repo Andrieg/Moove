@@ -6,83 +6,71 @@
 - Client app access for members
 - Dashboard access for coaches
 
+## UI/UX Design System Implementation Status
+
+### Design System Updates (Current Session)
+- ✅ Created comprehensive design-system.ts with unified tokens
+- ✅ Updated globals.css with CSS variables for colors, shadows, radius
+- ✅ Standardized color palette to slate (replacing mix of gray/slate)
+- ✅ Unified border-radius: rounded-lg for buttons/inputs, rounded-xl for cards
+- ✅ Consistent typography scale across all pages
+- ✅ Updated Button, Card, Input, Select, Textarea, Modal, Table components
+- ✅ Refactored coach register/login pages with slate colors
+- ✅ Refactored client register/onboarding pages
+- ✅ Updated coach landing page with consistent styling
+
+### Components Updated:
+- /app/apps/client/app/coach/dashboard/_components/ui/Button.tsx
+- /app/apps/client/app/coach/dashboard/_components/ui/Card.tsx
+- /app/apps/client/app/coach/dashboard/_components/ui/Input.tsx
+- /app/apps/client/app/coach/dashboard/_components/ui/Select.tsx
+- /app/apps/client/app/coach/dashboard/_components/ui/Textarea.tsx
+- /app/apps/client/app/coach/dashboard/_components/ui/Modal.tsx
+- /app/apps/client/app/coach/dashboard/_components/ui/Table.tsx
+- /app/apps/client/app/coach/dashboard/_components/ui/PageHeader.tsx
+- /app/apps/client/app/coach/dashboard/_components/ui/design-system.ts
+- /app/apps/client/app/_components/atoms/Button.tsx
+- /app/apps/client/app/_components/atoms/Text.tsx
+- /app/apps/client/app/_components/atoms/Title.tsx
+
+### Pages Updated:
+- /app/apps/client/app/client/register/page.tsx
+- /app/apps/client/app/client/onboarding/page.tsx
+- /app/apps/client/app/coach/register/page.tsx
+- /app/apps/client/app/coach/login/page.tsx
+- /app/apps/client/app/coach/[brandSlug]/_components/LandingPageClient.tsx
+- /app/apps/client/app/explore/page.tsx
+- /app/apps/client/app/globals.css
+
 ## Completed Features
 
 ### 1. Coach Landing Page (/coach/{brandSlug})
 - ✅ Hero section with title, description, CTA
 - ✅ About section
 - ✅ Access/What You Get section
-- ✅ Reviews section with testimonials
-- ✅ Membership/Pricing section with 7-day free trial
+- ✅ Membership/Pricing section with Join button
 - ✅ Sign In / Join Now buttons
 - ✅ Theme color customization support
+- ✅ Consistent slate color palette
 
 ### 2. Member Signup Flow
-- ✅ Signup page at /signup?coach={brandSlug}
-- ✅ Coach parameter passed correctly
-- ✅ Form with First Name, Last Name, Email
+- ✅ Client registration at /client/register
+- ✅ Client onboarding at /client/onboarding
 - ✅ Auto-login after signup
-- ✅ Member linked to coach via brand
-- ✅ Redirect to client app after signup
 
-### 3. Client App (Member View)
-- ✅ Shows after successful signup
-- ✅ Navigation: For You, Explore, Book, Profile
-- ✅ Coach button for accessing dashboard
-- ✅ Content will be filtered by coach (placeholder shown when no content)
-
-### 4. Coach Dashboard (/dashboard)
+### 3. Coach Dashboard (/coach/dashboard)
 - ✅ Videos management (CRUD)
 - ✅ Challenges management (CRUD)
+- ✅ Members list and detail view
+- ✅ Landing page editor
+- ✅ Profile settings
 - ✅ Stats overview
 - ✅ Navigation sidebar
-- ✅ View Member App link
 
-## Test Flow
-1. Visit /coach/annamartin - Landing page loads ✓
-2. Click "Start Free Trial" - Redirects to /signup?coach=annamartin ✓
-3. Fill form and submit - Account created, redirected to client app ✓
-4. Member sees client app with their coach's content context ✓
+## Pending Items
+- P2: Bottom Navigation visibility issues (deferred)
+- P1: Harden Stripe Integration (server-side verification)
 
-## Landing Page Editor Test Flow
-1. Login at /login with any email ✓
-2. Navigate to /dashboard/landing ✓
-3. Edit fields in General/Hero/Content/Pricing/Reviews tabs ✓
-4. Click "Save Changes" - API call made, success toast shown ✓
-5. Visit /coach/{brand_slug} - Changes visible on public page ✓
-
-## Coach/Member Roles + Zustand Implementation
-- ✅ Global state management with Zustand (useAppStore)
-- ✅ Coach registration at /register?type=coach
-- ✅ Member registration at /register
-- ✅ Role-based route protection for /dashboard/*
-- ✅ Members redirected to home with toast when accessing coach areas
-- ✅ Global toast notifications via useAppStore
-
-## Coach Account Creation Journey (Updated to Match Reference Design)
-- ✅ Step 1: Email input with "SEND ME A LOGIN LINK" button (black bg, white card)
-- ✅ Step 2: "Create account link sent!" confirmation with checkmark icon
-- ✅ Step 3: "Let's get to know you" - First Name, Last Name, Brand Name
-- ✅ Color Theme picker with 8 color options and checkmark selection
-- ✅ Dashboard redirect with "Welcome, {name}!" and personalized greeting
-- ✅ Updated sidebar navigation (Home, Profile, Members, Library, Live, Challenges, Add link, Support)
-- ✅ Get Started checklist for new coaches
-
-## Pending
-- Stripe integration for actual payments
-- Content filtering by coach (show only coach's content to their members)
-- Member management in dashboard
-
-## Completed (New)
-
-### 5. Landing Page Editor (/dashboard/landing)
-- ✅ Full CRUD functionality via API
-- ✅ General settings (brand name, slug, theme color, about)
-- ✅ Hero section (title, description, image URL)
-- ✅ Content section ("What You Get" with title, description, image)
-- ✅ Pricing section (plan name, price, benefits list)
-- ✅ Reviews section (add/remove reviews with ratings)
-- ✅ API endpoints: GET/POST /landingpage/settings/:brandSlug
-- ✅ Changes persist in memory and reflect on public landing page
-- ✅ Toast notifications for save success/failure
-
+## Incorporate User Feedback
+- Design system implementation completed
+- All UI components now use consistent tokens from design-system.ts
