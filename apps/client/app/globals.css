@@ -70,33 +70,15 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* Responsive font sizing - matches legacy */
+/* Responsive font sizing */
 html {
-  font-size: 12px;
-}
-
-@media only screen and (min-width: 400px) {
-  html {
-    font-size: 14px;
-  }
+  font-size: 14px;
 }
 
 @media only screen and (min-width: 768px) {
   html {
     font-size: 16px;
   }
-}
-
-@media only screen and (min-width: 1200px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-/* Force light mode - legacy app is light only */
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
 }
 
 body {
@@ -111,6 +93,31 @@ body {
   min-height: -webkit-fill-available;
   /* Space for fixed header */
   margin-top: calc(5rem + 1px);
+}
+
+/* =============================================================================
+   UTILITY CLASSES - Consistent Design Tokens
+   ============================================================================= */
+
+/* Text Colors */
+.text-primary { color: var(--primary); }
+.text-primary-dark { color: var(--primary-dark); }
+.text-muted { color: var(--slate-500); }
+.text-secondary { color: var(--slate-600); }
+
+/* Background Colors */
+.bg-primary { background-color: var(--primary); }
+.bg-primary-light { background-color: var(--primary-100); }
+.bg-surface { background-color: var(--slate-50); }
+
+/* Border Colors */
+.border-default { border-color: var(--slate-200); }
+
+/* Focus Ring */
+.focus-ring {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--primary-200);
+  border-color: var(--primary);
 }
 
 /* Hide scrollbar on mobile bottom nav */
