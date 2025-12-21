@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../../_context/AuthContext";
+import type { User } from "@moove/types";
 
 const FITNESS_GOALS = [
   "Be more active",
@@ -29,7 +31,9 @@ interface FormData {
 
 export default function ClientOnboardingPage() {
   const router = useRouter();
+  const { login, showToast } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
@@ -42,16 +46,24 @@ export default function ClientOnboardingPage() {
     fitnessGoal: "",
   });
 
+  // Load email from localStorage on mount
+  useEffect(() => {
+    const pendingEmail = localStorage.getItem("moove_pending_email");
+    if (pendingEmail) {
+      setEmail(pendingEmail);
+    }
+  }, []);
+
   const updateField = <K extends keyof FormData>(field: K, value: FormData[K]) => {
     setFormData({ ...formData, [field]: value });
   };
 
-  // Convert weight based on unit
+  // Get weight label based on unit
   const getWeightLabel = () => {
     return formData.weightUnit === "kg" ? "Weight (kg)" : "Weight (lbs)";
   };
 
-  // Convert height based on unit
+  // Get height label based on unit
   const getHeightLabel = () => {
     return formData.heightUnit === "cm" ? "Height (cm)" : "Height (ft)";
   };
@@ -60,16 +72,25 @@ export default function ClientOnboardingPage() {
     e.preventDefault();
 
     if (!formData.firstName.trim() || !formData.lastName.trim()) {
-      alert("Please enter your name");
+      showToast("error", "Please enter your name");
       return;
     }
 
     setIsLoading(true);
     try {
-      // Save to localStorage for now
-      const userData = {
+      // Create user object
+      const user: User = {
+        id: "user-" + Date.now(),
+        email: email || `user${Date.now()}@example.com`,
         firstName: formData.firstName,
         lastName: formData.lastName,
+        role: "member",
+        createdAt: new Date().toISOString(),
+      };
+
+      // Save profile data to localStorage
+      const profileData = {
+        ...user,
         dob: formData.dob,
         weight: formData.weight,
         weightUnit: formData.weightUnit,
@@ -79,13 +100,21 @@ export default function ClientOnboardingPage() {
         fitnessGoal: formData.fitnessGoal,
         onboardingComplete: true,
       };
-      localStorage.setItem("moove_client_profile", JSON.stringify(userData));
+      localStorage.setItem("moove_client_profile", JSON.stringify(profileData));
 
-      // Redirect to home or dashboard
+      // Clean up pending email
+      localStorage.removeItem("moove_pending_email");
+
+      // Log in the user
+      const token = `dev-token-member-${Date.now()}`;
+      login(user, token);
+      showToast("success", `Welcome, ${formData.firstName}! Your profile has been created.`);
+
+      // Redirect to home
       router.push("/");
     } catch (err) {
       console.error("Failed to save profile:", err);
-      alert("Failed to save profile. Please try again.");
+      showToast("error", "Failed to save profile. Please try again.");
     } finally {
       setIsLoading(false);
     }
