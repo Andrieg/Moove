@@ -2,6 +2,8 @@
 
 import { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
 import { useAuth } from "../../_context/AuthContext";
 import type { User } from "@moove/types";
 
@@ -121,175 +123,175 @@ export default function ClientOnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
-        <div className="max-w-lg mx-auto px-4 py-4">
-          <h1 className="text-xl font-bold text-gray-900 text-center">Complete Your Profile</h1>
-        </div>
+    <div className="min-h-screen bg-white flex flex-col">
+      {/* Header - Same as register page */}
+      <header className="p-6">
+        <Image src="/images/logo.svg" alt="Moove" width={100} height={32} className="" />
       </header>
 
-      <div className="max-w-lg mx-auto px-4 py-8">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* First Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              First name
-            </label>
-            <input
-              type="text"
-              value={formData.firstName}
-              onChange={(e) => updateField("firstName", e.target.value)}
-              placeholder="Your real name"
-              className="w-full px-4 py-3.5 rounded-xl bg-gray-100 border-0 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/30"
-            />
-          </div>
+      {/* Main Content */}
+      <main className="flex-1 flex items-center justify-center px-4">
+        <div className="w-full max-w-sm">
+          <div className="bg-white rounded-2xl p-8">
+            <h1 className="text-xl font-semibold text-gray-900 mb-6 text-center">
+              Complete Your Profile
+            </h1>
 
-          {/* Last Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Last name
-            </label>
-            <input
-              type="text"
-              value={formData.lastName}
-              onChange={(e) => updateField("lastName", e.target.value)}
-              placeholder="Your real last name"
-              className="w-full px-4 py-3.5 rounded-xl bg-gray-100 border-0 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/30"
-            />
-          </div>
-
-          {/* DOB */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              DOB
-            </label>
-            <div className="relative">
-              <input
-                type="date"
-                value={formData.dob}
-                onChange={(e) => updateField("dob", e.target.value)}
-                className="w-full px-4 py-3.5 rounded-xl bg-gray-100 border-0 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/30"
-              />
-            </div>
-          </div>
-
-          {/* Weight and Height Row */}
-          <div className="grid grid-cols-2 gap-4">
-            {/* Weight */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  {getWeightLabel()}
-                </label>
-                <button
-                  type="button"
-                  onClick={() => updateField("weightUnit", formData.weightUnit === "kg" ? "lbs" : "kg")}
-                  className="text-xs text-[#308FAB] font-medium hover:underline"
-                >
-                  {formData.weightUnit === "kg" ? "Switch to lbs" : "Switch to kg"}
-                </button>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* First Name */}
+              <div>
+                <label className="block text-sm text-gray-600 mb-2">First name</label>
+                <input
+                  type="text"
+                  value={formData.firstName}
+                  onChange={(e) => updateField("firstName", e.target.value)}
+                  placeholder="Your real name"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/20 focus:border-[#308FAB] text-sm"
+                />
               </div>
-              <input
-                type="number"
-                value={formData.weight}
-                onChange={(e) => updateField("weight", e.target.value)}
-                placeholder={formData.weightUnit === "kg" ? "60" : "132"}
-                className="w-full px-4 py-3.5 rounded-xl bg-gray-100 border-0 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/30"
-              />
-            </div>
 
-            {/* Height */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  {getHeightLabel()}
-                </label>
-                <button
-                  type="button"
-                  onClick={() => updateField("heightUnit", formData.heightUnit === "cm" ? "ft" : "cm")}
-                  className="text-xs text-[#308FAB] font-medium hover:underline"
-                >
-                  {formData.heightUnit === "cm" ? "Switch to ft" : "Switch to cm"}
-                </button>
+              {/* Last Name */}
+              <div>
+                <label className="block text-sm text-gray-600 mb-2">Last name</label>
+                <input
+                  type="text"
+                  value={formData.lastName}
+                  onChange={(e) => updateField("lastName", e.target.value)}
+                  placeholder="Your real last name"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/20 focus:border-[#308FAB] text-sm"
+                />
               </div>
-              <input
-                type="number"
-                value={formData.height}
-                onChange={(e) => updateField("height", e.target.value)}
-                placeholder={formData.heightUnit === "cm" ? "169" : "5.5"}
-                step={formData.heightUnit === "ft" ? "0.1" : "1"}
-                className="w-full px-4 py-3.5 rounded-xl bg-gray-100 border-0 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/30"
-              />
-            </div>
-          </div>
 
-          {/* Gender */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Gender
-            </label>
-            <div className="relative">
-              <select
-                value={formData.gender}
-                onChange={(e) => updateField("gender", e.target.value)}
-                className="w-full px-4 py-3.5 rounded-xl bg-gray-100 border-0 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/30 appearance-none cursor-pointer"
-              >
-                <option value="" disabled>Select gender</option>
-                {GENDERS.map((g) => (
-                  <option key={g} value={g}>{g}</option>
-                ))}
-              </select>
-              <svg
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </div>
+              {/* DOB */}
+              <div>
+                <label className="block text-sm text-gray-600 mb-2">DOB</label>
+                <input
+                  type="date"
+                  value={formData.dob}
+                  onChange={(e) => updateField("dob", e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/20 focus:border-[#308FAB] text-sm"
+                />
+              </div>
 
-          {/* Fitness Goal */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Fitness goal
-            </label>
-            <div className="relative">
-              <select
-                value={formData.fitnessGoal}
-                onChange={(e) => updateField("fitnessGoal", e.target.value)}
-                className="w-full px-4 py-3.5 rounded-xl bg-gray-100 border-0 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/30 appearance-none cursor-pointer"
-              >
-                <option value="" disabled>Select fitness goal</option>
-                {FITNESS_GOALS.map((goal) => (
-                  <option key={goal} value={goal}>{goal}</option>
-                ))}
-              </select>
-              <svg
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </div>
+              {/* Weight and Height Row */}
+              <div className="grid grid-cols-2 gap-3">
+                {/* Weight */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-sm text-gray-600">{getWeightLabel()}</label>
+                    <button
+                      type="button"
+                      onClick={() => updateField("weightUnit", formData.weightUnit === "kg" ? "lbs" : "kg")}
+                      className="text-xs text-[#308FAB] font-medium hover:underline"
+                    >
+                      {formData.weightUnit === "kg" ? "lbs" : "kg"}
+                    </button>
+                  </div>
+                  <input
+                    type="number"
+                    value={formData.weight}
+                    onChange={(e) => updateField("weight", e.target.value)}
+                    placeholder={formData.weightUnit === "kg" ? "60" : "132"}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/20 focus:border-[#308FAB] text-sm"
+                  />
+                </div>
 
-          {/* Submit Button */}
-          <div className="pt-4">
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full py-4 bg-[#308FAB] text-white font-semibold rounded-full hover:bg-[#267a91] transition disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
-            >
-              {isLoading ? "Saving..." : "Continue"}
-            </button>
+                {/* Height */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-sm text-gray-600">{getHeightLabel()}</label>
+                    <button
+                      type="button"
+                      onClick={() => updateField("heightUnit", formData.heightUnit === "cm" ? "ft" : "cm")}
+                      className="text-xs text-[#308FAB] font-medium hover:underline"
+                    >
+                      {formData.heightUnit === "cm" ? "ft" : "cm"}
+                    </button>
+                  </div>
+                  <input
+                    type="number"
+                    value={formData.height}
+                    onChange={(e) => updateField("height", e.target.value)}
+                    placeholder={formData.heightUnit === "cm" ? "169" : "5.5"}
+                    step={formData.heightUnit === "ft" ? "0.1" : "1"}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/20 focus:border-[#308FAB] text-sm"
+                  />
+                </div>
+              </div>
+
+              {/* Gender */}
+              <div>
+                <label className="block text-sm text-gray-600 mb-2">Gender</label>
+                <div className="relative">
+                  <select
+                    value={formData.gender}
+                    onChange={(e) => updateField("gender", e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/20 focus:border-[#308FAB] text-sm appearance-none cursor-pointer bg-white"
+                  >
+                    <option value="" disabled>Select gender</option>
+                    {GENDERS.map((g) => (
+                      <option key={g} value={g}>{g}</option>
+                    ))}
+                  </select>
+                  <svg
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Fitness Goal */}
+              <div>
+                <label className="block text-sm text-gray-600 mb-2">Fitness goal</label>
+                <div className="relative">
+                  <select
+                    value={formData.fitnessGoal}
+                    onChange={(e) => updateField("fitnessGoal", e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/20 focus:border-[#308FAB] text-sm appearance-none cursor-pointer bg-white"
+                  >
+                    <option value="" disabled>Select fitness goal</option>
+                    {FITNESS_GOALS.map((goal) => (
+                      <option key={goal} value={goal}>{goal}</option>
+                    ))}
+                  </select>
+                  <svg
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-3 bg-[#308FAB] text-white font-medium rounded-lg hover:bg-[#217E9A] transition disabled:opacity-50 text-sm mt-2"
+              >
+                {isLoading ? "SAVING..." : "CONTINUE"}
+              </button>
+            </form>
           </div>
-        </form>
-      </div>
+        </div>
+      </main>
+
+      {/* Footer - Same as register page */}
+      <footer className="py-6 text-center">
+        <p className="text-xs text-gray-500 mb-2">Powered by</p>
+        <Image src="/images/logo.svg" alt="Moove" width={80} height={24} className="mx-auto opacity-50" />
+        <div className="flex items-center justify-center gap-4 mt-3 text-xs text-gray-500">
+          <Link href="#" className="hover:text-gray-400">Terms and Conditions</Link>
+          <span>|</span>
+          <Link href="#" className="hover:text-gray-400">Privacy Policy</Link>
+        </div>
+      </footer>
     </div>
   );
 }
