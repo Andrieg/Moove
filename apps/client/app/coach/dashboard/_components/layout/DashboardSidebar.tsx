@@ -18,9 +18,7 @@ const navItems: NavItem[] = [
   { id: "profile", label: "Profile", icon: "user", href: "/coach/dashboard/profile" },
   { id: "members", label: "Members", icon: "users", href: "/coach/dashboard/members" },
   { id: "library", label: "Library", icon: "folder", href: "/coach/dashboard/videos" },
-  { id: "live", label: "Live", icon: "wifi", href: "/coach/dashboard/live" },
   { id: "challenges", label: "Challenges", icon: "flag", href: "/coach/dashboard/challenges" },
-  { id: "addlink", label: "Add link", icon: "link", href: "/coach/dashboard/links" },
 ];
 
 const bottomNavItems: NavItem[] = [
