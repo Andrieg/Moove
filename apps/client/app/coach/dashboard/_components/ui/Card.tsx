@@ -1,15 +1,30 @@
 "use client";
 
+import { cards, spacing } from "./design-system";
+
 interface CardProps {
   children: React.ReactNode;
   className?: string;
   padding?: "none" | "sm" | "md" | "lg";
+  hover?: boolean;
+  onClick?: () => void;
 }
 
-export default function Card({ children, className = "", padding = "md" }: CardProps) {
-  const paddingClasses = { none: "", sm: "p-4", md: "p-6", lg: "p-8" };
+export default function Card({ 
+  children, 
+  className = "", 
+  padding = "md",
+  hover = false,
+  onClick,
+}: CardProps) {
+  const hoverClass = hover || onClick ? "hover:shadow-md transition-shadow" : "";
+  const cursorClass = onClick ? "cursor-pointer" : "";
+  
   return (
-    <div className={`bg-white rounded-xl shadow-sm border border-slate-200 ${paddingClasses[padding]} ${className}`}>
+    <div 
+      className={`${cards.base} ${spacing.card[padding]} ${hoverClass} ${cursorClass} ${className}`}
+      onClick={onClick}
+    >
       {children}
     </div>
   );

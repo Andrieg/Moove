@@ -11,17 +11,25 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, helperText, className = "", ...props }, ref) => {
+    const inputClasses = [
+      forms.input,
+      error ? forms.inputError : "",
+      props.disabled ? forms.inputDisabled : "",
+      props.readOnly ? forms.inputReadonly : "",
+      className,
+    ].filter(Boolean).join(" ");
+
     return (
       <div>
         {label && (
-          <label className={`block ${typography.label} mb-2`}>
+          <label className={forms.label}>
             {label}
-            {props.required && " *"}
+            {props.required && <span className={forms.labelRequired}>*</span>}
           </label>
         )}
         <input
           ref={ref}
-          className={`${forms.input} ${error ? forms.inputError : ""} ${props.disabled ? forms.inputDisabled : ""} ${props.readOnly ? forms.inputReadonly : ""} ${className}`}
+          className={inputClasses}
           {...props}
         />
         {error && <p className={`${typography.error} mt-1`}>{error}</p>}

@@ -1,7 +1,7 @@
 "use client";
 
 import { forwardRef } from "react";
-import { forms, typography } from "./design-system";
+import { forms, typography, icons } from "./design-system";
 
 interface SelectOption {
   value: string;
@@ -18,18 +18,26 @@ interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>
 
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({ label, error, helperText, options, placeholder, className = "", ...props }, ref) => {
+    const selectClasses = [
+      forms.select,
+      error ? forms.inputError : "",
+      props.disabled ? forms.inputDisabled : "",
+      "pr-10",
+      className,
+    ].filter(Boolean).join(" ");
+
     return (
       <div>
         {label && (
-          <label className={`block ${typography.label} mb-2`}>
+          <label className={forms.label}>
             {label}
-            {props.required && " *"}
+            {props.required && <span className={forms.labelRequired}>*</span>}
           </label>
         )}
         <div className="relative">
           <select
             ref={ref}
-            className={`${forms.select} ${error ? forms.inputError : ""} ${props.disabled ? forms.inputDisabled : ""} pr-10 ${className}`}
+            className={selectClasses}
             {...props}
           >
             {placeholder && (
@@ -44,7 +52,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             ))}
           </select>
           <svg
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none"
+            className={`absolute right-3 top-1/2 -translate-y-1/2 ${icons.sizes.md} text-slate-400 pointer-events-none`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
