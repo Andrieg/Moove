@@ -108,22 +108,22 @@ export default function LandingPageClient({ data, brandSlug }: Props) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight mb-6">
                 {mergedData.brand_name}
               </h1>
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+              <p className="text-lg text-slate-600 mb-8 leading-relaxed">
                 {mergedData.hero.description}
               </p>
               <div className="flex flex-wrap items-center gap-4">
                 <button
                   onClick={handleFreeTrialClick}
                   style={{ background: `linear-gradient(135deg, ${themeColor}, ${themeColor}dd)` }}
-                  className="px-8 py-4 text-white font-semibold rounded-full hover:opacity-90 transition shadow-lg text-base uppercase tracking-wide"
+                  className="px-8 py-4 text-white font-semibold rounded-lg hover:opacity-90 transition shadow-sm text-base uppercase tracking-wide"
                 >
                   Free Trial
                 </button>
                 {mergedData.hero.video && (
-                  <button className="flex items-center gap-3 text-gray-700 hover:text-gray-900 transition">
+                  <button className="flex items-center gap-3 text-slate-700 hover:text-slate-900 transition">
                     <div 
                       className="w-12 h-12 rounded-full flex items-center justify-center border-2"
                       style={{ borderColor: themeColor }}
@@ -141,7 +141,7 @@ export default function LandingPageClient({ data, brandSlug }: Props) {
               <img
                 src={mergedData.hero.cover.url}
                 alt={mergedData.hero.title}
-                className="rounded-2xl shadow-2xl w-full aspect-[4/5] object-cover"
+                className="rounded-xl shadow-lg w-full aspect-[4/5] object-cover"
               />
             </div>
           </div>
