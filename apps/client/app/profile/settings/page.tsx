@@ -54,7 +54,7 @@ export default function SettingsPage() {
               <div className="px-4 py-4 flex justify-between items-center border-b border-gray-100">
                 <div>
                   <Text size="base" weight="500">Push Notifications</Text>
-                  <Text size="sm" color="#B0B0B0" className="mt-1">Receive workout reminders</Text>
+                  <p className="text-sm text-gray-400 mt-2">Receive workout reminders</p>
                 </div>
                 <button
                   onClick={() => setNotifications(!notifications)}
@@ -72,7 +72,7 @@ export default function SettingsPage() {
               <div className="px-4 py-4 flex justify-between items-center">
                 <div>
                   <Text size="base" weight="500">Email Updates</Text>
-                  <Text size="sm" color="#B0B0B0" className="mt-1">Get weekly progress reports</Text>
+                  <p className="text-sm text-gray-400 mt-2">Get weekly progress reports</p>
                 </div>
                 <button
                   onClick={() => setEmailUpdates(!emailUpdates)}
