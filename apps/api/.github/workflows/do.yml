@@ -1,0 +1,40 @@
+name: deploy-to-do
+
+on:
+  #   push:
+  #     branches:
+  #     - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+  
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }} 
+          known_hosts: 'just-a-placeholder-so-we-dont-get-errors'
+
+      - name: Adding Known Hosts
+        run: ssh-keyscan -H 46.101.22.239 >> ~/.ssh/known_hosts
+
+      - name: Deploy with rsync
+        run: rsync -avz ./ root@46.101.22.239:/home/api/
+
+      - name: Start Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: '46.101.22.239'
+          key: ${{ secrets.SSH_KEY }}
+          username: root
+          script: |
+            cd /home/api/
+            npm install
+            npm run build
+            pm2 stop index
+            pm2 delete index
+            pm2 start -f dist/index.js
