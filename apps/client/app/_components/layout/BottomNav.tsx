@@ -28,18 +28,18 @@ const tabs: NavTab[] = [
     links: ["/explore", "/challenges", "/videos"],
   },
   {
-    id: "chat",
-    title: "Chat",
-    icon: "/icons/chat.svg",
-    iconActive: "/icons/chatFilled.svg",
-    links: ["/chat"],
+    id: "search",
+    title: "Search",
+    icon: "/icons/search.svg",
+    iconActive: "/icons/search.svg",
+    links: ["/search"],
   },
   {
     id: "profile",
     title: "Profile",
     icon: "/images/example-avatar-4.png",
     iconActive: "/images/example-avatar-4.png",
-    links: ["/profile", "/me"],
+    links: ["/profile"],
   },
 ];
 
