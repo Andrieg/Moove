@@ -113,8 +113,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
+    // Determine the correct redirect based on user role before clearing
+    const wasCoach = user?.role === "coach";
     storeLogout();
-    router.push("/login");
+    
+    // Redirect to appropriate login page
+    if (wasCoach) {
+      router.push("/coach/login");
+    } else {
+      router.push("/client/login");
+    }
   };
 
   const handleSetUser = (newUser: User) => {
