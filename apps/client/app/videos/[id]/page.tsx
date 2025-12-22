@@ -260,18 +260,18 @@ export default function VideoDetailPage() {
       <div className="container mx-auto px-4 sm:px-8 lg:px-32 xl:px-48 py-8">
         {/* Class Details */}
         <section className="py-6 border-b border-gray-200">
-          <Title size="base" weight="600" className="mb-3">
+          <Title size="base" weight="600" className="mb-4">
             Class Details
           </Title>
-          <Text size="sm" className="text-gray-700 leading-relaxed">
+          <p className="text-sm text-gray-700 leading-relaxed">
             {(video.description as string) ||
               `This ${duration}-minute workout is designed to push your limits and help you achieve your fitness goals. Perfect for all fitness levels, this class combines strength training with cardio intervals for maximum results.`}
-          </Text>
+          </p>
         </section>
 
         {/* Equipment Needed */}
         <section className="py-6 border-b border-gray-200">
-          <Title size="base" weight="600" className="mb-3">
+          <Title size="base" weight="600" className="mb-4">
             Equipment Needed
           </Title>
           <div className="flex flex-wrap gap-2">
@@ -288,40 +288,29 @@ export default function VideoDetailPage() {
 
         {/* Disclaimer */}
         <section className="py-6 border-b border-gray-200">
-          <Title size="base" weight="600" className="mb-3">
+          <Title size="base" weight="600" className="mb-4">
             Disclaimer
           </Title>
-          <div className="space-y-2">
-            <Text
-              size="sm"
-              weight="600"
-              color="#429FBA"
-              className="cursor-pointer hover:underline"
-            >
+          <div className="space-y-3">
+            <a href="#" className="text-sm font-medium text-[#429FBA] hover:underline block">
               Booking and Cancellation Policy
-            </Text>
-            <br />
-            <Text
-              size="sm"
-              weight="600"
-              color="#429FBA"
-              className="cursor-pointer hover:underline"
-            >
+            </a>
+            <a href="#" className="text-sm font-medium text-[#429FBA] hover:underline block">
               Waiver
-            </Text>
+            </a>
           </div>
         </section>
 
         {/* Notes */}
         <section className="py-6">
-          <Title size="base" weight="600" className="mb-3">
+          <Title size="base" weight="600" className="mb-4">
             Notes
           </Title>
-          <Text size="sm" className="text-gray-700 leading-relaxed">
+          <p className="text-sm text-gray-700 leading-relaxed">
             Please ensure you have adequate space and proper equipment before
             starting this workout. Stay hydrated and listen to your body
             throughout the session.
-          </Text>
+          </p>
         </section>
       </div>
     </div>
