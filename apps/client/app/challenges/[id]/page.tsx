@@ -298,23 +298,23 @@ export default function ChallengeDetailPage() {
           <>
             {/* Challenge Details */}
             <section className="py-6 border-b border-gray-200">
-              <Title size="base" weight="600" className="mb-3">
+              <Title size="base" weight="600" className="mb-4">
                 About This Challenge
               </Title>
-              <Text size="sm" className="text-gray-700 leading-relaxed">
+              <p className="text-sm text-gray-700 leading-relaxed">
                 Join thousands of members in this transformative {totalWorkouts}-day fitness
                 challenge. Each day includes a curated workout designed to build
                 strength, endurance, and confidence. Perfect for all fitness levels
                 with modifications available for every exercise.
-              </Text>
+              </p>
             </section>
 
             {/* What's Included */}
             <section className="py-6 border-b border-gray-200">
-              <Title size="base" weight="600" className="mb-3">
-                What's Included
+              <Title size="base" weight="600" className="mb-4">
+                What&apos;s Included
               </Title>
-              <ul className="space-y-2 ml-4">
+              <ul className="space-y-3 ml-4">
                 {[
                   `${totalWorkouts} days of guided workouts`,
                   "Progress tracking and milestones",
@@ -322,11 +322,9 @@ export default function ChallengeDetailPage() {
                   "Nutrition tips and guidelines",
                   "Certificate of completion",
                 ].map((item, index) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <span className="text-[#308FAB] mt-1">✓</span>
-                    <Text size="sm" className="text-gray-700">
-                      {item}
-                    </Text>
+                  <li key={index} className="flex items-start gap-3">
+                    <span className="text-[#308FAB] mt-0.5">✓</span>
+                    <span className="text-sm text-gray-700">{item}</span>
                   </li>
                 ))}
               </ul>
@@ -334,23 +332,21 @@ export default function ChallengeDetailPage() {
 
             {/* Requirements */}
             <section className="py-6">
-              <Title size="base" weight="600" className="mb-3">
+              <Title size="base" weight="600" className="mb-4">
                 Requirements
               </Title>
-              <Text size="sm" className="text-gray-700 leading-relaxed mb-4">
-                This challenge is designed for all fitness levels. You'll need:
-              </Text>
-              <ul className="space-y-2 ml-4">
+              <p className="text-sm text-gray-700 leading-relaxed mb-4">
+                This challenge is designed for all fitness levels. You&apos;ll need:
+              </p>
+              <ul className="space-y-3 ml-4">
                 {[
                   "Basic equipment (dumbbells, mat)",
                   "20-30 minutes per day",
                   "Commitment and motivation",
                 ].map((item, index) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <span className="text-gray-400 mt-1">•</span>
-                    <Text size="sm" className="text-gray-700">
-                      {item}
-                    </Text>
+                  <li key={index} className="flex items-start gap-3">
+                    <span className="text-gray-400 mt-0.5">•</span>
+                    <span className="text-sm text-gray-700">{item}</span>
                   </li>
                 ))}
               </ul>
