@@ -15,15 +15,7 @@ type FilterCategory = {
   title: string;
 };
 
-type SearchTab = "all" | "workouts" | "challenges" | "instructors";
-
-// Mock instructors data
-const mockInstructors = [
-  { id: "1", name: "Coach Emma", specialty: "HIIT & Cardio", classes: 156, rating: 4.9 },
-  { id: "2", name: "Sarah Johnson", specialty: "Yoga & Flexibility", classes: 89, rating: 4.8 },
-  { id: "3", name: "Mike Chen", specialty: "Strength Training", classes: 124, rating: 4.7 },
-  { id: "4", name: "Laura Martinez", specialty: "Full Body Workouts", classes: 201, rating: 4.9 },
-];
+type SearchTab = "all" | "workouts" | "challenges";
 
 // Recent searches (mock - would normally come from localStorage)
 const recentSearches = ["HIIT", "Yoga", "30 min workout", "Core"];
@@ -122,14 +114,6 @@ export default function SearchContent() {
     });
   }, [challenges, searchQuery]);
 
-  const filteredInstructors = useMemo(() => {
-    return mockInstructors.filter((instructor) => {
-      return !searchQuery ||
-        instructor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        instructor.specialty.toLowerCase().includes(searchQuery.toLowerCase());
-    });
-  }, [searchQuery]);
-
   const clearFilters = () => {
     setSelectedTargets([]);
     setSelectedCategories([]);
@@ -140,7 +124,7 @@ export default function SearchContent() {
     selectedCategories.length > 0 ||
     selectedDurations.length > 0;
 
-  const totalResults = filteredVideos.length + filteredChallenges.length + filteredInstructors.length;
+  const totalResults = filteredVideos.length + filteredChallenges.length;
   const isSearching = searchQuery.length > 0 || hasActiveFilters;
 
   return (
@@ -160,7 +144,7 @@ export default function SearchContent() {
             </div>
             <input
               type="text"
-              placeholder="Search workouts, challenges, instructors..."
+              placeholder="Search workouts, challenges..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               autoFocus
@@ -337,12 +321,11 @@ export default function SearchContent() {
           <>
             {/* Tabs */}
             <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
-              {(["all", "workouts", "challenges", "instructors"] as SearchTab[]).map((tab) => {
+              {(["all", "workouts", "challenges"] as SearchTab[]).map((tab) => {
                 let count = 0;
                 if (tab === "all") count = totalResults;
                 else if (tab === "workouts") count = filteredVideos.length;
                 else if (tab === "challenges") count = filteredChallenges.length;
-                else if (tab === "instructors") count = filteredInstructors.length;
 
                 return (
                   <button
@@ -427,46 +410,6 @@ export default function SearchContent() {
                               cover: { url: "" },
                             }}
                           />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Instructors */}
-                {(activeTab === "all" || activeTab === "instructors") && filteredInstructors.length > 0 && (
-                  <div className="mb-8">
-                    {activeTab === "all" && (
-                      <div className="flex justify-between items-center mb-4">
-                        <Title size="lg" weight="600">Instructors</Title>
-                        <button
-                          onClick={() => setActiveTab("instructors")}
-                          className="text-sm text-[#308FAB] font-semibold hover:underline"
-                        >
-                          See all ({filteredInstructors.length})
-                        </button>
-                      </div>
-                    )}
-                    <div className="space-y-3">
-                      {(activeTab === "all" ? filteredInstructors.slice(0, 3) : filteredInstructors).map((instructor) => (
-                        <div
-                          key={instructor.id}
-                          className="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition cursor-pointer"
-                        >
-                          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#429FBA] to-[#217E9A] flex items-center justify-center text-white text-xl font-bold">
-                            {instructor.name[0]}
-                          </div>
-                          <div className="flex-1">
-                            <Title size="base" weight="600">{instructor.name}</Title>
-                            <Text size="sm" color="#666">{instructor.specialty}</Text>
-                          </div>
-                          <div className="text-right">
-                            <div className="flex items-center gap-1 justify-end">
-                              <Image src="/icons/filledStar.svg" alt="Rating" width={14} height={14} />
-                              <Text size="sm" weight="600">{instructor.rating}</Text>
-                            </div>
-                            <Text size="xs" color="#B0B0B0">{instructor.classes} classes</Text>
-                          </div>
                         </div>
                       ))}
                     </div>
