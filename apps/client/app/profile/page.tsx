@@ -55,7 +55,7 @@ export default function ProfilePage() {
 
   const handleLogout = () => {
     clearToken();
-    router.push("/onboarding");
+    router.push("/client/login");
   };
 
   if (loading) {
