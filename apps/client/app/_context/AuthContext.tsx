@@ -2,8 +2,10 @@
 
 import { createContext, useContext, useEffect, ReactNode } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import type { User as AuthUser, Session } from "@supabase/supabase-js";
 import type { User } from "@moove/types";
 import { useAppStore } from "../_store/useAppStore";
+import { supabase } from "../../lib/supabase";
 
 interface AuthContextType {
   user: User | null;
@@ -11,18 +13,15 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isCoach: boolean;
   isMember: boolean;
-  login: (user: User, token: string) => void;
-  logout: () => void;
+  signUp: (email: string, password: string, role: "coach" | "member", metadata?: Record<string, unknown>) => Promise<{ error: Error | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signOut: () => Promise<void>;
   setUser: (user: User) => void;
   showToast: (type: "success" | "error" | "info" | "warning", message: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const TOKEN_KEY = "moovefit-token";
-const USER_KEY = "moovefit-user";
-
-// Public routes that don't require authentication
 const PUBLIC_ROUTES = [
   "/",
   "/auth",
@@ -35,17 +34,58 @@ const PUBLIC_ROUTES = [
   "/payment",
 ];
 
-// Routes that require coach role
 const COACH_ROUTES = ["/coach/dashboard"];
+
+async function fetchUserProfile(authUser: AuthUser): Promise<User | null> {
+  const { data: coach } = await supabase
+    .from("coaches")
+    .select("*")
+    .eq("id", authUser.id)
+    .maybeSingle();
+
+  if (coach) {
+    return {
+      id: coach.id,
+      email: coach.email,
+      firstName: coach.first_name,
+      lastName: coach.last_name,
+      role: "coach",
+      brandSlug: coach.brand_slug,
+      brand: coach.display_name,
+      createdAt: coach.created_at,
+      updatedAt: coach.updated_at,
+    };
+  }
+
+  const { data: member } = await supabase
+    .from("members")
+    .select("*, coaches(brand_slug, display_name)")
+    .eq("id", authUser.id)
+    .maybeSingle();
+
+  if (member) {
+    return {
+      id: member.id,
+      email: member.email,
+      firstName: member.first_name,
+      lastName: member.last_name,
+      role: "member",
+      brand: member.coaches?.display_name,
+      brandSlug: member.coaches?.brand_slug,
+      createdAt: member.created_at,
+      updatedAt: member.updated_at,
+    };
+  }
+
+  return null;
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Use Zustand store
   const {
     user,
-    token,
     isAuthenticated,
     isLoading,
     setUser: storeSetUser,
@@ -58,20 +98,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isMember,
   } = useAppStore();
 
-  // Initial auth check - sync with localStorage if Zustand hasn't hydrated yet
   useEffect(() => {
-    const checkAuth = () => {
-      const savedToken = localStorage.getItem(TOKEN_KEY);
-      const savedUser = localStorage.getItem(USER_KEY);
+    const initAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
 
-      if (savedToken && savedUser && !user) {
-        try {
-          const parsedUser = JSON.parse(savedUser);
-          storeLogin(parsedUser, savedToken);
-        } catch {
-          // Invalid data, clear storage
-          localStorage.removeItem(TOKEN_KEY);
-          localStorage.removeItem(USER_KEY);
+      if (session?.user) {
+        const profile = await fetchUserProfile(session.user);
+        if (profile) {
+          storeLogin(profile, session.access_token);
+        } else {
           setLoading(false);
         }
       } else {
@@ -79,10 +114,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    checkAuth();
+    initAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        (async () => {
+          if (event === "SIGNED_IN" && session?.user) {
+            const profile = await fetchUserProfile(session.user);
+            if (profile) {
+              storeLogin(profile, session.access_token);
+            }
+          } else if (event === "SIGNED_OUT") {
+            storeLogout();
+          }
+        })();
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
-  // Route protection logic
   useEffect(() => {
     if (isLoading) return;
 
@@ -94,13 +147,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       (route) => pathname?.startsWith(route)
     );
 
-    // Not authenticated and trying to access protected route
     if (!isAuthenticated && !isPublicRoute) {
       router.push("/coach/login");
       return;
     }
 
-    // Authenticated but trying to access coach-only route without coach role
     if (isAuthenticated && isCoachRoute && !isCoach()) {
       addToast("warning", "Access denied. This area is for coaches only.");
       router.push("/");
@@ -108,16 +159,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [isAuthenticated, isLoading, pathname, router, isCoach, addToast]);
 
-  const login = (newUser: User, newToken: string) => {
-    storeLogin(newUser, newToken);
+  const signUp = async (
+    email: string,
+    password: string,
+    role: "coach" | "member",
+    metadata?: Record<string, unknown>
+  ): Promise<{ error: Error | null }> => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          role,
+          ...metadata,
+        },
+      },
+    });
+
+    if (error) {
+      return { error: new Error(error.message) };
+    }
+
+    return { error: null };
   };
 
-  const logout = () => {
-    // Determine the correct redirect based on user role before clearing
+  const signIn = async (email: string, password: string): Promise<{ error: Error | null }> => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      return { error: new Error(error.message) };
+    }
+
+    return { error: null };
+  };
+
+  const signOut = async () => {
     const wasCoach = user?.role === "coach";
+    await supabase.auth.signOut();
     storeLogout();
-    
-    // Redirect to appropriate login page
+
     if (wasCoach) {
       router.push("/coach/login");
     } else {
@@ -127,7 +210,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const handleSetUser = (newUser: User) => {
     storeSetUser(newUser);
-    localStorage.setItem(USER_KEY, JSON.stringify(newUser));
   };
 
   return (
@@ -138,8 +220,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated,
         isCoach: isCoach(),
         isMember: isMember(),
-        login,
-        logout,
+        signUp,
+        signIn,
+        signOut,
         setUser: handleSetUser,
         showToast: addToast,
       }}
@@ -157,13 +240,4 @@ export function useAuth() {
   return context;
 }
 
-export function getToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem(TOKEN_KEY);
-}
-
-export function clearToken(): void {
-  if (typeof window === "undefined") return;
-  localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(USER_KEY);
-}
+export { supabase };

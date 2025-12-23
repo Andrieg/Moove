@@ -12,6 +12,7 @@
     "@moove/api-client": "*",
     "@moove/types": "*",
     "@stripe/stripe-js": "^8.6.0",
+    "@supabase/supabase-js": "^2.89.0",
     "next": "14.2.35",
     "react": "^18",
     "react-dom": "^18",

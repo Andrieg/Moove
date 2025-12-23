@@ -1,15 +1,12 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { useAuth } from "../../_context/AuthContext";
-import type { User } from "@moove/types";
+import { useAuth, supabase } from "../../_context/AuthContext";
 
-// Extended color themes (same as dashboard/profile/brand)
 const colorThemes = [
-  // Row 1
   { id: "teal", color: "#308FAB" },
   { id: "cyan", color: "#06B6D4" },
   { id: "sky", color: "#0EA5E9" },
@@ -18,7 +15,6 @@ const colorThemes = [
   { id: "violet", color: "#8B5CF6" },
   { id: "purple", color: "#A855F7" },
   { id: "fuchsia", color: "#D946EF" },
-  // Row 2
   { id: "pink", color: "#EC4899" },
   { id: "rose", color: "#F43F5E" },
   { id: "red", color: "#EF4444" },
@@ -27,7 +23,6 @@ const colorThemes = [
   { id: "yellow", color: "#EAB308" },
   { id: "lime", color: "#84CC16" },
   { id: "green", color: "#22C55E" },
-  // Row 3
   { id: "emerald", color: "#10B981" },
   { id: "teal2", color: "#14B8A6" },
   { id: "slate", color: "#64748B" },
@@ -40,7 +35,7 @@ const colorThemes = [
 
 function CoachOnboardingForm() {
   const router = useRouter();
-  const { login, showToast } = useAuth();
+  const { showToast } = useAuth();
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -50,6 +45,24 @@ function CoachOnboardingForm() {
   const [selectedTheme, setSelectedTheme] = useState(colorThemes[0].color);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [userId, setUserId] = useState("");
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setUserEmail(session.user.email || "");
+        setUserId(session.user.id);
+      } else {
+        const savedEmail = localStorage.getItem("moove-onboarding-email");
+        if (savedEmail) {
+          setUserEmail(savedEmail);
+        }
+      }
+    };
+    checkSession();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,33 +83,42 @@ function CoachOnboardingForm() {
 
     setIsLoading(true);
 
-    // Get email from localStorage (set during registration step 1-2)
-    const savedEmail = localStorage.getItem("moove-onboarding-email") || "coach@example.com";
-
     const brandSlug = formData.brandName
       .toLowerCase()
       .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "")
-      .substring(0, 20);
+      .replace(/\s+/g, "-")
+      .substring(0, 30);
 
-    const user: User = {
-      id: "user-" + Date.now(),
-      email: savedEmail,
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      role: "coach",
-      brandSlug: brandSlug,
-      brand: formData.brandName,
-      themeColor: selectedTheme,
-      createdAt: new Date().toISOString(),
-    };
+    const { data: { session } } = await supabase.auth.getSession();
 
-    const token = `dev-token-coach-${Date.now()}`;
+    if (!session?.user) {
+      setError("Please sign in to complete your profile");
+      setIsLoading(false);
+      return;
+    }
 
-    // Save theme color separately for easy access
+    const { error: insertError } = await supabase
+      .from("coaches")
+      .insert({
+        id: session.user.id,
+        email: session.user.email,
+        first_name: formData.firstName.trim(),
+        last_name: formData.lastName.trim(),
+        display_name: formData.brandName.trim(),
+        brand_slug: brandSlug,
+      });
+
+    if (insertError) {
+      if (insertError.code === "23505") {
+        setError("This brand name is already taken. Please choose another.");
+      } else {
+        setError(insertError.message);
+      }
+      setIsLoading(false);
+      return;
+    }
+
     localStorage.setItem("moove_theme_color", selectedTheme);
-    
-    // Save brand data
     localStorage.setItem("moove_brand", JSON.stringify({
       brandName: formData.brandName,
       brandSlug: brandSlug,
@@ -104,8 +126,6 @@ function CoachOnboardingForm() {
       themeColor: selectedTheme,
     }));
 
-    // Login the user
-    login(user, token);
     showToast("success", `Welcome, ${formData.firstName}! Your coach account has been created.`);
     setIsLoading(false);
     router.push("/coach/dashboard");
@@ -121,12 +141,11 @@ function CoachOnboardingForm() {
         <div className="w-full max-w-md">
           <div className="bg-white rounded-2xl p-8">
             <h1 className="text-xl font-semibold text-gray-900 mb-8 text-center">
-              Let's get to know you
+              Let&apos;s get to know you
             </h1>
 
             <form onSubmit={handleSubmit}>
               <div className="space-y-5">
-                {/* First Name */}
                 <div>
                   <label className="block text-sm text-gray-600 mb-2">First Name</label>
                   <input
@@ -138,7 +157,6 @@ function CoachOnboardingForm() {
                   />
                 </div>
 
-                {/* Last Name */}
                 <div>
                   <label className="block text-sm text-gray-600 mb-2">Last Name</label>
                   <input
@@ -150,7 +168,6 @@ function CoachOnboardingForm() {
                   />
                 </div>
 
-                {/* Brand Name */}
                 <div>
                   <label className="block text-sm text-gray-600 mb-2">Brand Name</label>
                   <input
@@ -162,7 +179,6 @@ function CoachOnboardingForm() {
                   />
                 </div>
 
-                {/* Color Theme */}
                 <div>
                   <label className="block text-sm text-gray-600 mb-3">Color Theme</label>
                   <div className="grid grid-cols-8 gap-2">
@@ -196,7 +212,6 @@ function CoachOnboardingForm() {
                   </div>
                 )}
 
-                {/* Submit Button - uses selected theme color */}
                 <button
                   type="submit"
                   disabled={isLoading}

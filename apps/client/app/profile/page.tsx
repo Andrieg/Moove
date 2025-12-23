@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { getCurrentUserProfile, getVideos } from "@moove/api-client";
-import { clearToken } from "../_context/AuthContext";
+import { useAuth } from "../_context/AuthContext";
+import { supabase } from "../../lib/supabase";
 import Title from "../_components/atoms/Title";
 import Text from "../_components/atoms/Text";
 import Button from "../_components/atoms/Button";
@@ -53,8 +54,8 @@ export default function ProfilePage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleLogout = () => {
-    clearToken();
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     router.push("/client/login");
   };
 
