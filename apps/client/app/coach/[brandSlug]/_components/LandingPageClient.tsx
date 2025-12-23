@@ -42,14 +42,16 @@ const defaultPlanData = {
 
 interface LandingPageClientProps {
   brandSlug: string;
+  data?: any;
 }
 
-export default function LandingPageClient({ brandSlug }: LandingPageClientProps) {
+export default function LandingPageClient({ brandSlug, data: serverData }: LandingPageClientProps) {
   const router = useRouter();
   const [themeColor, setThemeColor] = useState("#308FAB");
   const [data, setData] = useState({
     ...defaultLandingPageData,
     plan: defaultPlanData,
+    ...(serverData || {}),
   });
 
   useEffect(() => {
@@ -58,7 +60,7 @@ export default function LandingPageClient({ brandSlug }: LandingPageClientProps)
     if (savedConfig) {
       try {
         const config = JSON.parse(savedConfig);
-        setData((prev) => ({
+        setData((prev: any) => ({
           ...prev,
           ...config,
           hero: { ...prev.hero, ...config.hero },
@@ -291,7 +293,7 @@ export default function LandingPageClient({ brandSlug }: LandingPageClientProps)
                 </div>
 
                 <ul className="space-y-4 mb-8">
-                  {data.plan.benefits.map((benefit, idx) => (
+                  {data.plan.benefits.map((benefit: string, idx: number) => (
                     <li key={idx} className="flex items-start gap-3">
                       <svg className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: themeColor }} fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
