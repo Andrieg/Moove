@@ -1,223 +1,300 @@
-import DB from '../../services/dynamodb';
-import { v4 as uuidv4 } from 'uuid';
+import { supabaseAdmin } from "../../services/supabase";
+import logger from "../../utils/logger";
 
-const createChallange  = async (request: any, reply: any) => {
+const createChallange = async (request: any, reply: any) => {
   const { user } = request;
   const { challenge } = request.body.parsed;
 
-  // ✅ DEV BYPASS: Return mock success response without AWS/DynamoDB
-  if (process.env.NODE_ENV !== "production") {
-    const newChallenge = {
-      ...challenge,
-      id: uuidv4(),
-      email: user?.email || "dev@moove.test",
-      createdAt: new Date().toISOString(),
-    };
-    
-    return reply.send({
-      status: 'SUCCESS',
-      challenge: newChallenge
+  if (user?.role !== "coach") {
+    return reply.code(403).send({
+      status: "FAILED",
+      error: { message: "Only coaches can create challenges", code: 1001 },
     });
   }
 
-  if (!!user?.email) {
-    const result = await DB.CHALLANGES.put({
-      ...challenge,
-      email: user.email,
-      id: uuidv4()
-    });
-  
-  
-    if (result) {
-      return reply.send({
-        status: 'SUCCESS',
-        challenge: result
-      });
-    }
-  
-    return reply.send({
-      status: 'FAIL',
-      error: 'save'
+  const challengeData = {
+    coach_id: user.id,
+    title: challenge.title,
+    description: challenge.description || null,
+    cover_image_url: challenge.coverImageUrl || null,
+    status: challenge.status || "scheduled",
+    start_date: challenge.startDate || null,
+    end_date: challenge.endDate || null,
+  };
+
+  const { data, error } = await supabaseAdmin
+    .from("challenges")
+    .insert(challengeData)
+    .select()
+    .single();
+
+  if (error) {
+    logger.error("[createChallenge error]", { error });
+    return reply.code(500).send({
+      status: "FAILED",
+      error: { message: "Failed to create challenge", code: 1002 },
     });
   }
+
+  return reply.send({ status: "SUCCESS", challenge: data });
 };
 
 const updateChallange = async (request: any, reply: any) => {
-  const { email } = request?.user;
-  const { challenge, fields } = request.body.parsed;
+  const { user } = request;
+  const { id } = request.params;
+  const { updates } = request.body.parsed;
 
-  // ✅ DEV BYPASS: Return mock success response without AWS/DynamoDB
-  if (process.env.NODE_ENV !== "production") {
-    return reply.send({
-      status: 'SUCCESS',
-      challenge: {
-        ...challenge,
-        updatedAt: new Date().toISOString(),
-      }
+  if (user?.role !== "coach") {
+    return reply.code(403).send({
+      status: "FAILED",
+      error: { message: "Only coaches can update challenges", code: 1001 },
     });
   }
 
-  if (!challenge || !email || !fields?.length) {
-    return reply.send({
-      status: 'FAIL',
-      error: 'wrong'
+  const updateData: Record<string, any> = {};
+  if (updates.title !== undefined) updateData.title = updates.title;
+  if (updates.description !== undefined) updateData.description = updates.description;
+  if (updates.coverImageUrl !== undefined) updateData.cover_image_url = updates.coverImageUrl;
+  if (updates.status !== undefined) updateData.status = updates.status;
+  if (updates.startDate !== undefined) updateData.start_date = updates.startDate;
+  if (updates.endDate !== undefined) updateData.end_date = updates.endDate;
+
+  if (Object.keys(updateData).length === 0) {
+    return reply.code(400).send({
+      status: "FAILED",
+      error: { message: "No valid updates provided", code: 1002 },
     });
   }
 
+  const { data, error } = await supabaseAdmin
+    .from("challenges")
+    .update(updateData)
+    .eq("id", id)
+    .eq("coach_id", user.id)
+    .select()
+    .maybeSingle();
 
-  const result = await DB.CHALLANGES.update(challenge, fields);
-
-  if (!!result) {
-    return reply.send({
-      status: 'SUCCESS',
-      user: result,
+  if (error) {
+    logger.error("[updateChallenge error]", { error });
+    return reply.code(500).send({
+      status: "FAILED",
+      error: { message: "Failed to update challenge", code: 1003 },
     });
   }
 
-  return reply.send({
-    status: 'FAIL',
-    error: 'wrong'
-  });
+  if (!data) {
+    return reply.code(404).send({
+      status: "FAILED",
+      error: { message: "Challenge not found or access denied", code: 1004 },
+    });
+  }
+
+  return reply.send({ status: "SUCCESS", challenge: data });
 };
 
 const getAllChallanges = async (request: any, reply: any) => {
-  const email = request?.user?.email;
-  const { brand } = request.query || {};
+  const { user } = request;
+  const { brandSlug } = request.query || {};
 
-  // ✅ DEV BYPASS: Return mock challenges without AWS/DynamoDB
-  if (process.env.NODE_ENV !== "production") {
-    // Generate dates relative to current date for better status diversity
-    const now = new Date();
-    const activeStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); // 7 days ago
-    const activeEnd = new Date(now.getTime() + 23 * 24 * 60 * 60 * 1000); // 23 days from now
-    const upcomingStart = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days from now
-    const upcomingEnd = new Date(now.getTime() + 37 * 24 * 60 * 60 * 1000); // 37 days from now
-    
-    const mockChallenges = [
-      {
-        id: "challenge-1",
-        title: "30 Day Strength Challenge",
-        startDate: activeStart.toISOString(),
-        endDate: activeEnd.toISOString(),
-        brand: "annamartin",
-        coachId: "coach@annamartin.com",
-        description: "Build strength over 30 days with progressive workouts",
-        cover: { url: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400" },
-      },
-      {
-        id: "challenge-2",
-        title: "New Year Fitness Challenge",
-        startDate: upcomingStart.toISOString(),
-        endDate: upcomingEnd.toISOString(),
-        brand: "annamartin",
-        coachId: "coach@annamartin.com",
-        description: "Start the new year right with daily workouts",
-        cover: { url: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400" },
-      },
-    ];
-
-    // Filter by brand if provided
-    const filteredChallenges = brand 
-      ? mockChallenges.filter(c => c.brand === brand)
-      : mockChallenges;
-
-    return reply.send({
-      status: 'SUCCESS',
-      challenges: filteredChallenges
+  if (!user?.id) {
+    return reply.code(401).send({
+      status: "FAILED",
+      error: { message: "Unauthorized", code: 1001 },
     });
   }
 
-  if (!email) {
-    return reply.send({
-      status: 'FAIL',
-      error: 'wrong'
+  let query = supabaseAdmin
+    .from("challenges")
+    .select("*, challenge_videos(*, videos(*))");
+
+  if (user.role === "coach") {
+    query = query.eq("coach_id", user.id);
+  } else if (user.role === "member") {
+    query = query.eq("coach_id", user.coachId);
+  } else if (brandSlug) {
+    const { data: coach } = await supabaseAdmin
+      .from("coaches")
+      .select("id")
+      .eq("brand_slug", brandSlug)
+      .maybeSingle();
+
+    if (!coach) {
+      return reply.send({ status: "SUCCESS", challenges: [] });
+    }
+    query = query.eq("coach_id", coach.id);
+  }
+
+  const { data, error } = await query.order("created_at", { ascending: false });
+
+  if (error) {
+    logger.error("[getChallenges error]", { error });
+    return reply.code(500).send({
+      status: "FAILED",
+      error: { message: "Failed to fetch challenges", code: 1002 },
     });
   }
 
-  // ✅ PRODUCTION PATH (unchanged behaviour)
-  const challanges = await DB.CHALLANGES.getAll(email);
-
-  if (!!challanges?.Items) {
-    return reply.send({
-      status: 'SUCCESS',
-      challenges: !!challanges?.Items?.length ? challanges.Items : []
-    });
-  }
-
-  return reply.send({
-    status: 'FAIL',
-    error: 'wrong',
-    code: 1001
-  });
+  return reply.send({ status: "SUCCESS", challenges: data || [] });
 };
 
 const getChallangeById = async (request: any, reply: any) => {
+  const { user } = request;
   const { id } = request.params;
-  const email = request?.user?.email;
 
-  // DEV BYPASS: Return mock challenge by ID in development
-  if (process.env.NODE_ENV !== "production") {
-    const mockChallenge = {
-      id: id,
-      title: "30 Day Strength Challenge",
-      startDate: "2024-12-01T00:00:00Z",
-      endDate: "2024-12-31T23:59:59Z",
-      coachId: email || "dev@moove.test",
-      description: "Build strength over 30 days with progressive workouts. Each day includes targeted exercises designed to build functional strength.",
-    };
-
-    return reply.send({
-      status: 'SUCCESS',
-      challenge: mockChallenge
+  if (!user?.id) {
+    return reply.code(401).send({
+      status: "FAILED",
+      error: { message: "Unauthorized", code: 1001 },
     });
   }
 
-  // Production path
-  const challange = await DB.CHALLANGES.getById?.(email, id);
+  let query = supabaseAdmin
+    .from("challenges")
+    .select("*, challenge_videos(*, videos(*))")
+    .eq("id", id);
 
-  if (challange) {
-    return reply.send({
-      status: 'SUCCESS',
-      challenge: challange
+  if (user.role === "coach") {
+    query = query.eq("coach_id", user.id);
+  } else if (user.role === "member") {
+    query = query.eq("coach_id", user.coachId);
+  }
+
+  const { data, error } = await query.maybeSingle();
+
+  if (error) {
+    logger.error("[getChallengeById error]", { error });
+    return reply.code(500).send({
+      status: "FAILED",
+      error: { message: "Failed to fetch challenge", code: 1002 },
     });
   }
 
-  return reply.send({
-    status: 'FAIL',
-    error: 'not found',
-    code: 1002
-  });
+  if (!data) {
+    return reply.code(404).send({
+      status: "FAILED",
+      error: { message: "Challenge not found", code: 1003 },
+    });
+  }
+
+  return reply.send({ status: "SUCCESS", challenge: data });
 };
 
 const deleteChallange = async (request: any, reply: any) => {
-  const { email } = request?.user;
+  const { user } = request;
   const { id } = request.params;
 
-  // ✅ DEV BYPASS: Return mock success response without AWS/DynamoDB
-  if (process.env.NODE_ENV !== "production") {
-    return reply.send({
-      status: 'SUCCESS'
+  if (user?.role !== "coach") {
+    return reply.code(403).send({
+      status: "FAILED",
+      error: { message: "Only coaches can delete challenges", code: 1001 },
     });
   }
 
-  const challange = {
-    PK: `USER#${email}`,
-    SK: `CHALLANGE#${id}`
-  }
+  const { error } = await supabaseAdmin
+    .from("challenges")
+    .delete()
+    .eq("id", id)
+    .eq("coach_id", user.id);
 
-  const result = await DB.CHALLANGES.delete(challange);
-
-  if (result) {
-    return reply.send({
-      status: 'SUCCESS'
+  if (error) {
+    logger.error("[deleteChallenge error]", { error });
+    return reply.code(500).send({
+      status: "FAILED",
+      error: { message: "Failed to delete challenge", code: 1002 },
     });
   }
 
-  return reply.send({
-    status: 'FAIL',
-    error: 'wrong',
-    code: 1001
-  });
+  return reply.send({ status: "SUCCESS" });
+};
+
+const addVideoToChallenge = async (request: any, reply: any) => {
+  const { user } = request;
+  const { id } = request.params;
+  const { videoId, dayNumber, sortOrder } = request.body.parsed;
+
+  if (user?.role !== "coach") {
+    return reply.code(403).send({
+      status: "FAILED",
+      error: { message: "Only coaches can modify challenges", code: 1001 },
+    });
+  }
+
+  const { data: challenge } = await supabaseAdmin
+    .from("challenges")
+    .select("id")
+    .eq("id", id)
+    .eq("coach_id", user.id)
+    .maybeSingle();
+
+  if (!challenge) {
+    return reply.code(404).send({
+      status: "FAILED",
+      error: { message: "Challenge not found or access denied", code: 1002 },
+    });
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from("challenge_videos")
+    .insert({
+      challenge_id: id,
+      video_id: videoId,
+      day_number: dayNumber || 1,
+      sort_order: sortOrder || 0,
+    })
+    .select("*, videos(*)")
+    .single();
+
+  if (error) {
+    logger.error("[addVideoToChallenge error]", { error });
+    return reply.code(500).send({
+      status: "FAILED",
+      error: { message: "Failed to add video to challenge", code: 1003 },
+    });
+  }
+
+  return reply.send({ status: "SUCCESS", challengeVideo: data });
+};
+
+const removeVideoFromChallenge = async (request: any, reply: any) => {
+  const { user } = request;
+  const { id, videoId } = request.params;
+
+  if (user?.role !== "coach") {
+    return reply.code(403).send({
+      status: "FAILED",
+      error: { message: "Only coaches can modify challenges", code: 1001 },
+    });
+  }
+
+  const { data: challenge } = await supabaseAdmin
+    .from("challenges")
+    .select("id")
+    .eq("id", id)
+    .eq("coach_id", user.id)
+    .maybeSingle();
+
+  if (!challenge) {
+    return reply.code(404).send({
+      status: "FAILED",
+      error: { message: "Challenge not found or access denied", code: 1002 },
+    });
+  }
+
+  const { error } = await supabaseAdmin
+    .from("challenge_videos")
+    .delete()
+    .eq("challenge_id", id)
+    .eq("video_id", videoId);
+
+  if (error) {
+    logger.error("[removeVideoFromChallenge error]", { error });
+    return reply.code(500).send({
+      status: "FAILED",
+      error: { message: "Failed to remove video from challenge", code: 1003 },
+    });
+  }
+
+  return reply.send({ status: "SUCCESS" });
 };
 
 export {
@@ -226,4 +303,6 @@ export {
   getAllChallanges,
   getChallangeById,
   deleteChallange,
-}
+  addVideoToChallenge,
+  removeVideoFromChallenge,
+};
