@@ -9,7 +9,10 @@
   "scripts": {
     "dev": "turbo dev",
     "dev:all": "concurrently -n API,WEB -c green,blue \"cd apps/api && PORT=3005 npx tsx watch src/index.ts\" \"cd apps/client && PORT=3000 next dev --hostname 0.0.0.0 --port 3000\"",
-    "build": "turbo build",
+    "build": "npm run build:packages && npm run build:apps",
+    "build:packages": "npm run build --workspace=packages/types --workspace=packages/api-client --if-present",
+    "build:apps": "npm run build --workspace=apps/client --if-present",
+    "build:turbo": "turbo build",
     "lint": "turbo lint",
     "test": "turbo test"
   },
