@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useEffect, FormEvent, use, useCallback } from "react";
+import { useState, useEffect, FormEvent, use } from "react";
 import { useRouter } from "next/navigation";
 import Button from "../../_components/ui/Button";
 import Modal from "../../_components/ui/Modal";
-import { getVideoById, updateVideo, deleteVideo } from "@moove/api-client";
+import { videosService } from "@/lib/supabase-services";
 import { useToast } from "../../_components/ui/Toast";
-import { uploadFile, isValidVideoFile, isValidImageFile } from "@/lib/upload";
 
 const TARGET_AREAS = [
   { id: "upper-body", label: "Upper body" },
@@ -42,8 +41,8 @@ interface FormData {
   title: string;
   description: string;
   maxLength: string;
-  videoFile: string;
-  coverImage: string;
+  videoUrl: string;
+  thumbnailUrl: string;
   targetArea: string;
   fitnessGoal: string;
   type: string;
@@ -59,14 +58,12 @@ export default function EditVideoPage({ params }: { params: Promise<{ id: string
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isUploadingVideo, setIsUploadingVideo] = useState(false);
-  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     title: "",
     description: "",
     maxLength: "45",
-    videoFile: "",
-    coverImage: "",
+    videoUrl: "",
+    thumbnailUrl: "",
     targetArea: "full-body",
     fitnessGoal: "lose-weight",
     type: "strength",
@@ -75,101 +72,56 @@ export default function EditVideoPage({ params }: { params: Promise<{ id: string
   });
 
   useEffect(() => {
-    getVideoById(id)
-      .then((video) => {
+    const loadVideo = async () => {
+      try {
+        const video = await videosService.getById(id);
         if (video) {
-          const v = video as any;
-          // Map duration to closest available option
-          const durationMinutes = Math.floor((video.durationSeconds || 0) / 60);
+          const durationMinutes = Math.floor((video.duration_seconds || 0) / 60);
           const validDurations = ["15", "30", "45", "60"];
-          const maxLength = validDurations.includes(String(durationMinutes)) 
-            ? String(durationMinutes) 
+          const maxLength = validDurations.includes(String(durationMinutes))
+            ? String(durationMinutes)
             : "45";
-          
-          // Normalize target area value
-          const targetArea = v.target ? v.target.toLowerCase().replace(/\s+/g, "-") : "full-body";
+
+          const targetArea = video.target ? video.target.toLowerCase().replace(/\s+/g, "-") : "full-body";
           const validTargets = ["upper-body", "full-body", "core", "lower-body"];
-          
-          // Normalize type value
-          const typeValue = (v.category || v.type || "strength").toLowerCase();
+
+          const typeValue = (video.category || "strength").toLowerCase();
           const validTypes = ["cardio", "strength", "calm"];
-          
+
           setFormData({
             title: video.title || "",
-            description: v.description || "",
+            description: video.description || "",
             maxLength,
-            videoFile: v.videoUrl || "",
-            coverImage: video.thumbnailUrl || "",
+            videoUrl: video.video_url || "",
+            thumbnailUrl: video.thumbnail_url || "",
             targetArea: validTargets.includes(targetArea) ? targetArea : "full-body",
-            fitnessGoal: v.fitnessGoal || "lose-weight",
+            fitnessGoal: video.fitness_goal || "lose-weight",
             type: validTypes.includes(typeValue) ? typeValue : "strength",
             visibility: video.published ? "publish" : "draft",
-            featured: v.featured || false,
+            featured: video.featured || false,
           });
         }
-      })
-      .catch(() => toast.error("Failed to load video"))
-      .finally(() => setIsLoading(false));
-  }, [id]);
-
-  const handleVideoUpload = async (file: File) => {
-    if (!isValidVideoFile(file)) {
-      toast.error("Please upload a valid video file (MP4, MOV, or AVI)");
-      return;
-    }
-    setIsUploadingVideo(true);
-    try {
-      const url = await uploadFile(file);
-      setFormData({ ...formData, videoFile: url });
-      toast.success("Video uploaded");
-    } catch {
-      toast.error("Failed to upload video");
-    } finally {
-      setIsUploadingVideo(false);
-    }
-  };
-
-  const handleImageUpload = async (file: File) => {
-    if (!isValidImageFile(file)) {
-      toast.error("Please upload a valid image file (PNG, JPG, or WebP)");
-      return;
-    }
-    setIsUploadingImage(true);
-    try {
-      const url = await uploadFile(file);
-      setFormData({ ...formData, coverImage: url });
-      toast.success("Image uploaded");
-    } catch {
-      toast.error("Failed to upload image");
-    } finally {
-      setIsUploadingImage(false);
-    }
-  };
-
-  const handleDrop = useCallback(
-    (type: "video" | "image") => (e: React.DragEvent) => {
-      e.preventDefault();
-      const file = e.dataTransfer.files[0];
-      if (file) {
-        if (type === "video") handleVideoUpload(file);
-        else handleImageUpload(file);
-      }
-    },
-    [formData]
-  );
-
-  const handleFileClick = (type: "video" | "image") => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = type === "video" ? "video/mp4,video/mov,video/avi,video/quicktime" : "image/png,image/jpeg,image/webp";
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) {
-        if (type === "video") handleVideoUpload(file);
-        else handleImageUpload(file);
+      } catch (err) {
+        console.error("Failed to load video:", err);
+        toast.error("Failed to load video");
+      } finally {
+        setIsLoading(false);
       }
     };
-    input.click();
+
+    loadVideo();
+  }, [id]);
+
+  const validateUrl = (url: string, type: 'video' | 'image'): boolean => {
+    try {
+      new URL(url);
+      if (type === 'video') {
+        return url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com');
+      }
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -180,28 +132,40 @@ export default function EditVideoPage({ params }: { params: Promise<{ id: string
       return;
     }
 
+    if (!formData.videoUrl.trim()) {
+      toast.error("Please enter a video URL");
+      return;
+    }
+
+    if (!validateUrl(formData.videoUrl, 'video')) {
+      toast.error("Please enter a valid YouTube or Vimeo URL");
+      return;
+    }
+
+    if (formData.thumbnailUrl && !validateUrl(formData.thumbnailUrl, 'image')) {
+      toast.error("Please enter a valid thumbnail URL");
+      return;
+    }
+
     setIsSaving(true);
     try {
-      await updateVideo(
-        {
-          id,
-          title: formData.title,
-          description: formData.description,
-          durationSeconds: parseInt(formData.maxLength) * 60 || 0,
-          category: formData.type,
-          target: formData.targetArea,
-          published: formData.visibility === "publish",
-          thumbnailUrl: formData.coverImage,
-          videoUrl: formData.videoFile,
-          fitnessGoal: formData.fitnessGoal,
-          featured: formData.featured,
-        },
-        ["title", "description", "durationSeconds", "category", "target", "published", "thumbnailUrl", "videoUrl", "fitnessGoal", "featured"]
-      );
-      toast.success("Class updated successfully!");
+      await videosService.update(id, {
+        title: formData.title,
+        description: formData.description,
+        video_url: formData.videoUrl,
+        thumbnail_url: formData.thumbnailUrl || undefined,
+        duration_seconds: parseInt(formData.maxLength) * 60 || 0,
+        category: formData.type,
+        target: formData.targetArea,
+        fitness_goal: formData.fitnessGoal,
+        published: formData.visibility === "publish",
+        featured: formData.featured,
+      });
+      toast.success("Video updated successfully!");
       setTimeout(() => router.push("/coach/dashboard/videos"), 1500);
-    } catch {
-      toast.error("Failed to update class");
+    } catch (err) {
+      console.error("Failed to update video:", err);
+      toast.error("Failed to update video");
     } finally {
       setIsSaving(false);
     }
@@ -210,11 +174,12 @@ export default function EditVideoPage({ params }: { params: Promise<{ id: string
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      await deleteVideo(id);
-      toast.success("Class deleted!");
+      await videosService.delete(id);
+      toast.success("Video deleted!");
       setTimeout(() => router.push("/coach/dashboard/videos"), 1500);
-    } catch {
-      toast.error("Failed to delete class");
+    } catch (err) {
+      console.error("Failed to delete video:", err);
+      toast.error("Failed to delete video");
     } finally {
       setIsDeleting(false);
       setShowDeleteModal(false);
@@ -308,86 +273,38 @@ export default function EditVideoPage({ params }: { params: Promise<{ id: string
           </div>
         </div>
 
-        {/* Video File */}
+        {/* Video URL */}
         <div>
-          <label className="block text-sm font-medium text-slate-400 mb-2">Video file *</label>
-          {formData.videoFile ? (
-            <div className="relative rounded-lg overflow-hidden border border-slate-200 bg-slate-900">
-              <video src={formData.videoFile} className="w-full h-40 object-cover" controls />
-              <button
-                type="button"
-                onClick={() => setFormData({ ...formData, videoFile: "" })}
-                className="absolute top-2 right-2 p-1.5 bg-white rounded-full shadow-md hover:bg-slate-100 transition"
-              >
-                <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-          ) : (
-            <div
-              onClick={() => handleFileClick("video")}
-              onDrop={handleDrop("video")}
-              onDragOver={(e) => e.preventDefault()}
-              className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center hover:border-[#308FAB] transition cursor-pointer"
-            >
-              {isUploadingVideo ? (
-                <div className="flex flex-col items-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#308FAB] mb-2"></div>
-                  <p className="text-sm text-slate-500">Uploading...</p>
-                </div>
-              ) : (
-                <>
-                  <p className="text-sm text-slate-600">
-                    Drag your video, <span className="text-[#308FAB] font-medium">click to upload</span>
-                  </p>
-                  <p className="text-xs text-slate-400 mt-1">
-                    We accept any and all video files, most commonly .mp4, .mov and .avi.
-                  </p>
-                </>
-              )}
-            </div>
-          )}
+          <label className="block text-sm font-medium text-slate-400 mb-2">Video URL *</label>
+          <input
+            type="url"
+            value={formData.videoUrl}
+            onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
+            placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..."
+            required
+            className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/20 focus:border-[#308FAB]"
+          />
+          <p className="text-xs text-slate-400 mt-1">
+            Enter a YouTube or Vimeo video URL
+          </p>
         </div>
 
-        {/* Cover Image */}
+        {/* Thumbnail URL */}
         <div>
-          <label className="block text-sm font-medium text-slate-400 mb-2">Cover image</label>
-          {formData.coverImage ? (
-            <div className="relative rounded-lg overflow-hidden border border-slate-200">
-              <img src={formData.coverImage} alt="Cover" className="w-full h-40 object-cover" />
-              <button
-                type="button"
-                onClick={() => setFormData({ ...formData, coverImage: "" })}
-                className="absolute top-2 right-2 p-1.5 bg-white rounded-full shadow-md hover:bg-slate-100 transition"
-              >
-                <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-          ) : (
-            <div
-              onClick={() => handleFileClick("image")}
-              onDrop={handleDrop("image")}
-              onDragOver={(e) => e.preventDefault()}
-              className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center hover:border-[#308FAB] transition cursor-pointer"
-            >
-              {isUploadingImage ? (
-                <div className="flex flex-col items-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#308FAB] mb-2"></div>
-                  <p className="text-sm text-slate-500">Uploading...</p>
-                </div>
-              ) : (
-                <>
-                  <p className="text-sm text-slate-600">
-                    Drag your image here, or <span className="text-[#308FAB] font-medium">click to upload</span>
-                  </p>
-                  <p className="text-xs text-slate-400 mt-1">
-                    If no image is provided, the first frame of the video will be used.
-                  </p>
-                </>
-              )}
+          <label className="block text-sm font-medium text-slate-400 mb-2">Thumbnail URL (Optional)</label>
+          <input
+            type="url"
+            value={formData.thumbnailUrl}
+            onChange={(e) => setFormData({ ...formData, thumbnailUrl: e.target.value })}
+            placeholder="https://example.com/thumbnail.jpg"
+            className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#308FAB]/20 focus:border-[#308FAB]"
+          />
+          <p className="text-xs text-slate-400 mt-1">
+            If not provided, the video platform's default thumbnail will be used
+          </p>
+          {formData.thumbnailUrl && (
+            <div className="mt-3 rounded-lg overflow-hidden border border-slate-200">
+              <img src={formData.thumbnailUrl} alt="Thumbnail preview" className="w-full h-40 object-cover" />
             </div>
           )}
         </div>
