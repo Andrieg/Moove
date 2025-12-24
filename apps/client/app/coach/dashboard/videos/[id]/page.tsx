@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, FormEvent, use } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Button from "../../_components/ui/Button";
 import Modal from "../../_components/ui/Modal";
@@ -50,8 +50,8 @@ interface FormData {
   featured: boolean;
 }
 
-export default function EditVideoPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function EditVideoPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const router = useRouter();
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(true);
