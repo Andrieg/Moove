@@ -10,15 +10,15 @@ function generateFakeMembers(): Member[] {
   const genders = ["Male", "Female", "Other"];
   const fitnessGoals = ["Be more active", "Lose weight", "Build muscle", "Improve flexibility", "Train for event"];
   const statuses: ("active" | "inactive")[] = ["active", "inactive"];
-  
+
   const members: Member[] = [];
-  
+
   for (let i = 0; i < 15; i++) {
     const firstName = firstNames[i % firstNames.length];
     const lastName = lastNames[i % lastNames.length];
     const daysAgo = Math.floor(Math.random() * 30) + 1;
     const joinDaysAgo = Math.floor(Math.random() * 365) + 30;
-    
+
     members.push({
       id: `member-${i + 1}`,
       coachId: "coach-1",
@@ -37,7 +37,7 @@ function generateFakeMembers(): Member[] {
       createdAt: new Date(Date.now() - joinDaysAgo * 24 * 60 * 60 * 1000).toISOString(),
     });
   }
-  
+
   return members;
 }
 
@@ -67,37 +67,41 @@ export async function listMembers(params?: ListMembersParams): Promise<Member[]>
     const queryParams = new URLSearchParams();
     if (params?.search) queryParams.set("search", params.search);
     if (params?.status && params.status !== "all") queryParams.set("status", params.status);
-    
+
     const query = queryParams.toString();
     const path = `/members${query ? `?${query}` : ""}`;
-    
-    return await apiFetch<Member[]>(path);
+
+    // The API returns { status: "SUCCESS", members: Member[] }
+    const response = await apiFetch<{ status: string; members: Member[] }>(path);
+    return response.members || [];
   } catch (err) {
     console.warn("API unavailable, using localStorage fallback for members");
     // Fallback to localStorage
     let members = getStoredMembers();
-    
+
     // Apply client-side filtering
     if (params?.search) {
       const search = params.search.toLowerCase();
-      members = members.filter(m => 
+      members = members.filter(m =>
         m.firstName?.toLowerCase().includes(search) ||
         m.lastName?.toLowerCase().includes(search) ||
         m.email?.toLowerCase().includes(search)
       );
     }
-    
+
     if (params?.status && params.status !== "all") {
       members = members.filter(m => m.status === params.status);
     }
-    
+
     return members;
   }
 }
 
 export async function getMember(memberId: string): Promise<Member | null> {
   try {
-    return await apiFetch<Member>(`/members/${memberId}`);
+    // The API returns { status: "SUCCESS", member: Member }
+    const response = await apiFetch<{ status: string; member: Member }>(`/members/${memberId}`);
+    return response.member || null;
   } catch (err) {
     console.warn("API unavailable, using localStorage fallback for member");
     // Fallback to localStorage

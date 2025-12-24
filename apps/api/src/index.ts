@@ -48,7 +48,7 @@ const start = async () => {
 
     console.log("[BOOT] register cors");
     server.register(cors as any, {
-      origin: ["http://localhost:3001", "http://localhost:3002", "http://localhost", /\.moove\.fit$/],
+      origin: ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost", /\.moove\.fit$/],
       methods: ["GET", "POST", "PATCH", "DELETE", "OPTION"],
       credentials: true,
     });
