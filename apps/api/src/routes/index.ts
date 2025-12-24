@@ -6,17 +6,17 @@ import { createTrainer, getTrainersbyCoach, updateUser, whoAmI } from '../module
 import { uploadAvatar, uploadVideo } from '../modules/media';
 import { onBoarding, onBoardingRefresh } from '../modules/billing/onboarding';
 import { webhook } from '../modules/billing/webhook';
-import { createMembership, updateMembership, getBilling, getMembershipPlan, cancelMembership } from '../modules/billing';
+import { createMembership, updateMembership, getBilling, getMembershipPlan, cancelMembership, createCheckoutSession, getCheckoutStatus } from '../modules/billing';
 import { createClassroom, deleteClassroom, getClassrooms, updateClassroom } from '../modules/classrooms';
 import { createVideo, deleteVideo, getVideos, getVideoById, updateVideo } from '../modules/videos';
 import { createLiveClass, deleteLiveClass, getLiveClass, updateLiveClass } from '../modules/lives';
 import { createCategory, getCategories } from '../modules/categories';
 import { createLocation, getLocations } from '../modules/locations';
-import { createChallange, deleteChallange, getAllChallanges, getChallangeById, updateChallange } from '../modules/challanges';
+import { createChallange, deleteChallange, getAllChallanges, getChallangeById, updateChallange, addVideoToChallenge, removeVideoFromChallenge } from '../modules/challanges';
 import { createLink, deleteLink, getLinks, updateLink } from '../modules/links';
 import { createLandingpage, getLandingpage, getLandingpageByBrand, updateLandingpage } from '../modules/landingpages';
 import { generateSessionCheckout } from '../modules/billing/checkout';
-import { getMembersByCoach, updateMember } from '../modules/members';
+import { getMembersByCoach, updateMember, getMemberById, getMemberProgress, updateMemberProgress } from '../modules/members';
 import { getContent, postChallangeCompleted, postChallangeViewEnded, postChallangeViewStarted, postFavourite, postJoinChallange, postJoinLiveClass, postViewContent, postViewContentTime, postViewEnded } from '../modules/content';
 
 const registerSchema = {
@@ -271,7 +271,7 @@ const routes = fp(async (server, opts, next) => {
   });
 
   server.route({
-    url: '/videos',
+    url: '/videos/:id',
     logLevel: 'warn',
     method: ['PATCH'],
     preValidation: [server.authenticate],
@@ -379,7 +379,7 @@ const routes = fp(async (server, opts, next) => {
   });
 
   server.route({
-    url: '/challenges',
+    url: '/challenges/:id',
     logLevel: 'warn',
     method: ['PATCH'],
     preValidation: [server.authenticate],
@@ -400,6 +400,22 @@ const routes = fp(async (server, opts, next) => {
     method: ['DELETE'],
     preValidation: [server.authenticate],
     handler: (request, reply) => deleteChallange(request, reply)
+  });
+
+  server.route({
+    url: '/challenges/:id/videos',
+    logLevel: 'warn',
+    method: ['POST'],
+    preValidation: [server.authenticate],
+    handler: (request, reply) => addVideoToChallenge(request, reply)
+  });
+
+  server.route({
+    url: '/challenges/:id/videos/:videoId',
+    logLevel: 'warn',
+    method: ['DELETE'],
+    preValidation: [server.authenticate],
+    handler: (request, reply) => removeVideoFromChallenge(request, reply)
   });
 
   // Links Routes
@@ -488,6 +504,30 @@ const routes = fp(async (server, opts, next) => {
     handler: (request, reply) => updateMember(request, reply)
   });
 
+  server.route({
+    url: '/members/:id',
+    logLevel: 'warn',
+    method: ['GET'],
+    preValidation: [server.authenticate],
+    handler: (request, reply) => getMemberById(request, reply)
+  });
+
+  server.route({
+    url: '/members/progress',
+    logLevel: 'warn',
+    method: ['GET'],
+    preValidation: [server.authenticate],
+    handler: (request, reply) => getMemberProgress(request, reply)
+  });
+
+  server.route({
+    url: '/members/progress',
+    logLevel: 'warn',
+    method: ['POST'],
+    preValidation: [server.authenticate],
+    handler: (request, reply) => updateMemberProgress(request, reply)
+  });
+
   // Content Routes
 
   server.route({
@@ -570,11 +610,7 @@ const routes = fp(async (server, opts, next) => {
     handler: (request, reply) => postFavourite(request, reply)
   });
 
-  // Landing page settings routes now use Supabase via getLandingpageByBrand
-
-  // Billing checkout routes now use billing module
-  const { createCheckoutSession, getCheckoutStatus } = require('../modules/billing');
-
+  // Billing checkout routes
   server.route({
     url: '/billing/checkout',
     logLevel: 'warn',

@@ -209,4 +209,185 @@ const handleWebhook = async (request: any, reply: any) => {
   }
 };
 
-export { createCheckoutSession, getCheckoutStatus, handleWebhook };
+const getBilling = async (request: any, reply: any) => {
+  const { user } = request;
+
+  if (user?.role !== "coach") {
+    return reply.code(403).send({
+      status: "FAILED",
+      error: { message: "Only coaches can view billing", code: 1001 },
+    });
+  }
+
+  const { data: coach, error } = await supabaseAdmin
+    .from("coaches")
+    .select("stripe_account_id")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (error) {
+    logger.error("[getBilling error]", { error });
+    return reply.code(500).send({
+      status: "FAILED",
+      error: { message: "Failed to fetch billing info", code: 1002 },
+    });
+  }
+
+  return reply.send({
+    status: "SUCCESS",
+    billing: {
+      stripeAccountId: coach?.stripe_account_id || null,
+      connected: !!coach?.stripe_account_id,
+    },
+  });
+};
+
+const getMembershipPlan = async (request: any, reply: any) => {
+  const { user } = request;
+
+  if (user?.role !== "coach") {
+    return reply.code(403).send({
+      status: "FAILED",
+      error: { message: "Only coaches can view memberships", code: 1001 },
+    });
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from("memberships")
+    .select("*")
+    .eq("coach_id", user.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    logger.error("[getMembershipPlan error]", { error });
+    return reply.code(500).send({
+      status: "FAILED",
+      error: { message: "Failed to fetch memberships", code: 1002 },
+    });
+  }
+
+  return reply.send({ status: "SUCCESS", memberships: data || [] });
+};
+
+const createMembership = async (request: any, reply: any) => {
+  const { user } = request;
+  const { membership } = request.body.parsed || request.body;
+
+  if (user?.role !== "coach") {
+    return reply.code(403).send({
+      status: "FAILED",
+      error: { message: "Only coaches can create memberships", code: 1001 },
+    });
+  }
+
+  const membershipData = {
+    coach_id: user.id,
+    title: membership.title,
+    description: membership.description || null,
+    price_monthly: membership.priceMonthly || membership.price_monthly,
+    currency: membership.currency || "GBP",
+    status: membership.status || "active",
+    features: membership.features || [],
+  };
+
+  const { data, error } = await supabaseAdmin
+    .from("memberships")
+    .insert(membershipData)
+    .select()
+    .single();
+
+  if (error) {
+    logger.error("[createMembership error]", { error });
+    return reply.code(500).send({
+      status: "FAILED",
+      error: { message: "Failed to create membership", code: 1002 },
+    });
+  }
+
+  return reply.send({ status: "SUCCESS", membership: data });
+};
+
+const updateMembership = async (request: any, reply: any) => {
+  const { user } = request;
+  const { membershipId, updates } = request.body.parsed || request.body;
+
+  if (user?.role !== "coach") {
+    return reply.code(403).send({
+      status: "FAILED",
+      error: { message: "Only coaches can update memberships", code: 1001 },
+    });
+  }
+
+  const updateData: Record<string, any> = {};
+  if (updates.title !== undefined) updateData.title = updates.title;
+  if (updates.description !== undefined) updateData.description = updates.description;
+  if (updates.priceMonthly !== undefined) updateData.price_monthly = updates.priceMonthly;
+  if (updates.price_monthly !== undefined) updateData.price_monthly = updates.price_monthly;
+  if (updates.currency !== undefined) updateData.currency = updates.currency;
+  if (updates.status !== undefined) updateData.status = updates.status;
+  if (updates.features !== undefined) updateData.features = updates.features;
+
+  if (Object.keys(updateData).length === 0) {
+    return reply.code(400).send({
+      status: "FAILED",
+      error: { message: "No valid updates provided", code: 1002 },
+    });
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from("memberships")
+    .update(updateData)
+    .eq("id", membershipId)
+    .eq("coach_id", user.id)
+    .select()
+    .maybeSingle();
+
+  if (error) {
+    logger.error("[updateMembership error]", { error });
+    return reply.code(500).send({
+      status: "FAILED",
+      error: { message: "Failed to update membership", code: 1003 },
+    });
+  }
+
+  return reply.send({ status: "SUCCESS", membership: data });
+};
+
+const cancelMembership = async (request: any, reply: any) => {
+  const { user } = request;
+  const { membershipId } = request.body.parsed || request.body || request.query;
+
+  if (user?.role !== "coach") {
+    return reply.code(403).send({
+      status: "FAILED",
+      error: { message: "Only coaches can cancel memberships", code: 1001 },
+    });
+  }
+
+  const { error } = await supabaseAdmin
+    .from("memberships")
+    .update({ status: "inactive" })
+    .eq("id", membershipId)
+    .eq("coach_id", user.id);
+
+  if (error) {
+    logger.error("[cancelMembership error]", { error });
+    return reply.code(500).send({
+      status: "FAILED",
+      error: { message: "Failed to cancel membership", code: 1002 },
+    });
+  }
+
+  return reply.send({ status: "SUCCESS" });
+};
+
+export {
+  createCheckoutSession,
+  getCheckoutStatus,
+  handleWebhook,
+  getBilling,
+  getMembershipPlan,
+  createMembership,
+  updateMembership,
+  cancelMembership,
+};
