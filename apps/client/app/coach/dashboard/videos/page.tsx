@@ -6,9 +6,20 @@ import Card from "../_components/ui/Card";
 import Button from "../_components/ui/Button";
 import Table from "../_components/ui/Table";
 import Modal from "../_components/ui/Modal";
-import { getVideos, deleteVideo } from "@moove/api-client";
-import type { Video } from "@moove/types";
+import { videosService } from "@/lib/supabase-services";
 import { useToast } from "../_components/ui/Toast";
+
+interface Video {
+  id: string;
+  title: string;
+  description?: string;
+  video_url: string;
+  thumbnail_url?: string;
+  duration_seconds?: number;
+  category?: string;
+  published: boolean;
+  created_at: string;
+}
 
 export default function VideosPage() {
   const router = useRouter();
@@ -23,21 +34,30 @@ export default function VideosPage() {
 
   const loadVideos = async () => {
     try {
-      const data = await getVideos();
+      const data = await videosService.getAll();
       setVideos(data);
-    } catch { toast.error("Failed to load videos"); }
-    finally { setLoading(false); }
+    } catch (err) {
+      console.error("Failed to load videos:", err);
+      toast.error("Failed to load videos");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = async () => {
     if (!deleteModal.video) return;
     setIsDeleting(true);
     try {
-      await deleteVideo(deleteModal.video.id);
+      await videosService.delete(deleteModal.video.id);
       toast.success("Video deleted successfully!");
       setVideos((prev) => prev.filter((v) => v.id !== deleteModal.video?.id));
-    } catch { toast.error("Failed to delete video"); }
-    finally { setIsDeleting(false); setDeleteModal({ open: false }); }
+    } catch (err) {
+      console.error("Failed to delete video:", err);
+      toast.error("Failed to delete video");
+    } finally {
+      setIsDeleting(false);
+      setDeleteModal({ open: false });
+    }
   };
 
   const filteredVideos = videos.filter((video) => video.title?.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -54,7 +74,7 @@ export default function VideosPage() {
         </div>
       ),
     },
-    { key: "duration", header: "Duration", width: "100px", render: (video: Video) => <span>{Math.floor((video.durationSeconds || 0) / 60)} min</span> },
+    { key: "duration", header: "Duration", width: "100px", render: (video: Video) => <span>{Math.floor((video.duration_seconds || 0) / 60)} min</span> },
     {
       key: "status", header: "Status", width: "100px",
       render: (video: Video) => <span className={`px-2 py-1 text-xs rounded-full font-medium ${video.published ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-600"}`}>{video.published ? "Published" : "Draft"}</span>,

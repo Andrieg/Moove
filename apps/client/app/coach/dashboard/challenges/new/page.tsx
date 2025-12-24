@@ -7,8 +7,13 @@ import { useToast } from "../../_components/ui/Toast";
 import CoverImageDropzone from "../_components/CoverImageDropzone";
 import WorkoutsList from "../_components/WorkoutsList";
 import AddVideoDrawer from "../_components/AddVideoDrawer";
-import { createChallenge } from "@moove/api-client";
-import type { ChallengeWorkoutItem } from "@moove/types";
+import { challengesService } from "@/lib/supabase-services";
+
+interface ChallengeWorkoutItem {
+  id: string;
+  title: string;
+  durationMinutes?: number;
+}
 
 interface FormData {
   title: string;
@@ -75,22 +80,22 @@ export default function NewChallengePage() {
 
     setIsLoading(true);
     try {
-      const response = await createChallenge({
+      const challenge = await challengesService.create({
         title: formData.title,
         description: formData.description,
-        startDate: formData.startDate ? new Date(formData.startDate).toISOString() : undefined,
-        endDate: formData.endDate ? new Date(formData.endDate).toISOString() : undefined,
-        coverImageUrl: formData.coverImageUrl,
-        workouts: formData.workouts,
+        start_date: formData.startDate,
+        end_date: formData.endDate,
+        cover_image_url: formData.coverImageUrl,
         status: "scheduled",
       });
 
-      if (response.status === "SUCCESS") {
-        toast.success("Challenge created successfully!");
-        setTimeout(() => router.push("/coach/dashboard/challenges"), 1500);
-      } else {
-        toast.error("Failed to create challenge");
+      if (formData.workouts.length > 0) {
+        const videoIds = formData.workouts.map(w => w.id);
+        await challengesService.addVideos(challenge.id, videoIds);
       }
+
+      toast.success("Challenge created successfully!");
+      setTimeout(() => router.push("/coach/dashboard/challenges"), 1500);
     } catch (err) {
       console.error("Failed to create challenge:", err);
       toast.error("Failed to create challenge");

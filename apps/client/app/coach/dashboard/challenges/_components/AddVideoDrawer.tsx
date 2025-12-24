@@ -1,9 +1,22 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { Video, ChallengeWorkoutItem } from "@moove/types";
-import { getVideos } from "@moove/api-client";
+import { videosService } from "@/lib/supabase-services";
 import Button from "../../_components/ui/Button";
+
+interface ChallengeWorkoutItem {
+  id: string;
+  title: string;
+  durationMinutes?: number;
+  thumbnailUrl?: string;
+}
+
+interface Video {
+  id: string;
+  title: string;
+  duration_seconds?: number;
+  thumbnail_url?: string;
+}
 
 interface AddVideoDrawerProps {
   isOpen: boolean;
@@ -29,7 +42,7 @@ export default function AddVideoDrawer({ isOpen, onClose, onAdd, existingIds }: 
   const loadVideos = async () => {
     setLoading(true);
     try {
-      const data = await getVideos();
+      const data = await videosService.getAll();
       setVideos(data);
     } catch (err) {
       console.error("Failed to load videos:", err);
@@ -66,8 +79,8 @@ export default function AddVideoDrawer({ isOpen, onClose, onAdd, existingIds }: 
       .map((v) => ({
         id: v.id,
         title: v.title || "Untitled",
-        durationMinutes: v.durationSeconds ? Math.floor(v.durationSeconds / 60) : undefined,
-        thumbnailUrl: v.thumbnailUrl,
+        durationMinutes: v.duration_seconds ? Math.floor(v.duration_seconds / 60) : undefined,
+        thumbnailUrl: v.thumbnail_url,
       }));
     onAdd(selected);
     onClose();
@@ -143,9 +156,9 @@ export default function AddVideoDrawer({ isOpen, onClose, onAdd, existingIds }: 
                     className="w-5 h-5 rounded border-slate-300 text-[#308FAB] focus:ring-[#308FAB]"
                   />
                   <div className="w-12 h-9 rounded overflow-hidden bg-slate-200 flex-shrink-0">
-                    {video.thumbnailUrl ? (
+                    {video.thumbnail_url ? (
                       <img
-                        src={video.thumbnailUrl}
+                        src={video.thumbnail_url}
                         alt={video.title}
                         className="w-full h-full object-cover"
                       />
@@ -159,8 +172,8 @@ export default function AddVideoDrawer({ isOpen, onClose, onAdd, existingIds }: 
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-slate-900 truncate">{video.title || "Video"}</p>
-                    {video.durationSeconds && (
-                      <p className="text-xs text-slate-500">{Math.floor(video.durationSeconds / 60)} minutes</p>
+                    {video.duration_seconds && (
+                      <p className="text-xs text-slate-500">{Math.floor(video.duration_seconds / 60)} minutes</p>
                     )}
                   </div>
                 </label>

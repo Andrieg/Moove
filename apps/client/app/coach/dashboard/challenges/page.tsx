@@ -6,8 +6,20 @@ import Card from "../_components/ui/Card";
 import Button from "../_components/ui/Button";
 import { useToast } from "../_components/ui/Toast";
 import ChallengesTable from "./_components/ChallengesTable";
-import { getChallenges } from "@moove/api-client";
-import type { Challenge, ChallengeStatus } from "@moove/types";
+import { challengesService } from "@/lib/supabase-services";
+
+type ChallengeStatus = 'all' | 'scheduled' | 'started' | 'completed';
+
+interface Challenge {
+  id: string;
+  title: string;
+  description?: string;
+  status: 'scheduled' | 'started' | 'completed';
+  start_date?: string;
+  end_date?: string;
+  cover_image_url?: string;
+  created_at: string;
+}
 
 export default function ChallengesPage() {
   const router = useRouter();
@@ -24,7 +36,7 @@ export default function ChallengesPage() {
   const loadChallenges = async () => {
     setLoading(true);
     try {
-      const data = await getChallenges();
+      const data = await challengesService.getAll();
       setChallenges(data);
     } catch (err) {
       console.error("Failed to load challenges:", err);
