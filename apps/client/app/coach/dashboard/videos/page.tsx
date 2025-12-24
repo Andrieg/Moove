@@ -83,7 +83,7 @@ export default function VideosPage() {
       key: "actions", header: "Actions", width: "120px",
       render: (video: Video) => (
         <div className="flex gap-2">
-          <button onClick={(e) => { e.stopPropagation(); router.push(`/dashboard/videos/${video.id}`); }} className="p-2 hover:bg-slate-100 rounded transition" title="Edit">
+          <button onClick={(e) => { e.stopPropagation(); router.push(`/coach/dashboard/videos/${video.id}`); }} className="p-2 hover:bg-slate-100 rounded transition" title="Edit">
             <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
           </button>
           <button onClick={(e) => { e.stopPropagation(); setDeleteModal({ open: true, video }); }} className="p-2 hover:bg-red-50 rounded transition" title="Delete">
@@ -116,7 +116,7 @@ export default function VideosPage() {
             <div className="inline-block w-8 h-8 border-4 border-[#308FAB] border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : (
-          <Table columns={columns} data={filteredVideos} onRowClick={(video) => router.push(`/dashboard/videos/${video.id}`)} emptyMessage="No videos found. Upload your first video!" />
+          <Table columns={columns} data={filteredVideos} onRowClick={(video) => router.push(`/coach/dashboard/videos/${video.id}`)} emptyMessage="No videos found. Upload your first video!" />
         )}
       </Card>
       <Modal isOpen={deleteModal.open} onClose={() => setDeleteModal({ open: false })} title="Delete Video" size="sm">
